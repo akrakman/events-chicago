@@ -88,6 +88,13 @@ function getPlatformBadge(platform: string) {
       btn: 'bg-amber-600 hover:bg-amber-700 text-white shadow-sm shadow-amber-600/20',
     };
   }
+  if (p === 'MISHKAN') {
+    return {
+      name: 'Mishkan Chicago',
+      badge: 'bg-indigo-50 text-indigo-700 border-indigo-200',
+      btn: 'bg-indigo-600 hover:bg-indigo-700 text-white shadow-xs shadow-indigo-600/20',
+    };
+  }
   if (p === 'CHITRIBE') {
     return {
       name: 'ChiTribe',

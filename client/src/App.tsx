@@ -214,7 +214,7 @@ export const App: React.FC = () => {
                 Jewish Events
               </h2>
               <p className="text-xs sm:text-sm text-slate-600 max-w-2xl leading-relaxed">
-                Aggregated daily across Chicago Moishe Houses, Moishe Pods, ChiTribe, Chabad, Silverstein Base, Mishkan, and community organizers.
+                Aggregated daily from Chicago Moishe Houses, Moishe Pods, Silverstein Base, Anshe Emet YAD, JCUA, and grassroots organizers.
                 Filter by organization, neighborhood, or weekend plans, and subscribe to your phone calendar.
               </p>
             </div>

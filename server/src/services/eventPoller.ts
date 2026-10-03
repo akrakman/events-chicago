@@ -1,7 +1,7 @@
 import { prisma } from '../db';
 import { scrapeWithCheerio } from '../scraper/cheerioNextData';
 import { scrapeWithPlaywright } from '../scraper/playwrightScraper';
-import { scrapeChiTribeEvents } from '../scraper/chitribeScraper';
+import { scrapeTribeEvents } from '../scraper/tribeEventsScraper';
 import { parseEventDate } from '../utils/dateParser';
 
 export const DEFAULT_SOURCES = [
@@ -31,23 +31,85 @@ export const DEFAULT_SOURCES = [
     platform: 'LINKTREE',
   },
   {
+    url: 'https://linktr.ee/lakeviewmoishe',
+    name: 'Moishe House: Lakeview',
+    platform: 'LINKTREE',
+  },
+  {
     url: 'https://linktr.ee/RSJMohoChicago',
     name: 'RSJ Moishe House Chicago',
     platform: 'LINKTREE',
   },
   {
-    url: 'https://chitribe.org/events/',
-    name: 'ChiTribe Events',
-    platform: 'CHITRIBE',
+    url: 'https://linktr.ee/baselgsq',
+    name: 'Silverstein Base Logan Square',
+    platform: 'LINKTREE',
+  },
+  {
+    url: 'https://linktr.ee/baseanvl',
+    name: 'Silverstein Base Andersonville',
+    platform: 'LINKTREE',
+  },
+  {
+    url: 'https://linktr.ee/metrochihillel',
+    name: 'Metro Chicago Hillel & Base Central',
+    platform: 'LINKTREE',
+  },
+  {
+    url: 'https://linktr.ee/ansheemet_yad',
+    name: 'Anshe Emet Synagogue YAD',
+    platform: 'LINKTREE',
+  },
+  {
+    url: 'https://linktr.ee/jcua',
+    name: 'JCUA Chicago',
+    platform: 'LINKTREE',
+  },
+  {
+    url: 'https://www.mishkanchicago.org/wp-json/tribe/events/v1/events?per_page=60',
+    name: 'Mishkan Chicago',
+    platform: 'MISHKAN',
   },
 ];
 
 let isPollingInProgress = false;
 
 /**
- * Ensures all default community sources exist in SQLite.
+ * Ensures all default community sources exist in SQLite,
+ * and automatically retires any legacy/removed sources (such as ChiTribe).
  */
 export async function seedDefaultSources() {
+  const defaultUrls = new Set(DEFAULT_SOURCES.map((s) => s.url));
+
+  // Prune any legacy sources that are no longer in DEFAULT_SOURCES
+  const legacySources = await prisma.monitoredSource.findMany({
+    where: {
+      url: {
+        notIn: Array.from(defaultUrls),
+      },
+    },
+  });
+
+  for (const leg of legacySources) {
+    console.log(`[Poller] Retiring legacy source: ${leg.name} (${leg.url})`);
+    await prisma.extractedItem.deleteMany({
+      where: {
+        OR: [
+          { sourceUrl: leg.url },
+          { platform: leg.platform },
+        ],
+      },
+    });
+    await prisma.scrapeJob.deleteMany({
+      where: {
+        OR: [{ sourceId: leg.id }, { url: leg.url }],
+      },
+    });
+    await prisma.monitoredSource.delete({
+      where: { id: leg.id },
+    });
+  }
+
   for (const src of DEFAULT_SOURCES) {
     const existing = await prisma.monitoredSource.findUnique({
       where: { url: src.url },
@@ -153,26 +215,22 @@ export async function pollSource(sourceId: string) {
       }
     }
     // ------------------------------------------------------------------------
-    // CASE B: ChiTribe Events Calendar (e.g. chitribe.org)
+    // CASE B: Mishkan Chicago (The Events Calendar REST API)
     // ------------------------------------------------------------------------
-    else if (source.platform === 'CHITRIBE' || source.url.includes('chitribe.org')) {
-      scrapeMethod = 'PLAYWRIGHT';
-      console.log(`[Poller] Scraping ChiTribe events calendar via Playwright: ${source.url}`);
-      const chResult = await scrapeChiTribeEvents(source.url);
+    else if (source.platform === 'MISHKAN' || source.url.includes('/wp-json/tribe/events/')) {
+      scrapeMethod = 'CHEERIO_STATIC';
+      console.log(`[Poller] Scraping Mishkan Chicago events API: ${source.url}`);
+      const tResult = await scrapeTribeEvents(source.url);
 
-      jobTitle = chResult.title || source.name || 'ChiTribe Events';
-      jobDescription = chResult.description || 'Chicago Jewish Community Events Calendar';
-      jobAuthor = chResult.author || 'ChiTribe';
-      jobAvatar = chResult.avatarUrl || null;
-      rawPayload = chResult.rawPayload || null;
+      jobTitle = tResult.title || source.name || 'Mishkan Chicago Events';
+      jobDescription = tResult.description || 'Mishkan Chicago Community Events';
+      jobAuthor = tResult.author || 'Mishkan Chicago';
 
-      console.log(`[Poller] Found ${chResult.items.length} events from ChiTribe`);
-
-      for (const item of chResult.items) {
+      for (const item of tResult.items) {
         enrichedEvents.push({
           title: item.title,
           url: item.url,
-          platform: 'CHITRIBE',
+          platform: 'MISHKAN',
           itemType: 'EVENT',
           eventDate: item.eventDate ? new Date(item.eventDate) : null,
           eventDateStr: item.eventDateStr || null,
@@ -180,11 +238,12 @@ export async function pollSource(sourceId: string) {
           description: item.description || null,
           imageUrl: item.imageUrl || null,
           location: item.location || null,
-          hostName: item.hostName || 'ChiTribe',
-          rsvpCount: item.rsvpCount ?? null,
+          hostName: 'Mishkan Chicago',
+          rsvpCount: null,
           isPinned: false,
         });
       }
+      console.log(`[Poller] Found ${tResult.items.length} events from Mishkan Chicago`);
     }
     // ------------------------------------------------------------------------
     // CASE C: Linktree Profile (e.g. linktr.ee/...)
@@ -219,14 +278,22 @@ export async function pollSource(sourceId: string) {
         const urlLower = item.url.toLowerCase();
         const titleLower = item.title.toLowerCase();
 
-        // Skip generic social profile channels or external non-event links
+        const isGoogleForm = urlLower.includes('forms.gle') || urlLower.includes('docs.google.com/forms');
+        const isSurveyOrContact =
+          titleLower.includes('survey') ||
+          titleLower.includes('tell us your thoughts') ||
+          titleLower.includes('newsletter') ||
+          titleLower.includes('email list') ||
+          titleLower.includes('coffee') ||
+          titleLower.includes('donate') ||
+          urlLower.includes('chat.whatsapp.com');
+
+        // Skip generic non-event social links
         if (
           urlLower.includes('instagram.com/') && !urlLower.includes('/p/') ||
           urlLower.includes('facebook.com/') && !urlLower.includes('/events/') ||
-          urlLower.includes('chat.whatsapp.com') ||
-          urlLower.includes('forms.gle') ||
-          urlLower.includes('docs.google.com/forms') ||
-          urlLower.startsWith('mailto:')
+          urlLower.startsWith('mailto:') ||
+          isSurveyOrContact
         ) {
           continue;
         }
@@ -236,21 +303,33 @@ export async function pollSource(sourceId: string) {
         const isGenericEvent =
           item.itemType === 'EVENT' ||
           urlLower.includes('/event') ||
+          urlLower.includes('/calendar') ||
           titleLower.includes('rsvp') ||
           titleLower.includes('shabbat') ||
           titleLower.includes('shabbos') ||
           titleLower.includes('dinner') ||
+          titleLower.includes('brunch') ||
+          titleLower.includes('lunch') ||
           titleLower.includes('class') ||
           titleLower.includes('night') ||
           titleLower.includes('fest') ||
-          /\b\d{1,2}\/\d{1,2}\b/.test(item.title);
+          titleLower.includes('havdalah') ||
+          titleLower.includes('learning') ||
+          titleLower.includes('simchat') ||
+          titleLower.includes('rosh') ||
+          titleLower.includes('passover') ||
+          titleLower.includes('purim') ||
+          titleLower.includes('circle') ||
+          titleLower.includes('volunteering') ||
+          /\b\d{1,2}\/\d{1,2}\b/.test(item.title) ||
+          /\b(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)\b/i.test(item.title);
 
         if ((isPartiful || isOneTable || isGenericEvent) && !seenUrls.has(item.url)) {
           seenUrls.add(item.url);
           candidateEvents.push({
             title: item.title,
             url: item.url,
-            platform: isPartiful ? 'PARTIFUL' : isOneTable ? 'ONETABLE' : item.platform || 'GENERIC',
+            platform: isPartiful ? 'PARTIFUL' : isOneTable ? 'ONETABLE' : isGoogleForm ? 'GOOGLE_FORMS' : item.platform || 'GENERIC',
             itemType: 'EVENT',
             description: item.description,
           });

@@ -32,7 +32,8 @@ export function classifyEvent(
     if (combined.includes('wrigley')) organization = 'Moishe House: Wrigleyville';
     else if (combined.includes('lincoln park') || combined.includes('lp moho')) organization = 'Moishe House: Lincoln Park';
     else if (combined.includes('wicker park') || combined.includes('mohowicker')) organization = 'Moishe House: Wicker Park';
-    else if (combined.includes('lakeview') || combined.includes('lake view')) organization = 'Lakeview Moishe Pod';
+    else if (combined.includes('lakeview moishe pod') || combined.includes('gmi91wtnnz4dkca7aiy4')) organization = 'Lakeview Moishe Pod';
+    else if (combined.includes('lakeview') || combined.includes('lakeviewmoishe')) organization = 'Moishe House: Lakeview';
     else if (combined.includes('streeterville') || combined.includes('mpod.streeterville')) organization = 'Moishe Pod: Streeterville';
     else if (combined.includes('rsj')) organization = 'RSJ Moishe House Chicago';
     else organization = 'Moishe House';
@@ -45,9 +46,11 @@ export function classifyEvent(
     else organization = 'Chabad';
   } else if (combined.includes('base') || combined.includes('silverstein')) {
     orgGroup = 'Silverstein Base';
-    if (combined.includes('lincoln park')) organization = 'Base Lincoln Park';
+    if (combined.includes('logan square') || combined.includes('lgsq')) organization = 'Base Logan Square';
+    else if (combined.includes('andersonville') || combined.includes('anvl')) organization = 'Base Andersonville';
+    else if (combined.includes('lincoln park')) organization = 'Base Lincoln Park';
     else if (combined.includes('loop')) organization = 'Base Loop';
-    else if (combined.includes('andersonville')) organization = 'Base Andersonville';
+    else if (combined.includes('metrochihillel') || combined.includes('metro chicago hillel')) organization = 'Metro Chicago Hillel';
     else organization = 'Silverstein Base Chicago';
   } else if (combined.includes('mishkan')) {
     orgGroup = 'Mishkan Chicago';
@@ -58,18 +61,18 @@ export function classifyEvent(
   } else if (combined.includes('juf') || combined.includes('yld') || combined.includes('young leadership')) {
     orgGroup = 'JUF / YLD';
     organization = 'JUF Young Leadership Division';
-  } else if (combined.includes('rodfei zedek')) {
-    orgGroup = 'Congregation Rodfei Zedek';
-    organization = 'Congregation Rodfei Zedek';
+  } else if (combined.includes('jcua') || combined.includes('urban affairs') || combined.includes('kol or')) {
+    orgGroup = 'JCUA';
+    organization = 'JCUA (Jewish Council on Urban Affairs)';
+  } else if (combined.includes('anshe emet')) {
+    orgGroup = 'Anshe Emet';
+    organization = combined.includes('yad') ? 'Anshe Emet YAD' : 'Anshe Emet Synagogue';
   } else if (combined.includes('temple beth-el') || combined.includes('beth-el')) {
     orgGroup = 'Temple Beth-El';
     organization = 'Temple Beth-El';
-  } else if (combined.includes('anshe emet')) {
-    orgGroup = 'Anshe Emet';
-    organization = 'Anshe Emet';
-  } else if (combined.includes('chitribe')) {
-    orgGroup = 'ChiTribe';
-    organization = hostName && hostName !== 'ChiTribe' ? hostName : 'ChiTribe';
+  } else if (combined.includes('rodfei zedek')) {
+    orgGroup = 'Congregation Rodfei Zedek';
+    organization = 'Congregation Rodfei Zedek';
   }
 
   // 2. Neighborhood

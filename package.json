@@ -1,0 +1,20 @@
+{
+  "name": "link-aggregator",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev:server": "cd server && npm run dev",
+    "dev:client": "cd client && npm run dev",
+    "dev": "concurrently -k -p \"[{name}]\" -n \"SERVER,CLIENT\" -c \"cyan.bold,magenta.bold\" \"npm run dev:server\" \"npm run dev:client\"",
+    "build": "cd server && npm run build && cd ../client && npm run build",
+    "start": "cd server && npm run start",
+    "test:scrapers": "tsx scripts/test-scrapers.ts"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.4",
+    "cheerio": "^1.2.0",
+    "concurrently": "^10.0.5",
+    "playwright": "^1.63.0",
+    "tsx": "^4.23.15"
+  }
+}

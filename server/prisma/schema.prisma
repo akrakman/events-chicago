@@ -1,0 +1,74 @@
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model MonitoredSource {
+  id           String      @id @default(cuid())
+  url          String      @unique
+  name         String?
+  platform     String      // LINKTREE | PARTIFUL | SOCIAL | GENERIC
+  isActive     Boolean     @default(true)
+  lastPolledAt DateTime?
+  lastStatus   String?     // SUCCESS | FAILED
+  errorMessage String?
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+  jobs         ScrapeJob[]
+}
+
+model ScrapeJob {
+  id           String           @id @default(cuid())
+  url          String
+  sourceId     String?
+  source       MonitoredSource? @relation(fields: [sourceId], references: [id], onDelete: SetNull)
+  platform     String           // LINKTREE | PARTIFUL | SOCIAL | GENERIC
+  method       String           // CHEERIO_NEXT_DATA | CHEERIO_STATIC | PLAYWRIGHT
+  status       String           // COMPLETED | FAILED | RUNNING
+  durationMs   Int              @default(0)
+  title        String?
+  description  String?
+  author       String?
+  avatarUrl    String?
+  errorMessage String?
+  rawPayload   String?
+  items        ExtractedItem[]
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
+
+  @@index([sourceId])
+}
+
+model ExtractedItem {
+  id           String     @id @default(cuid())
+  jobId        String
+  job          ScrapeJob  @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  title        String
+  url          String
+  itemType     String     // EVENT | LINK | SOCIAL | MEDIA
+  platform     String     // LINKTREE | PARTIFUL | ONETABLE | TWITTER | GENERIC
+  description  String?
+  imageUrl     String?
+  icon         String?
+  eventDate    DateTime?  // Stored as DateTime for chronological sorting
+  eventDateStr String?    // Original string representation
+  eventEndDate DateTime?
+  location     String?
+  hostName     String?
+  rsvpCount    Int?
+  isPinned     Boolean    @default(false)
+  sourceName   String?    // e.g. "mpod.streeterville"
+  sourceUrl    String?    // e.g. "https://linktr.ee/mpod.streeterville"
+  metadata     String?    // JSON for any custom/extra attributes
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  @@index([jobId])
+  @@index([itemType])
+  @@index([eventDate])
+  @@index([platform])
+}

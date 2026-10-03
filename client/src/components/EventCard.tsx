@@ -116,8 +116,17 @@ export const EventCard: React.FC<EventCardProps> = ({
   onShare,
 }) => {
   const [copied, setCopied] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(false);
   const dateInfo = parseDateDetails(event.eventDate || event.eventDateStr);
   const platStyle = getPlatformBadge(event.platform);
+
+  // Extract direct external registration link from description if present
+  const directLink = (() => {
+    if (!event.description) return null;
+    const matches = event.description.match(/https?:\/\/[^\s<">]+/g) || [];
+    const ext = matches.find((u) => !u.includes('chitribe.org') && !u.includes('instagram.com') && !u.includes('facebook.com'));
+    return ext || null;
+  })();
 
   const handleCopy = async (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -279,9 +288,23 @@ export const EventCard: React.FC<EventCardProps> = ({
 
           {/* Description */}
           {event.description && (
-            <p className="text-xs text-slate-600 line-clamp-2 mt-2 leading-relaxed">
-              {event.description}
-            </p>
+            <div className="mt-2">
+              <p className={`text-xs text-slate-600 leading-relaxed ${isExpanded ? '' : 'line-clamp-2'}`}>
+                {event.description}
+              </p>
+              {event.description.length > 120 && (
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setIsExpanded(!isExpanded);
+                  }}
+                  className="text-[11px] font-bold text-emerald-700 hover:text-emerald-800 mt-1 inline-block focus:outline-none"
+                >
+                  {isExpanded ? 'Show less ▲' : 'Read full event details... ▼'}
+                </button>
+              )}
+            </div>
           )}
         </div>
 
@@ -291,14 +314,27 @@ export const EventCard: React.FC<EventCardProps> = ({
           <div className="flex flex-wrap items-center gap-2">
             {/* Primary Action Button */}
             <a
-              href={event.url}
+              href={directLink || event.url}
               target="_blank"
               rel="noreferrer"
               className={`inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold transition shadow-xs active:scale-95 ${platStyle.btn}`}
             >
-              <span>RSVP & View Details</span>
+              <span>{directLink ? 'Direct RSVP Link' : 'RSVP & View Details'}</span>
               <ExternalLink className="w-3.5 h-3.5" />
             </a>
+
+            {/* Direct Link secondary if event.url was different */}
+            {directLink && event.url !== directLink && (
+              <a
+                href={event.url}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center gap-1 px-3 py-2 rounded-xl text-xs font-semibold bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 transition"
+              >
+                <span>Original Link</span>
+                <ExternalLink className="w-3 h-3" />
+              </a>
+            )}
 
             {/* Secondary Cross-Posted RSVP Links */}
             {event.secondaryUrls && event.secondaryUrls.map((sec, idx) => (

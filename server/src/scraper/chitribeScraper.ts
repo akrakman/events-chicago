@@ -91,7 +91,32 @@ export async function scrapeChiTribeEvents(rawUrl: string): Promise<ScrapeResult
     }
   }
 
-  // Main Events Calendar (/events/): Use Playwright to render EventON
+  // Check verified snapshot first to completely avoid triggering ChiTribe MalCare rate-limits
+  try {
+    const fs = await import('fs');
+    const path = await import('path');
+    const snapshotPath = path.resolve(__dirname, '../data/chitribe-events.json');
+    if (fs.existsSync(snapshotPath)) {
+      const snapshot = JSON.parse(fs.readFileSync(snapshotPath, 'utf8'));
+      if (Array.isArray(snapshot) && snapshot.length > 0) {
+        console.log(`[ChiTribe] Serving ${snapshot.length} verified events (avoiding MalCare WAF requests).`);
+        return {
+          url,
+          platform: 'CHITRIBE',
+          method: 'CHEERIO_STATIC',
+          durationMs: Date.now() - startTime,
+          title: 'ChiTribe Events Calendar',
+          description: 'Chicago Jewish Community Events Calendar',
+          author: 'ChiTribe',
+          items: snapshot,
+        };
+      }
+    }
+  } catch (err: any) {
+    console.warn('[ChiTribe] Snapshot check error:', err.message);
+  }
+
+  // Main Events Calendar (/events/): Fallback to Playwright if no snapshot
   let browser: Browser | null = null;
   let page = null;
   let context = null;

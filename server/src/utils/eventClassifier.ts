@@ -67,12 +67,24 @@ export function classifyEvent(
   } else if (combined.includes('anshe emet')) {
     orgGroup = 'Anshe Emet';
     organization = combined.includes('yad') ? 'Anshe Emet YAD' : 'Anshe Emet Synagogue';
+  } else if (combined.includes('kam isaiah israel') || combined.includes('kamii')) {
+    orgGroup = 'Synagogues & Congregations';
+    organization = 'KAM Isaiah Israel';
+  } else if (combined.includes('makom shalom')) {
+    orgGroup = 'Synagogues & Congregations';
+    organization = 'Makom Shalom Mitziut';
+  } else if (combined.includes('repair the world') || combined.includes('sharsheret x repair')) {
+    orgGroup = 'Civic & Social Justice';
+    organization = 'Repair the World Chicago';
   } else if (combined.includes('temple beth-el') || combined.includes('beth-el')) {
-    orgGroup = 'Temple Beth-El';
+    orgGroup = 'Synagogues & Congregations';
     organization = 'Temple Beth-El';
   } else if (combined.includes('rodfei zedek')) {
-    orgGroup = 'Congregation Rodfei Zedek';
+    orgGroup = 'Synagogues & Congregations';
     organization = 'Congregation Rodfei Zedek';
+  } else if (combined.includes('chitribe')) {
+    orgGroup = 'ChiTribe';
+    organization = hostName && hostName !== 'ChiTribe' ? hostName : 'ChiTribe';
   }
 
   // 2. Neighborhood

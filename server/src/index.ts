@@ -35,6 +35,26 @@ async function main() {
   await fastify.register(itemRoutes);
   await fastify.register(sampleRoutes);
 
+  // Serve static client bundle if built
+  const path = await import('path');
+  const fs = await import('fs');
+  const fastifyStatic = (await import('@fastify/static')).default;
+  const clientDistPath = path.resolve(__dirname, '../../client/dist');
+
+  if (fs.existsSync(clientDistPath)) {
+    await fastify.register(fastifyStatic, {
+      root: clientDistPath,
+      prefix: '/',
+    });
+
+    fastify.setNotFoundHandler(async (request, reply) => {
+      if (request.raw.url && request.raw.url.startsWith('/api')) {
+        return reply.status(404).send({ error: 'Endpoint not found' });
+      }
+      return reply.sendFile('index.html');
+    });
+  }
+
   // Initialize automated daily polling background scheduler
   await startDailyPollingScheduler();
 

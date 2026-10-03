@@ -2,6 +2,7 @@ import { prisma } from '../db';
 import { scrapeWithCheerio } from '../scraper/cheerioNextData';
 import { scrapeWithPlaywright } from '../scraper/playwrightScraper';
 import { scrapeTribeEvents } from '../scraper/tribeEventsScraper';
+import { scrapeChiTribeEvents } from '../scraper/chitribeScraper';
 import { parseEventDate } from '../utils/dateParser';
 
 export const DEFAULT_SOURCES = [
@@ -69,6 +70,11 @@ export const DEFAULT_SOURCES = [
     url: 'https://www.mishkanchicago.org/wp-json/tribe/events/v1/events?per_page=60',
     name: 'Mishkan Chicago',
     platform: 'MISHKAN',
+  },
+  {
+    url: 'https://chitribe.org/events/',
+    name: 'ChiTribe Community Events',
+    platform: 'CHITRIBE',
   },
 ];
 
@@ -246,7 +252,38 @@ export async function pollSource(sourceId: string) {
       console.log(`[Poller] Found ${tResult.items.length} events from Mishkan Chicago`);
     }
     // ------------------------------------------------------------------------
-    // CASE C: Linktree Profile (e.g. linktr.ee/...)
+    // CASE C: ChiTribe Events & Community Feed
+    // ------------------------------------------------------------------------
+    else if (source.platform === 'CHITRIBE' || source.url.includes('chitribe.org')) {
+      scrapeMethod = 'PLAYWRIGHT';
+      console.log(`[Poller] Scraping ChiTribe events calendar: ${source.url}`);
+      const chiResult = await scrapeChiTribeEvents(source.url);
+
+      jobTitle = chiResult.title || 'ChiTribe Events Calendar';
+      jobDescription = chiResult.description || 'Chicago Jewish Community Events Calendar';
+      jobAuthor = 'ChiTribe';
+
+      for (const item of chiResult.items) {
+        enrichedEvents.push({
+          title: item.title,
+          url: item.url,
+          platform: 'CHITRIBE',
+          itemType: 'EVENT',
+          eventDate: item.eventDate ? new Date(item.eventDate) : null,
+          eventDateStr: item.eventDateStr || null,
+          eventEndDate: item.eventEndDate ? new Date(item.eventEndDate) : null,
+          description: item.description || null,
+          imageUrl: item.imageUrl || null,
+          location: item.location || null,
+          hostName: item.hostName || 'ChiTribe',
+          rsvpCount: null,
+          isPinned: false,
+        });
+      }
+      console.log(`[Poller] Found ${chiResult.items.length} events from ChiTribe`);
+    }
+    // ------------------------------------------------------------------------
+    // CASE D: Linktree Profile (e.g. linktr.ee/...)
     // ------------------------------------------------------------------------
     else {
       const parentScrape = await scrapeWithCheerio(source.url);

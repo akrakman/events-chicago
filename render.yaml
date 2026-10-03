@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: events-chicago
+    env: node
+    plan: free
+    region: ohio
+    buildCommand: npm install && cd server && npm install && npm run build && npx prisma db push && cd ../client && npm install && npm run build
+    startCommand: cd server && npm run start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000

@@ -7,8 +7,8 @@ X-WR-CALNAME:Jewish Events Chicago
 X-WR-TIMEZONE:America/Chicago
 X-WR-CALDESC:Chicago Jewish Community Events & Gatherings
 BEGIN:VEVENT
-UID:cmusx60w2008t123s385bj4l9@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h24x007jw3eyqs1smndj@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261003T133000Z
 DTEND:20261004T045900Z
 SUMMARY:Simchat Torah Class in Chassidus
@@ -18,8 +18,8 @@ URL:https://chitribe.org/events/simchat-torah-class-in-chassidus-2/
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx60w3008v123sbuin22qe@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h250007lw3eyg776x2s9@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261003T140000Z
 DTEND:20261003T170000Z
 SUMMARY:Shabbat Shemini Atzeret Service & Yizkor
@@ -29,8 +29,8 @@ URL:https://chitribe.org/events/shabbat-shemini-atzeret-service-yizkor/
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx60w3008x123sd46ugdi5@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h251007nw3eyohacj2y0@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261003T140000Z
 DTEND:20261004T045900Z
 SUMMARY:Special Water-themed Torah Study for Shemini Atzeret with Rachel Havrelock
@@ -40,8 +40,8 @@ URL:https://chitribe.org/events/special-water-themed-torah-study-for-shemini-atz
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx60w4008z123s4rw86g2l@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h253007pw3eymi6ylorp@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261003T141500Z
 DTEND:20261003T170000Z
 SUMMARY:Shemini Atzeret & Simchat Torah Festival Services (Saturday)
@@ -51,8 +51,8 @@ URL:https://chitribe.org/events/shemini-atzeret-simchat-torah-festival-services-
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx60w50091123s6obd6t9v@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h255007rw3eyhfubzshs@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261003T150000Z
 DTEND:20261003T163000Z
 SUMMARY:Simchat Torah Yizkor Service with October 7th Commemoration
@@ -62,8 +62,8 @@ URL:https://chitribe.org/events/simchat-torah-yizkor-service-with-october-7th-co
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx60w50093123s4zl0o7vr@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h256007tw3eysjgczzbh@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261003T150000Z
 DTEND:20261003T180000Z
 SUMMARY:Shmini Atzeret Services & Kiddush Luncheon
@@ -73,8 +73,8 @@ URL:https://chitribe.org/events/shmini-atzeret-services-kiddush-luncheon/
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx60w60095123s2bholtr9@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h258007vw3eyxa64vg8e@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261003T150000Z
 DTEND:20261003T180000Z
 SUMMARY:Shemini Atzeret Morning Services & Yizkor
@@ -84,8 +84,8 @@ URL:https://chitribe.org/events/shemini-atzeret-morning-services-yizkor/
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx60w70097123swz5st5gj@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h259007xw3eyzvst0tz0@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261003T150000Z
 DTEND:20261003T180000Z
 SUMMARY:Simchat Torah, Sh'mini Atzeret & Yizkor Service
@@ -95,8 +95,8 @@ URL:https://chitribe.org/events/simchat-torah-shmini-atzeret-yizkor-service/
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx60w70099123slwgz4upl@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h25b007zw3eynbr3o8ny@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261003T150000Z
 DTEND:20261003T180000Z
 SUMMARY:Shmini Atzeret Day Services, Yizkor & Sukkah Lunch
@@ -106,8 +106,8 @@ URL:https://chitribe.org/events/shmini-atzeret-day-services-yizkor-sukkah-lunch/
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx60w8009b123sncdyj2bg@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h25d0081w3eyiacc7aoj@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261003T151500Z
 DTEND:20261004T045900Z
 SUMMARY:Shemini Atzeret Yizkor Service
@@ -117,8 +117,8 @@ URL:https://chitribe.org/events/shemini-atzeret-yizkor-service/
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx60w9009d123sc5nbiyik@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h25g0083w3eyknpvcw4g@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261003T153000Z
 DTEND:20261004T045900Z
 SUMMARY:Simchat Torah Morning Services
@@ -128,8 +128,8 @@ URL:https://chitribe.org/events/simchat-torah-morning-services/
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx60w9009f123sqqxbt0ze@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h25j0085w3ey3z55owpb@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261003T164500Z
 DTEND:20261004T045900Z
 SUMMARY:Yizkor Memorial Service
@@ -139,8 +139,8 @@ URL:https://chitribe.org/events/yizkor-memorial-service-3/
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx60wa009h123stdsoa6yd@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h25l0087w3eyzgpuzgfm@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261003T173000Z
 DTEND:20261003T190000Z
 SUMMARY:Sukkot Kiddush Luncheon
@@ -150,8 +150,8 @@ URL:https://chitribe.org/events/sukkot-kiddush-luncheon/
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx5xmz004b123sj7gccyll@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3gz4b0035w3eywak346zo@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261003T190000Z
 DTEND:20261003T210000Z
 SUMMARY:Simchat Torah Learning and Celebration with Rav Jonathan 10/3/26, 5:45 pm at Anshe Emet Synagogue
@@ -161,8 +161,8 @@ URL:https://docs.google.com/forms/d/e/1FAIpQLScW505Lx-_ru-ai3rzbFI9elOFZqDfod1KO
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx5ydr0057123s8wewgh77@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h1yy003xw3eymu3scncb@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261003T220000Z
 DTEND:20261004T020000Z
 SUMMARY:Mishkan Chicago Brings Back: Simchat Torah!! (aka Mishkan's Big Torah Party)
@@ -172,8 +172,8 @@ URL:https://www.mishkanchicago.org/event/simchat-torah-10-03-26/
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx60wa009j123s0aqkc5dc@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h25n0089w3eyn09iv1i7@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261003T220000Z
 DTEND:20261004T020000Z
 SUMMARY:Simchat Torah! (aka Mishkan’s Big Torah Party)
@@ -183,8 +183,8 @@ URL:https://chitribe.org/events/simchat-torah-aka-mishkans-big-torah-party/
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx60wb009l123s6jte56a1@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h25o008bw3eyb6i9gmn1@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261003T223000Z
 DTEND:20261004T013000Z
 SUMMARY:Simchat Torah Dinner & Dancing
@@ -194,8 +194,8 @@ URL:https://chitribe.org/events/simchat-torah-dinner-dancing/
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx60wc009n123swc77rwyz@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h25q008dw3ey8ulqfr33@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261003T230000Z
 DTEND:20261004T020000Z
 SUMMARY:Simchat Torah Pizza Dinner & Celebration
@@ -205,8 +205,8 @@ URL:https://chitribe.org/events/simchat-torah-pizza-dinner-celebration/
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx60wc009p123swvfkiux2@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h25r008fw3eykbghpxo6@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261003T234500Z
 DTEND:20261004T045900Z
 SUMMARY:Simchat Torah Festival
@@ -216,8 +216,8 @@ URL:https://chitribe.org/events/simchat-torah-festival/
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx60wd009r123ss1nnxrmb@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h25s008hw3eye24m1wgg@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261004T000000Z
 DTEND:20261004T030000Z
 SUMMARY:Simchat Torah Hakafot Party
@@ -227,8 +227,8 @@ URL:https://chitribe.org/events/simchat-torah-hakafot-party/
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx60we009t123s3675mc79@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h25u008jw3eyu34vec8q@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261004T000000Z
 DTEND:20261004T030000Z
 SUMMARY:Simchat Torah Celebration: Hakafot, Singing, Dancing & Dinner
@@ -238,8 +238,8 @@ URL:https://chitribe.org/events/simchat-torah-celebration-hakafot-singing-dancin
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx60we009v123s5lwu9mcp@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h25w008lw3eyhk2nnwn3@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261004T000000Z
 DTEND:20261004T030000Z
 SUMMARY:Simchat Torah Main Hakafot & Buffet Kiddush
@@ -249,8 +249,8 @@ URL:https://chitribe.org/events/simchat-torah-main-hakafot-buffet-kiddush/
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx60wf009x123sgu82xrat@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h25y008nw3ey4t5zjlgg@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261004T000000Z
 DTEND:20261004T045900Z
 SUMMARY:Simchat Torah Event: Receiving Personal Torah
@@ -260,8 +260,8 @@ URL:https://chitribe.org/events/simchat-torah-event-receiving-personal-torah/
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx60wf009z123s91dghhc1@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h261008pw3ey7aapegz9@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261004T001500Z
 DTEND:20261004T030000Z
 SUMMARY:Simchat Torah Celebration & Dancing
@@ -271,8 +271,8 @@ URL:https://chitribe.org/events/simchat-torah-celebration-dancing/
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx60wg00a1123swr4sx811@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h264008rw3eycj9rn0eq@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261004T001500Z
 DTEND:20261004T045900Z
 SUMMARY:Simchat Torah Celebration & Dancing with the Torahs
@@ -282,8 +282,8 @@ URL:https://chitribe.org/events/simchat-torah-celebration-dancing-with-the-torah
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx60wh00a3123sday2f4do@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h267008tw3eys47zxch8@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261004T003000Z
 DTEND:20261004T030000Z
 SUMMARY:Simhat Torah Dance Party
@@ -293,8 +293,8 @@ URL:https://chitribe.org/events/simhat-torah-dance-party/
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx60wh00a5123sjhyi798g@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h269008vw3ey3tm91j24@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261004T003000Z
 DTEND:20261004T033000Z
 SUMMARY:Simchat Torah Celebration for YJPs!
@@ -304,8 +304,8 @@ URL:https://chitribe.org/events/simchat-torah-celebration-2/
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx60wi00a7123s9im0nteo@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h26c008xw3eyqe3uxiap@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261004T003000Z
 DTEND:20261004T033000Z
 SUMMARY:Simchat Torah BBQ & Dancing
@@ -315,8 +315,8 @@ URL:https://chitribe.org/events/simchat-torah-bbq-dancing/
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx60wi00a9123s0nzdw4mx@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h26f008zw3eyeejn7ncu@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261004T003000Z
 DTEND:20261004T043000Z
 SUMMARY:Main Simchat Torah Hakafot, Dinner & Sushi Station
@@ -326,8 +326,8 @@ URL:https://chitribe.org/events/main-simchat-torah-hakafot-dinner-sushi-station/
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx60wj00ab123sy3cvle07@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h26i0091w3eyb9e1caky@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261004T020000Z
 DTEND:20261004T050000Z
 SUMMARY:Legendary Post-dancing Farbrengen
@@ -337,8 +337,8 @@ URL:https://chitribe.org/events/legendary-post-dancing-farbrengen/
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx60wk00ad123speiq579x@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h26l0093w3eyeo6x3v13@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261004T140000Z
 DTEND:20261004T173000Z
 SUMMARY:Simchat Torah Celebration with Honorees
@@ -348,8 +348,8 @@ URL:https://chitribe.org/events/simchat-torah-celebration-with-honorees/
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx60wk00af123s8moynrkk@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h26o0095w3eyljy8b43x@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261004T140000Z
 DTEND:20261005T045900Z
 SUMMARY:Introducing the 5787 Beth El Simchat Torah Honorees!
@@ -359,8 +359,8 @@ URL:https://chitribe.org/events/introducing-the-5787-beth-el-simchat-torah-honor
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx60wl00ah123s8ns9uvu5@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h26r0097w3ey6s8jvpzh@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261004T143000Z
 DTEND:20261004T163000Z
 SUMMARY:Simchat Torah Festival Services
@@ -370,8 +370,8 @@ URL:https://chitribe.org/events/simchat-torah-festival-services/
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx60wl00aj123svzrsy6n5@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h26u0099w3eywy7cntln@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261004T143000Z
 DTEND:20261004T163000Z
 SUMMARY:The BIG Breakfast
@@ -381,8 +381,8 @@ URL:https://chitribe.org/events/the-big-breakfast/
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx60wm00al123s9dn19vuy@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h26w009bw3ey2jrqld7w@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261004T143000Z
 DTEND:20261004T173000Z
 SUMMARY:Simchat Torah Minyan and Torah Reading
@@ -392,8 +392,8 @@ URL:https://chitribe.org/events/simchat-torah-minyan-and-torah-reading/
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx5ydr0059123s86gykhn1@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h1z4003zw3ey9e4zivt3@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261004T150000Z
 DTEND:20261004T160000Z
 SUMMARY:Small Groups: 50+ Social Hour Does Pickleball Drills!
@@ -403,8 +403,8 @@ URL:https://www.mishkanchicago.org/event/small-groups-50-plus-pickleball-drills-
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx60wn00an123s37w8bzn8@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h26y009dw3eyvmgxadea@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261004T150000Z
 DTEND:20261004T170000Z
 SUMMARY:Shofar in the Street & Tashlich at Boat Park Playground
@@ -414,8 +414,8 @@ URL:https://chitribe.org/events/shofar-in-the-street-tashlich-at-boat-park-playg
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx60wn00ap123ssgda9jjr@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h271009fw3eym73mnv2m@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261004T150000Z
 DTEND:20261004T180000Z
 SUMMARY:Simchat Torah Morning Services, Hakafot & Kiddush Luncheon
@@ -425,8 +425,8 @@ URL:https://chitribe.org/events/simchat-torah-morning-services-hakafot-kiddush-l
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx60wo00ar123sbtfign0r@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h274009hw3eyu3grdtr5@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261004T150000Z
 DTEND:20261004T180000Z
 SUMMARY:Simchat Torah Morning Service & Hakafot
@@ -436,8 +436,8 @@ URL:https://chitribe.org/events/simchat-torah-morning-service-hakafot/
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx60wp00at123s667g6x4a@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h276009jw3eyrubv64hr@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261004T150000Z
 DTEND:20261005T045900Z
 SUMMARY:50+ Pickleball Drills
@@ -447,8 +447,8 @@ URL:https://chitribe.org/events/50-pickleball-drills/
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx60wp00av123s1l6vhtb4@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h279009lw3ey6qhx5xi8@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261004T153000Z
 DTEND:20261005T045900Z
 SUMMARY:Simchat Torah Dancing with the Torah & Torah Reading
@@ -458,8 +458,8 @@ URL:https://chitribe.org/events/simchat-torah-dancing-with-the-torah-torah-readi
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx60wq00ax123ss47jcjnx@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h27b009nw3eydbkvo8iz@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261004T153000Z
 DTEND:20261005T045900Z
 SUMMARY:Simchat Torah Morning Services with Hakafot Dancing
@@ -469,8 +469,8 @@ URL:https://chitribe.org/events/simchat-torah-morning-services-with-hakafot-danc
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx60wq00az123sfieue9l8@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h27e009pw3ey8es49x93@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261004T153000Z
 DTEND:20261005T045900Z
 SUMMARY:Book Club
@@ -480,8 +480,8 @@ URL:https://chitribe.org/events/book-club-2/
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx60wr00b1123s81vuoeja@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h27g009rw3eyqq5dbsba@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261004T160000Z
 DTEND:20261004T180000Z
 SUMMARY:Simchat Torah Day Celebration & Mimosas Brunch
@@ -491,8 +491,8 @@ URL:https://chitribe.org/events/simchat-torah-day-celebration-mimosas-brunch/
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx60ws00b3123s3c3xmgdh@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h27i009tw3eyzo1gb486@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261004T161500Z
 DTEND:20261004T190000Z
 SUMMARY:Simchat Torah Morning Celebration & Dancing
@@ -502,8 +502,8 @@ URL:https://chitribe.org/events/simchat-torah-morning-celebration-dancing/
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx60ws00b5123s1pbrzhr7@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h27k009vw3eyijnukzkb@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261004T170000Z
 DTEND:20261005T045900Z
 SUMMARY:Take Down the Sukkah
@@ -513,8 +513,8 @@ URL:https://chitribe.org/events/take-down-the-sukkah/
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx60wt00b7123sojjqg8z3@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h27l009xw3ey1yqqef8q@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261004T180000Z
 DTEND:20261005T045900Z
 SUMMARY:Hebrew Reading Crash Course
@@ -524,8 +524,8 @@ URL:https://chitribe.org/events/hebrew-reading-crash-course/
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx5gw7000z123ssmeacpke@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3gtw2000zw3eycz92uigc@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261004T190000Z
 DTEND:20261004T210000Z
 SUMMARY:Pizza, Candy, and Torah, Oh My!
@@ -535,8 +535,8 @@ URL:https://partiful.com/e/pES0UokQZrVFPROWsIwX
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx60wu00b9123s0hbd92xx@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h27m009zw3eyh2248ekr@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261004T220000Z
 DTEND:20261005T000000Z
 SUMMARY:Chicago Sukkah Design Festival
@@ -546,8 +546,8 @@ URL:https://chitribe.org/events/chicago-sukkah-design-festival/
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx60wu00bb123sot9nuvvk@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h27o00a1w3eymrp6iizj@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261004T224500Z
 DTEND:20261005T004500Z
 SUMMARY:Simchat Torah Nigunim & Farbrengen
@@ -557,8 +557,8 @@ URL:https://chitribe.org/events/simchat-torah-nigunim-farbrengen/
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx60wv00bd123sdmb7u0xx@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h27q00a3w3eyj4c5o5ih@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261005T000000Z
 DTEND:20261005T020000Z
 SUMMARY:Dinner In The Sukkah
@@ -568,8 +568,8 @@ URL:https://chitribe.org/events/dinner-in-the-sukkah-2/
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx60wv00bf123slukd452f@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h27s00a5w3ey9qyrsa03@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261005T050000Z
 DTEND:20261006T045900Z
 SUMMARY:BluePrint: Jewish Foundations 2026/2027 Cohort Registration
@@ -579,8 +579,8 @@ URL:https://chitribe.org/events/blueprint-jewish-foundations-2026-2027-cohort-re
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx5yds005b123sokm5jd45@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h1z90041w3ey35rcmve3@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261005T130000Z
 DTEND:20261005T133000Z
 SUMMARY:Morning Minyan
@@ -590,8 +590,8 @@ URL:https://www.mishkanchicago.org/event/morning-minyan-revised-schedule-6-3/202
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx60ww00bh123sxl6tx1os@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h27u00a7w3eygb91zdck@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261005T173000Z
 DTEND:20261102T200000Z
 SUMMARY:Mah Jongg Lessons
@@ -601,8 +601,8 @@ URL:https://chitribe.org/events/mah-jongg-lessons/
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx5ydt005d123sbf18anmo@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h1zc0043w3eydzsbg7v8@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261005T230000Z
 DTEND:20261006T000000Z
 SUMMARY:Small Groups: Studying Family Relationships in Six Stories of Genesis
@@ -612,8 +612,8 @@ URL:https://www.mishkanchicago.org/event/small-groups-studying-family-relationsh
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx60wx00bj123suw4m6vsj@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h27v00a9w3ey97adzgdz@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261005T230000Z
 DTEND:20261006T045900Z
 SUMMARY:Studying Family Relationships In Six Stories of Genesis
@@ -623,8 +623,8 @@ URL:https://chitribe.org/events/studying-family-relationships-in-six-stories-of-
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx5ydt005f123s2rgwwwnb@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h1zf0045w3eyr8lk7jkx@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261005T233000Z
 DTEND:20261006T013000Z
 SUMMARY:Small Groups: Vaguely Jewish Fiction Book Club: Happy New Years
@@ -634,8 +634,8 @@ URL:https://www.mishkanchicago.org/event/small-groups-jewish-fiction-book-club-1
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx60wx00bl123s4e86jl75@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h27x00abw3eyd2m4h83y@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261005T233000Z
 DTEND:20261006T045900Z
 SUMMARY:Vaguely Jewish Fiction Book Club
@@ -645,8 +645,8 @@ URL:https://chitribe.org/events/vaguely-jewish-fiction-book-club/
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx60wy00bn123s981wbmx3@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h27y00adw3eyd6fl8meq@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261006T003000Z
 DTEND:20261006T013000Z
 SUMMARY:Rabbi Helbraun's Adult Ed Class: The Book of Leviticus
@@ -656,8 +656,8 @@ URL:https://chitribe.org/events/rabbi-helbrauns-adult-ed-class-the-book-of-levit
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx5ydu005h123sveuw8gt1@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h1zj0047w3ey1frh1cef@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261006T130000Z
 DTEND:20261006T133000Z
 SUMMARY:Morning Minyan
@@ -667,8 +667,8 @@ URL:https://www.mishkanchicago.org/event/morning-minyan-revised-schedule-6-3/202
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx60wy00bp123snt4bz6dz@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h28000afw3eynyjs27ce@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261006T183000Z
 DTEND:20261006T203000Z
 SUMMARY:Mah Jongg Lessons
@@ -678,8 +678,8 @@ URL:https://chitribe.org/events/mah-jongg-lessons-2/
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx60wz00br123szg1gppfz@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h28300ahw3ey1tjqowl1@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261006T230000Z
 DTEND:20261007T020000Z
 SUMMARY:Tapestry of Strength: From Empowerment to Action with Shalva
@@ -689,8 +689,8 @@ URL:https://chitribe.org/events/tapestry-of-strength-from-empowerment-to-action-
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx5ydv005j123s9v6fiifd@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h1zm0049w3ey97l8ina3@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261006T233000Z
 DTEND:20261007T013000Z
 SUMMARY:Small Groups: Letters for Democracy
@@ -700,8 +700,8 @@ URL:https://www.mishkanchicago.org/event/small-groups-letters-for-democracy-10-0
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx60x000bt123sojoxfou5@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h28500ajw3eyei5fjeck@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261007T000000Z
 DTEND:20261007T020000Z
 SUMMARY:JWC Sukkot: Shakshuka, Sabich & Salads!
@@ -711,8 +711,8 @@ URL:https://chitribe.org/events/jwc-sukkot-shakshuka-sabich-salads/
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx60x000bv123sx42leby9@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h28600alw3eyv0g32dcz@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261007T010000Z
 DTEND:20261007T045900Z
 SUMMARY:Humans of October 7th: Rebuilding Israel with Erez Kaganovitz
@@ -722,8 +722,8 @@ URL:https://chitribe.org/events/humans-of-october-7th-rebuilding-israel-with-ere
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx5ydv005l123swmejr7ag@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h1zo004bw3ey6v2czdlh@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261007T130000Z
 DTEND:20261007T133000Z
 SUMMARY:Morning Minyan — Reflecting on the 3rd Anniversary of October 7th
@@ -733,8 +733,8 @@ URL:https://www.mishkanchicago.org/event/morning-minyan-revised-schedule-6-3-21/
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx60x100bx123si4r0qvqh@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h28700anw3ey5lrip949@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261007T130000Z
 DTEND:20261007T140000Z
 SUMMARY:Morning Minyan: October 7th Reflections
@@ -744,8 +744,8 @@ URL:https://chitribe.org/events/morning-minyan-october-7th-reflections/
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx60x100bz123skf5khqpi@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h28900apw3eymhnv3tzx@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261007T160000Z
 DTEND:20261007T190000Z
 SUMMARY:Lunch & Library: The Music of Billy Joel
@@ -755,8 +755,8 @@ URL:https://chitribe.org/events/lunch-library-the-music-of-billy-joel/
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx60x200c1123sjdj7cwlu@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h28c00arw3ey45lxk4fz@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261007T170000Z
 DTEND:20261007T180000Z
 SUMMARY:Gentle Yoga for the Young at Heart
@@ -766,8 +766,8 @@ URL:https://chitribe.org/events/gentle-yoga-for-the-young-at-heart-2/
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx5ydw005n123stiucy3pj@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h1zr004dw3ey6gxryl2t@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261007T233000Z
 DTEND:20261008T010000Z
 SUMMARY:Adult BMitzvah Cohort II
@@ -777,8 +777,8 @@ URL:https://www.mishkanchicago.org/event/adult-bmitzvah-cohort-pt-2-10-07-26/
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx60x300c3123s1hio2ikz@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h28e00atw3eyeolnyq58@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261007T233000Z
 DTEND:20261008T013000Z
 SUMMARY:Dinner In The Sukkah
@@ -788,8 +788,8 @@ URL:https://chitribe.org/events/dinner-in-the-sukkah/
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx60x300c5123smio3m0u5@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h28f00avw3ey8ez71e6c@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261008T000000Z
 DTEND:20261008T045900Z
 SUMMARY:Voices Joined in Memory - October 7
@@ -799,8 +799,8 @@ URL:https://chitribe.org/events/voices-joined-in-memory-october-7/
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx5ydx005p123synima6pq@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h1zt004fw3eycknt3oik@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261008T003000Z
 DTEND:20261008T020000Z
 SUMMARY:Anti-Racism Book Club
@@ -810,8 +810,8 @@ URL:https://www.mishkanchicago.org/event/anti-racism-book-club-2-5-2/2026-10-07/
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx5ydx005r123s4r0e470u@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h1zx004hw3eynj4mqjyx@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261008T130000Z
 DTEND:20261008T133000Z
 SUMMARY:Morning Minyan
@@ -821,8 +821,8 @@ URL:https://www.mishkanchicago.org/event/morning-minyan-revised-schedule-6-3/202
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx60x400c7123s1mnd7h9r@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h28g00axw3eyzq6zehz7@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261008T140000Z
 DTEND:20261009T045900Z
 SUMMARY:Weekly sessions on The Book of Joshua with Rosalie Fruchter
@@ -832,8 +832,8 @@ URL:https://chitribe.org/events/weekly-sessions-on-the-book-of-joshua-with-rosal
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx60x400c9123ssq31y8w5@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h28h00azw3eyiceaiawh@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261008T150000Z
 DTEND:20261008T170000Z
 SUMMARY:JWC Sukkot
@@ -843,8 +843,8 @@ URL:https://chitribe.org/events/jwc-sukkot/
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx60x500cb123s624f3gkj@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h28j00b1w3eyk5z8q3zf@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261008T161500Z
 DTEND:20261009T045900Z
 SUMMARY:Bearing Witness: Preserving in the Present for Our Future
@@ -854,8 +854,8 @@ URL:https://chitribe.org/events/bearing-witness-preserving-in-the-present-for-ou
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx60x600cd123seg0qc86x@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h28l00b3w3eyymash64x@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261008T173000Z
 DTEND:20261008T193000Z
 SUMMARY:Book Discussion: The Things We Never Say by Elizabeth Strout
@@ -865,8 +865,8 @@ URL:https://chitribe.org/events/book-discussion-the-things-we-never-say-by-eliza
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx60x600cf123sazqthua3@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h28m00b5w3eypuyii9sy@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261009T003000Z
 DTEND:20261009T020000Z
 SUMMARY:Mussar Study Group
@@ -876,8 +876,8 @@ URL:https://chitribe.org/events/mussar-study-group/
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx5ydy005t123sq6seafjv@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h1zz004jw3ey3jwm5yql@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261009T130000Z
 DTEND:20261009T133000Z
 SUMMARY:Morning Minyan
@@ -887,8 +887,8 @@ URL:https://www.mishkanchicago.org/event/morning-minyan-revised-schedule-6-3/202
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx5ydz005v123suimscjc8@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h202004lw3ey4kyqm90o@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261009T141500Z
 DTEND:20261009T150000Z
 SUMMARY:Raising Mensches: Drop-In Parenting Zoom
@@ -898,8 +898,8 @@ URL:https://www.mishkanchicago.org/event/raising-mensches-10-09-26/
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx60x700ch123say1f1bg3@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h28n00b7w3eyd4b0y9v9@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261009T233000Z
 DTEND:20261010T020000Z
 SUMMARY:YLD, Chi-Town Schvitzers, & OneFamily Marathon Weekend Shabbat Services & Dinner
@@ -909,8 +909,8 @@ URL:https://chitribe.org/events/yld-chi-town-schvitzers-onefamily-marathon-weeke
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx5ydz005x123srvg47oys@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h204004nw3eygso7un4s@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261010T134500Z
 DTEND:20261010T144500Z
 SUMMARY:Shabbat Morning Mishnah Study (Fall 2026)
@@ -920,8 +920,8 @@ URL:https://www.mishkanchicago.org/event/shabbat-morning-mishnah-study-fall-2026
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx5ye0005z123sx5o3a2mu@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h207004pw3ey49wql01c@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261010T143000Z
 DTEND:20261010T173000Z
 SUMMARY:Saturday Morning Unplugged
@@ -931,8 +931,8 @@ URL:https://www.mishkanchicago.org/event/saturday-morning-unplugged-10-10-2026/
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx5ye10061123si7s88st7@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h20c004rw3eyy4s78xsn@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261010T150000Z
 DTEND:20261010T154500Z
 SUMMARY:Rise and Shine
@@ -942,8 +942,8 @@ URL:https://www.mishkanchicago.org/event/rise-and-shine-10-10-2026/
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx5ye10063123svx8zddqh@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h20f004tw3eypxyp9976@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261010T160000Z
 DTEND:20261010T164500Z
 SUMMARY:Mah Tovu: Art (Fall/Winter 2026 &#8211; 2027)
@@ -953,8 +953,8 @@ URL:https://www.mishkanchicago.org/event/mah-tovu-fall-winter-10-10-2026/
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx60x700cj123sgmb6vd66@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h28o00b9w3eyl40oxxy0@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261010T173000Z
 DTEND:20261011T045900Z
 SUMMARY:Sisterhood Torah Fund Book Club: Sisters of Fortune by Esther Chehebar
@@ -964,8 +964,8 @@ URL:https://chitribe.org/events/sisterhood-torah-fund-book-club-sisters-of-fortu
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx60x800cl123ssgc6py7s@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h28p00bbw3eyyzts2zs4@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261010T230000Z
 DTEND:20261011T020000Z
 SUMMARY:Pink & Purpose: Raise Your Glass for Two Great Causes
@@ -975,8 +975,8 @@ URL:https://chitribe.org/events/pink-purpose-raise-your-glass-for-two-great-caus
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx60x900cn123sfg3q108c@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h28q00bdw3eyisk22sye@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261011T003000Z
 DTEND:20261011T030000Z
 SUMMARY:Simchat Torah Celebration
@@ -986,8 +986,8 @@ URL:https://chitribe.org/events/simchat-torah-celebration-3/
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx60x900cp123sfhxts5if@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h28s00bfw3eyn28ovv5i@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261011T050000Z
 DTEND:20261012T045959Z
 SUMMARY:Gather for Good Cohort
@@ -997,8 +997,8 @@ URL:https://chitribe.org/events/gather-for-good-cohort/
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx60vs007x123s7axfltpm@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h23t006nw3eya8rkbml2@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261011T110000Z
 DTEND:20261011T160000Z
 SUMMARY:Volunteer at the Chicago Marathon with ChiTribe
@@ -1008,8 +1008,8 @@ URL:https://chitribe.org/events/volunteer-at-the-chicago-marathon-with-chitribe-
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx60xa00cr123stkwfwvza@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h28u00bhw3eyqdd1s6rh@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261011T140000Z
 DTEND:20261011T180000Z
 SUMMARY:YLD and Chi-Town Schvitzers Marathon Watch Party
@@ -1019,8 +1019,8 @@ URL:https://chitribe.org/events/yld-and-chi-town-schvitzers-marathon-watch-party
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx60xb00ct123sk7ufs4do@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h28v00bjw3eykevjxio3@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261011T150000Z
 DTEND:20261012T045900Z
 SUMMARY:Harvesting Hope, the Chicago Sukkah Design Festival
@@ -1030,8 +1030,8 @@ URL:https://chitribe.org/events/harvesting-hope-the-chicago-sukkah-design-festiv
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx60xc00cv123sx4ay3rpd@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h28w00blw3eyy7x9078r@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261011T160000Z
 DTEND:20261011T180000Z
 SUMMARY:JWC Sukkot: Shakshuka, Sabich & Salads!
@@ -1041,8 +1041,8 @@ URL:https://chitribe.org/events/jwc-sukkot-shakshuka-sabich-salads-2/
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx5hhv0015123sdylpiezl@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3gu440015w3ey0ftze7tt@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261011T163000Z
 DTEND:20261011T183000Z
 SUMMARY:BEAR DOWN!! 🐻⬇️
@@ -1052,8 +1052,8 @@ URL:https://partiful.com/e/KkOd7TGeknsid18quRLI?c=7zAHcxMS
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx60xc00cx123s7k8acjyj@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h28y00bnw3eyohrdn4ph@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261011T190000Z
 DTEND:20261011T203000Z
 SUMMARY:Sundaes In The Sukkah
@@ -1063,8 +1063,8 @@ URL:https://chitribe.org/events/sundaes-in-the-sukkah/
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx60xd00cz123s1zc1x0up@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h28z00bpw3eyank4p3jv@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261011T190000Z
 DTEND:20261011T210000Z
 SUMMARY:The Jewish Bookshelf: The Final Solution to the Jewish Question by Dara Horn
@@ -1074,8 +1074,8 @@ URL:https://chitribe.org/events/the-jewish-bookshelf-the-final-solution-to-the-j
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx60xe00d1123sh1zu2ava@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h29100brw3eyrl85xbpa@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261011T200000Z
 DTEND:20261011T220000Z
 SUMMARY:Chicago's German-Jewish Labor History Walking Tour
@@ -1085,8 +1085,8 @@ URL:https://chitribe.org/events/chicagos-german-jewish-labor-history-walking-tou
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx60xe00d3123sphztrbt2@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h29300btw3ey0eij2erw@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261011T200000Z
 DTEND:20261012T045900Z
 SUMMARY:Rosh Chodesh Affiliation Group Meeting
@@ -1096,8 +1096,8 @@ URL:https://chitribe.org/events/rosh-chodesh-affiliation-group-meeting-2/
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx60xf00d5123ss3jcfk12@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h29400bvw3eypa1cwwr5@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261011T220000Z
 DTEND:20261012T045900Z
 SUMMARY:Chicago Festival of Israeli Cinema: Cabaret Total
@@ -1107,8 +1107,8 @@ URL:https://chitribe.org/events/chicago-festival-of-israeli-cinema-cabaret-total
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx60xg00d7123s7h1jaaxi@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h29500bxw3eyq4vc67qb@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261012T000000Z
 DTEND:20261012T013000Z
 SUMMARY:Sasha & Sapir - Choosing Hope
@@ -1118,8 +1118,8 @@ URL:https://chitribe.org/events/sasha-sapir-choosing-hope/
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx5ye20065123s1df8h02k@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h20i004vw3eyrmg1tl8p@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261012T130000Z
 DTEND:20261012T133000Z
 SUMMARY:Morning Minyan
@@ -1129,8 +1129,8 @@ URL:https://www.mishkanchicago.org/event/morning-minyan-revised-schedule-6-3/202
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx5ye20067123s9zplnrzq@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h20l004xw3eypl5bfoxz@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261012T230000Z
 DTEND:20261013T000000Z
 SUMMARY:Small Groups: Studying Family Relationships in Six Stories of Genesis
@@ -1140,8 +1140,8 @@ URL:https://www.mishkanchicago.org/event/small-groups-studying-family-relationsh
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx60xg00d9123smrtmuz9i@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h29700bzw3eyki3cg4on@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261013T000000Z
 DTEND:20261013T030000Z
 SUMMARY:Simchat Torah BBQ & Dancing
@@ -1151,8 +1151,8 @@ URL:https://chitribe.org/events/simchat-torah-bbq-dancing-2/
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx5ye30069123so1peuu6g@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h20p004zw3eym913c201@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261013T130000Z
 DTEND:20261013T133000Z
 SUMMARY:Morning Minyan
@@ -1162,8 +1162,8 @@ URL:https://www.mishkanchicago.org/event/morning-minyan-revised-schedule-6-3/202
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx60xh00db123s2bu4l1ui@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h29900c1w3ey13ro13kr@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261013T170000Z
 DTEND:20261013T183000Z
 SUMMARY:State of the Arts: Exclusion of Jewish and Israeli Voices in Culture
@@ -1173,8 +1173,8 @@ URL:https://chitribe.org/events/state-of-the-arts-exclusion-of-jewish-and-israel
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx60xh00dd123sgoyf9bv5@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h29b00c3w3eyvp3gggr5@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261014T000000Z
 DTEND:20261014T013000Z
 SUMMARY:Grief Support Group
@@ -1184,8 +1184,8 @@ URL:https://chitribe.org/events/grief-support-group-5/
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx60xi00df123szyk9s2t5@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h29e00c5w3eyjbuk55x0@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261014T000000Z
 DTEND:20261014T045900Z
 SUMMARY:Hebrew Study Group
@@ -1195,8 +1195,8 @@ URL:https://chitribe.org/events/hebrew-study-group-4/
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx60xi00dh123sp4jmomav@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h29g00c7w3eyywtfnhor@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261014T001500Z
 DTEND:20261014T014500Z
 SUMMARY:Simchat Torah Hakafot Celebration
@@ -1206,8 +1206,8 @@ URL:https://chitribe.org/events/simchat-torah-hakafot-celebration/
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx5ye4006b123slzjwd9px@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h20r0051w3ey2rifyw1c@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261014T130000Z
 DTEND:20261014T133000Z
 SUMMARY:Morning Minyan
@@ -1217,8 +1217,8 @@ URL:https://www.mishkanchicago.org/event/morning-minyan-revised-schedule-6-3/202
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx5ye4006d123slwxc1665@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h20t0053w3ey52ai5ixr@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261014T133000Z
 DTEND:20261014T143000Z
 SUMMARY:Why Wear the Palestinian Flag on A Kippah? An Honest Conversation with Israeli Educator Alex Sinclair
@@ -1228,8 +1228,8 @@ URL:https://www.mishkanchicago.org/event/alex-sinclair-minyan-10-14-26/
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx60xj00dj123sszfb7fzs@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h29h00c9w3ey2szqwwqm@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261014T183000Z
 DTEND:20261014T193000Z
 SUMMARY:Simchat Torah Mincha Service
@@ -1239,8 +1239,8 @@ URL:https://chitribe.org/events/simchat-torah-mincha-service/
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx60xk00dl123sh42ilbvk@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h29j00cbw3ey5zo2o70z@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261014T210000Z
 DTEND:20261015T045900Z
 SUMMARY:More than Mi Shebeirach: Healing in Jewish Liturgy and Ritual
@@ -1250,8 +1250,8 @@ URL:https://chitribe.org/events/more-than-mi-shebeirach-healing-in-jewish-liturg
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx60xk00dn123ssr1vptor@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h29l00cdw3ey0fzp9my5@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261015T000000Z
 DTEND:20261015T020000Z
 SUMMARY:Rosh Chodesh Women's Group
@@ -1261,8 +1261,8 @@ URL:https://chitribe.org/events/rosh-chodesh-womens-group/
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx60xl00dp123syblmvqzv@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h29m00cfw3eykhkqhncp@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261015T050000Z
 DTEND:20261016T045959Z
 SUMMARY:Nikki Stein's Founder's Award Gala
@@ -1272,8 +1272,8 @@ URL:https://chitribe.org/events/nikki-steins-founders-award-gala/
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx5ye5006f123s3thb6iv3@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h20v0055w3ey17zqovlu@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261015T130000Z
 DTEND:20261015T133000Z
 SUMMARY:Morning Minyan
@@ -1283,8 +1283,8 @@ URL:https://www.mishkanchicago.org/event/morning-minyan-revised-schedule-6-3/202
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx60xl00dr123siqeriib3@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h29m00chw3eyq0dtllu7@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261015T220000Z
 DTEND:20261015T230000Z
 SUMMARY:Memes, Manifestos and Mass Violence
@@ -1294,8 +1294,8 @@ URL:https://chitribe.org/events/memes-manifestos-and-mass-violence/
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx60xm00dt123sa0q89vr0@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h29n00cjw3ey9tjzwn2s@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261015T233000Z
 DTEND:20261016T020000Z
 SUMMARY:Simchat Torah Celebration
@@ -1305,8 +1305,8 @@ URL:https://chitribe.org/events/simchat-torah-celebration/
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx5gw6000x123s8qv2looe@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3gtw1000xw3eyoyvs1lme@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261016T000000Z
 DTEND:20261016T020000Z
 SUMMARY:Purple Thursday Friendship Bracelet Making
@@ -1316,8 +1316,8 @@ URL:https://partiful.com/e/idwmQrZqp7IYFbcHtgFC
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx60xn00dv123sivtmq8cg@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h29o00clw3eyypoihsb7@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261016T000000Z
 DTEND:20261016T045900Z
 SUMMARY:Spooky Game Night
@@ -1327,8 +1327,8 @@ URL:https://chitribe.org/events/spooky-game-night/
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx5ye5006h123s8d4wanbo@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h20y0057w3eyp7eliq3t@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261016T130000Z
 DTEND:20261016T133000Z
 SUMMARY:Morning Minyan
@@ -1338,8 +1338,8 @@ URL:https://www.mishkanchicago.org/event/morning-minyan-revised-schedule-6-3/202
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx60xn00dx123se80lpe7n@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h29p00cnw3eykqfvs5ij@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261016T150000Z
 DTEND:20261016T170000Z
 SUMMARY:Simchat Torah Gamepark!
@@ -1349,8 +1349,8 @@ URL:https://chitribe.org/events/simchat-torah-gamepark/
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx5ye6006j123sck7wso0w@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h2100059w3eys15eyu5g@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261016T173000Z
 DTEND:20261016T203000Z
 SUMMARY:Small Groups: Letters for Democracy
@@ -1360,8 +1360,8 @@ URL:https://www.mishkanchicago.org/event/small-groups-letters-for-democracy-10-1
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx5ye7006l123sc1wl46e4@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h213005bw3ey813v4gol@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261016T223000Z
 DTEND:20261016T232000Z
 SUMMARY:Volunteer Celebration Happy Hour
@@ -1371,8 +1371,8 @@ URL:https://www.mishkanchicago.org/event/volunteer-celebration-happy-hour-10-16-
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx5ye7006n123sz4de22ph@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h217005dw3eyy4wcuard@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261016T233000Z
 DTEND:20261017T013000Z
 SUMMARY:Friday Night Shabbat
@@ -1382,8 +1382,8 @@ URL:https://www.mishkanchicago.org/event/friday-night-shabbat-10-16-2026/
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx60xo00dz123s6ncu3tol@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h29r00cpw3eyj263ue4h@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261016T233000Z
 DTEND:20261017T013000Z
 SUMMARY:Makom Sweater Weather Shabbat for YJPs
@@ -1393,8 +1393,8 @@ URL:https://chitribe.org/events/makom-sweater-weather-shabbat-for-yjps/
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx60xo00e1123s7yfoqh0m@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h29s00crw3ey8i5c0iuk@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261016T233000Z
 DTEND:20261017T045900Z
 SUMMARY:Friday Night Shabbat & Volunteer Appreciation Happy Hour
@@ -1404,8 +1404,8 @@ URL:https://chitribe.org/events/friday-night-shabbat-volunteer-appreciation-happ
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx5ye8006p123soo6bjeuw@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h21c005fw3eynhrhk320@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261017T150000Z
 DTEND:20261017T170000Z
 SUMMARY:Family Shabbat Morning with Rabbi Lizzi
@@ -1415,8 +1415,8 @@ URL:https://www.mishkanchicago.org/event/family-shabbat-10-17-26/
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx5euz000d123stsv4omo6@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3grb7000dw3eyfymetu0n@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261017T160000Z
 DTEND:20261017T180000Z
 SUMMARY:IU v Ohio State Watch Party
@@ -1426,8 +1426,8 @@ URL:https://partiful.com/e/UjpxeA7HPmQnqqfgjb8X?c=z3Q5hA9m
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx60xp00e3123s1b9m8obh@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h29t00ctw3eykb3yhtp1@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261018T150000Z
 DTEND:20261018T210000Z
 SUMMARY:Or Tzedek Fall Retreat
@@ -1437,8 +1437,8 @@ URL:https://chitribe.org/events/or-tzedek-fall-retreat/
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx60xq00e5123sborcfdu3@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h29u00cvw3eyheju3p8o@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261018T150000Z
 DTEND:20261018T220000Z
 SUMMARY:Volunteer for Open House Chicago at Chicago Loop Synagogue
@@ -1448,8 +1448,8 @@ URL:https://chitribe.org/events/volunteer-for-open-house-chicago-at-chicago-loop
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx5hhy0019123seluocuhr@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3gu4a0019w3eyhmdwsdau@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261018T153000Z
 DTEND:20261018T173000Z
 SUMMARY:Bagel Brunch
@@ -1459,8 +1459,8 @@ URL:https://partiful.com/e/M9IFP8JBtzZ3cyqoxlsh?c=URwTDfg3
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx60xq00e7123s2nrka2gi@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h29v00cxw3eyhhtxi3ly@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261018T161500Z
 DTEND:20261018T174500Z
 SUMMARY:Planning For Life, Learning Session 1
@@ -1470,8 +1470,8 @@ URL:https://chitribe.org/events/planning-for-life-learning-session-1/
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx5ye8006r123s765x8x24@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h21g005hw3ey3yvkswyd@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261018T170000Z
 DTEND:20261018T190000Z
 SUMMARY:Small Groups: 50+ Social Hour Chicago Bears Watch Party
@@ -1481,8 +1481,8 @@ URL:https://www.mishkanchicago.org/event/small-groups-50-plus-bears-watch-party-
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx60xr00e9123sqonntpgb@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h29w00czw3ey3amom6qc@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261018T170000Z
 DTEND:20261018T183000Z
 SUMMARY:Crafts and Conversation
@@ -1492,8 +1492,8 @@ URL:https://chitribe.org/events/crafts-and-conversation-4/
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx60xr00eb123sj6i3pdna@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h29x00d1w3eyx1cv1ehh@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261018T170000Z
 DTEND:20261019T045900Z
 SUMMARY:50+ Bears Watch Party
@@ -1503,8 +1503,8 @@ URL:https://chitribe.org/events/50-bears-watch-party/
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx60xs00ed123se0fl5uyy@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h29y00d3w3eyjlsib44a@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261018T190000Z
 DTEND:20261018T203000Z
 SUMMARY:The Nurture Method Book Signing and Panel Discussion
@@ -1514,8 +1514,8 @@ URL:https://chitribe.org/events/the-nurture-method-book-signing-and-panel-discus
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx60xt00ef123svo7cmlk4@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h2a100d5w3eyjvylckom@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261018T200000Z
 DTEND:20261019T045900Z
 SUMMARY:An Unlikely Conversation
@@ -1525,8 +1525,8 @@ URL:https://chitribe.org/events/an-unlikely-conversation/
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx5ye9006t123su4rai9xk@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h21j005jw3ey6mmlr489@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261018T220000Z
 DTEND:20261018T233000Z
 SUMMARY:Small Groups: Rosh Chodesh October 2026
@@ -1536,8 +1536,8 @@ URL:https://www.mishkanchicago.org/event/small-groups-rosh-chodesh-10-18-26/
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx60xt00eh123shiobtxip@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h2a200d7w3ey8djmzlev@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261018T220000Z
 DTEND:20261018T233000Z
 SUMMARY:Rosh Chodesh Circle
@@ -1547,8 +1547,8 @@ URL:https://chitribe.org/events/rosh-chodesh-circle-5/
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx60xu00ej123sgc1yplcy@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h2a300d9w3eyxo58y9jv@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261018T230000Z
 DTEND:20261019T045900Z
 SUMMARY:Crafting + Movie
@@ -1558,8 +1558,8 @@ URL:https://chitribe.org/events/crafting-movie/
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx5yea006v123sop51dkll@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h21m005lw3eyp94b3h8k@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261019T130000Z
 DTEND:20261019T133000Z
 SUMMARY:Morning Minyan
@@ -1569,8 +1569,8 @@ URL:https://www.mishkanchicago.org/event/morning-minyan-revised-schedule-6-3/202
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx60xv00el123sxkpn4t2o@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h2a500dbw3eyi90yytiu@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261019T170000Z
 DTEND:20261020T045900Z
 SUMMARY:Community Days Hyde Park: Women in Jazz
@@ -1580,8 +1580,8 @@ URL:https://chitribe.org/events/community-days-hyde-park-women-in-jazz/
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx5yea006x123s99tza8c2@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h21r005nw3eyjbd83yc5@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261019T230000Z
 DTEND:20261020T000000Z
 SUMMARY:Small Groups: Studying Family Relationships in Six Stories of Genesis
@@ -1591,8 +1591,8 @@ URL:https://www.mishkanchicago.org/event/small-groups-studying-family-relationsh
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx60xv00en123s5rr9b70s@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h2a700ddw3eyl9l465k5@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261019T230000Z
 DTEND:20261020T010000Z
 SUMMARY:Messy Temple
@@ -1602,8 +1602,8 @@ URL:https://chitribe.org/events/messy-temple/
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx60xw00ep123szk57nxpx@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h2a800dfw3ey3xive6gv@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261019T233000Z
 DTEND:20261020T013000Z
 SUMMARY:Makom Book Club - October
@@ -1613,8 +1613,8 @@ URL:https://chitribe.org/events/makom-book-club-october/
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx5yeb006z123s76pyolq5@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h21y005pw3eyc2gwfu09@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261020T130000Z
 DTEND:20261020T133000Z
 SUMMARY:Morning Minyan
@@ -1624,8 +1624,8 @@ URL:https://www.mishkanchicago.org/event/morning-minyan-revised-schedule-6-3/202
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx60xw00er123s6306osnc@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h2aa00dhw3eymck14kqm@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261020T223000Z
 DTEND:20261020T233000Z
 SUMMARY:Book Club - In the War Room: The Inside Story of Israel's Fight Against Hamas and the Iranian Axis by Yonah Jeremy Bob and Elliott Kaufman
@@ -1635,8 +1635,8 @@ URL:https://chitribe.org/events/book-club-in-the-war-room-the-inside-story-of-is
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx5ev0000f123s2h7lvmwc@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3grb7000fw3ey9bmpac6c@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261020T233000Z
 DTEND:20261021T013000Z
 SUMMARY:Mitzvah Bag Making: For Those in Need
@@ -1646,8 +1646,8 @@ URL:https://partiful.com/e/0BGbtDJfUqz2UrLVjXuI?c=LtsSahW9
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx5yeb0071123sqn2kyau4@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h221005rw3eyl3xgi1lb@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261020T233000Z
 DTEND:20261021T013000Z
 SUMMARY:Small Groups: Letters for Democracy
@@ -1657,8 +1657,8 @@ URL:https://www.mishkanchicago.org/event/small-groups-letters-for-democracy-10-2
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx5yec0073123ss67rt95r@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h224005tw3ey8c6t44c3@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261021T000000Z
 DTEND:20261021T020000Z
 SUMMARY:Shakespeare and the Hebrew Bible
@@ -1668,8 +1668,8 @@ URL:https://www.mishkanchicago.org/event/shakespeare-and-the-hebrew-bible-10-20-
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx60xx00et123s1mn7ve6x@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h2ac00djw3eyclk9ue44@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261021T000000Z
 DTEND:20261021T020000Z
 SUMMARY:Shakespeare and the Hebrew Bible
@@ -1679,8 +1679,8 @@ URL:https://chitribe.org/events/shakespeare-and-the-hebrew-bible/
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx5yec0075123sis3wrn0e@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h227005vw3ey83qo8uzn@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261021T130000Z
 DTEND:20261021T133000Z
 SUMMARY:Morning Minyan
@@ -1690,8 +1690,8 @@ URL:https://www.mishkanchicago.org/event/morning-minyan-revised-schedule-6-3/202
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx5yed0077123s8gku4m6m@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h22b005xw3eyni9ur64z@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261021T223000Z
 DTEND:20261022T013000Z
 SUMMARY:How to Talk to Loved Ones: About the Midterms, at Thanksgiving, and Beyond
@@ -1701,8 +1701,8 @@ URL:https://www.mishkanchicago.org/event/midterms-resetting-the-table-10-21-2026
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx60xx00ev123sr2evilxq@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h2ad00dlw3eyvod3axr2@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261021T233000Z
 DTEND:20261022T010000Z
 SUMMARY:Linked with a Purpose: Sharsheret x Repair
@@ -1712,8 +1712,8 @@ URL:https://chitribe.org/events/linked-with-a-purpose-sharsheret-x-repair/
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx60xy00ex123skpgb7o9a@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h2ag00dnw3ey06hrx9j1@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261021T233000Z
 DTEND:20261022T045900Z
 SUMMARY:Simon Deng: On Freedom, Israel & Human Rights
@@ -1723,8 +1723,8 @@ URL:https://chitribe.org/events/simon-deng-on-freedom-israel-human-rights/
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx5yee0079123ss4n8m8p9@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h22e005zw3ey46drrf01@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261022T003000Z
 DTEND:20261022T020000Z
 SUMMARY:Anti-Racism Book Club
@@ -1734,8 +1734,8 @@ URL:https://www.mishkanchicago.org/event/anti-racism-book-club-2-5-2/2026-10-21/
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx5yef007b123sphjd3n7x@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h22h0061w3eyzas36fht@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261022T130000Z
 DTEND:20261022T133000Z
 SUMMARY:Morning Minyan
@@ -1745,8 +1745,8 @@ URL:https://www.mishkanchicago.org/event/morning-minyan-revised-schedule-6-3/202
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx5hi0001b123s3jugd10x@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3gu4c001bw3eymemmbgu3@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261022T233000Z
 DTEND:20261023T013000Z
 SUMMARY:Pumpkin Painting @ MoHo LP
@@ -1756,8 +1756,8 @@ URL:https://partiful.com/e/iFKFuZRad7mu94EiYVGa?c=3oxhck3N
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx60xy00ez123sxhdw6kpm@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h2aj00dpw3ey4grad7ke@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261023T000000Z
 DTEND:20261023T020000Z
 SUMMARY:Jewish Women's Circle
@@ -1767,8 +1767,8 @@ URL:https://chitribe.org/events/jewish-womens-circle/
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx5yeh007d123shs3adsnb@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h22k0063w3eyvlyajt4n@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261023T130000Z
 DTEND:20261023T133000Z
 SUMMARY:Morning Minyan
@@ -1778,8 +1778,8 @@ URL:https://www.mishkanchicago.org/event/morning-minyan-revised-schedule-6-3/202
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx5yei007f123snvhv6urd@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h22m0065w3eyn2uw5vpr@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261023T144500Z
 DTEND:20261023T161500Z
 SUMMARY:Spiritual Technology for a Broken World
@@ -1789,8 +1789,8 @@ URL:https://www.mishkanchicago.org/event/spiritual-technology-for-a-broken-world
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx5gw4000r123sly5yu626@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3gtvs000rw3eyp705hgqc@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261023T230000Z
 DTEND:20261024T010000Z
 SUMMARY:Global Shabbat Dinner
@@ -1800,8 +1800,8 @@ URL:https://partiful.com/e/Kylh8B9NtaBAQhl9BEMu
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx60xz00f1123satkcm792@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h2al00drw3ey4egl4kzt@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261023T230000Z
 DTEND:20261024T045900Z
 SUMMARY:Scholar in Residence: Box Shabbat Dinner & Book Discussion
@@ -1811,8 +1811,8 @@ URL:https://chitribe.org/events/scholar-in-residence-box-shabbat-dinner-book-dis
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx5yep007h123s7qoz6ntx@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h22q0067w3eyaigsyhjp@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261023T233000Z
 DTEND:20261024T003000Z
 SUMMARY:Friday Night Virtual Conversation & Candle Lighting
@@ -1822,8 +1822,8 @@ URL:https://www.mishkanchicago.org/event/friday-night-virtual-conversation-candl
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx60xz00f3123s5j5n1oqr@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h2an00dtw3eylsxskpy5@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261024T000000Z
 DTEND:20261024T045900Z
 SUMMARY:Halloween Ball 2026
@@ -1833,8 +1833,8 @@ URL:https://chitribe.org/events/halloween-ball-2026/
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx60y000f5123sitoyvxnz@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h2ap00dvw3eyhctaccma@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261024T050000Z
 DTEND:20261026T045959Z
 SUMMARY:Scholar in Residence Weekend with Rabbi Yisroel Bernath
@@ -1844,8 +1844,8 @@ URL:https://chitribe.org/events/scholar-in-residence-weekend-with-rabbi-yisroel-
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx5yew007j123s8x27egks@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h22t0069w3eyz0bep2vn@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261024T134500Z
 DTEND:20261024T144500Z
 SUMMARY:Shabbat Morning Mishnah Study (Fall 2026)
@@ -1855,8 +1855,8 @@ URL:https://www.mishkanchicago.org/event/shabbat-morning-mishnah-study-fall-2026
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx5yf2007l123sd2a5sfon@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h22w006bw3ey5syaj35o@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261024T143000Z
 DTEND:20261024T173000Z
 SUMMARY:Saturday Morning Unplugged
@@ -1866,8 +1866,8 @@ URL:https://www.mishkanchicago.org/event/saturday-morning-unplugged-10-24-2026/
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx5yfg007n123sufl7moo9@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h22y006dw3ey51h84ys1@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261024T150000Z
 DTEND:20261024T154500Z
 SUMMARY:Rise and Shine
@@ -1877,8 +1877,8 @@ URL:https://www.mishkanchicago.org/event/rise-and-shine-10-24-2026/
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx60y000f7123smrszfww5@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h2aq00dxw3eyxfjlzbfz@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261024T150000Z
 DTEND:20261024T170000Z
 SUMMARY:Torah Jam Shabbat Morning: Jewish Scary Stories
@@ -1888,8 +1888,8 @@ URL:https://chitribe.org/events/torah-jam-shabbat-morning-jewish-scary-stories/
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx5yfn007p123sdc4t8sri@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h231006fw3eyfx4bz93o@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261024T160000Z
 DTEND:20261024T164500Z
 SUMMARY:Mah Tovu: Art (Fall/Winter 2026 &#8211; 2027)
@@ -1899,8 +1899,8 @@ URL:https://www.mishkanchicago.org/event/mah-tovu-fall-winter-10-24-2026/
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx60y100f9123srtgoqt60@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h2as00dzw3eyzbgrwb4v@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261024T223000Z
 DTEND:20261025T023000Z
 SUMMARY:“Game On!” Progressive Dinner
@@ -1910,8 +1910,8 @@ URL:https://chitribe.org/events/game-on-progressive-dinner/
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx60y200fb123s3kwiw0f9@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h2au00e1w3eyohl0ud9t@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261025T153000Z
 DTEND:20261202T173000Z
 SUMMARY:JLI Course: Kabbalah - Reincarnation, Soulmates, Dreams, Names, and the Hidden Patterns of Your Life
@@ -1921,8 +1921,8 @@ URL:https://chitribe.org/events/jli-course-kabbalah-reincarnation-soulmates-drea
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx60y200fd123s9bms3e1m@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h2aw00e3w3eyu35nyd1x@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261025T160000Z
 DTEND:20261025T173000Z
 SUMMARY:Lila Corwin Berman: "What the History of Jewish Citizenship Teaches Us About American Democracy"
@@ -1932,8 +1932,8 @@ URL:https://chitribe.org/events/lila-corwin-berman-what-the-history-of-jewish-ci
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx60y300ff123sk5nyc5fr@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h2ax00e5w3ey21pjtz4g@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261025T160000Z
 DTEND:20261026T045900Z
 SUMMARY:Taking Back Our Narrative: A Conversation with Eitan Chitayat
@@ -1943,8 +1943,8 @@ URL:https://chitribe.org/events/taking-back-our-narrative-a-conversation-with-ei
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx5yfo007r123srdudm1qa@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h234006hw3eypawtykjj@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261025T180000Z
 DTEND:20261025T200000Z
 SUMMARY:Mensch Cafe: Mahjong!
@@ -1954,8 +1954,8 @@ URL:https://www.mishkanchicago.org/event/mensch-cafe-mahjong-10-25-26/
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx60y300fh123sxhor9rqb@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h2ay00e7w3eyndoar9u4@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261025T180000Z
 DTEND:20261025T200000Z
 SUMMARY:Mensch Cafe: Mahjong!
@@ -1965,8 +1965,8 @@ URL:https://chitribe.org/events/mensch-cafe-mahjong-4/
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx60y400fj123sjtqhebjw@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h2az00e9w3eyvexhqbv0@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261025T190000Z
 DTEND:20261025T210000Z
 SUMMARY:Jewish Genealogical Society of Illinois Monthly Meeting
@@ -1976,8 +1976,8 @@ URL:https://chitribe.org/events/jewish-genealogical-society-of-illinois-monthly-
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx5yfq007t123s0hkoz2y5@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h236006jw3ey81djq85s@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261026T000000Z
 DTEND:20261026T013000Z
 SUMMARY:Small Groups: Divorce Support
@@ -1987,8 +1987,8 @@ URL:https://www.mishkanchicago.org/event/small-groups-divorce-support-10-18-26/
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx60y500fl123s7dnk2km8@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h2b000ebw3eykiegc322@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261026T000000Z
 DTEND:20261026T013000Z
 SUMMARY:Divorce Support
@@ -1998,8 +1998,8 @@ URL:https://chitribe.org/events/divorce-support/
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx5ev0000h123s223xr1xy@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3grb8000hw3eyd8tdf24w@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261026T233000Z
 DTEND:20261027T013000Z
 SUMMARY:Pumpkin Decorating & Halloween Movie Night
@@ -2009,8 +2009,8 @@ URL:https://partiful.com/e/8BRWkJJcmm01fLyjw2uF?c=rFoqLJIM
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx60y500fn123suv2w9yls@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h2b100edw3ey4edj1mk5@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261027T003000Z
 DTEND:20261027T045900Z
 SUMMARY:Generating a Universe: Living Between the Trees
@@ -2020,8 +2020,8 @@ URL:https://chitribe.org/events/generating-a-universe-living-between-the-trees/
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx60y600fp123s5ov2zrqv@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h2b300efw3ey6ov9gfj7@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261027T003000Z
 DTEND:20261027T045900Z
 SUMMARY:Civic Orchestra Concert
@@ -2031,8 +2031,8 @@ URL:https://chitribe.org/events/civic-orchestra-concert/
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx60y600fr123swkhzacol@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h2b500ehw3eykbniv69e@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261028T140000Z
 DTEND:20261029T220000Z
 SUMMARY:Volunteer to Shop/Deliver/Serve at A Just Harvest
@@ -2042,8 +2042,8 @@ URL:https://chitribe.org/events/volunteer-to-shop-deliver-serve-at-a-just-harves
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx5ev1000j123scoykekzq@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3grb9000jw3eyewzuplry@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261030T000000Z
 DTEND:20261030T020000Z
 SUMMARY:Halloween Candy & Wine Pairing Event!
@@ -2053,8 +2053,8 @@ URL:https://partiful.com/e/AWjphxlLgdHovfztEiRE?c=a1e3Dccj
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx5hhx0017123swjfr1tpw@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3gu490017w3eypcomxoe3@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261030T000000Z
 DTEND:20261030T020000Z
 SUMMARY:Halloween movie night
@@ -2064,8 +2064,8 @@ URL:https://partiful.com/e/XPaZGeWQiKrha09gtFrk?c=u2TxyJaq
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:cmusx60y700ft123s481sbih4@jewishevents.chi
-DTSTAMP:20261003T220219Z
+UID:cmut3h2b600ejw3eygpcnv4a7@jewishevents.chi
+DTSTAMP:20261004T004045Z
 DTSTART:20261031T000000Z
 DTEND:20261031T045900Z
 SUMMARY:Spooky Shabbat + Party!

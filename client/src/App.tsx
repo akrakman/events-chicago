@@ -5,6 +5,7 @@ import { EventFilters, DateFilterType } from './components/EventFilters';
 import { SourcesModal } from './components/SourcesModal';
 import { ShareModal } from './components/ShareModal';
 import { CalendarSubscribeModal } from './components/CalendarSubscribeModal';
+import { EventDetailModal } from './components/EventDetailModal';
 import {
   fetchUpcomingEvents,
   fetchSources,
@@ -56,6 +57,7 @@ export const App: React.FC = () => {
   const [isSourcesModalOpen, setIsSourcesModalOpen] = useState<boolean>(false);
   const [isSubscribeModalOpen, setIsSubscribeModalOpen] = useState<boolean>(false);
   const [sharingEvent, setSharingEvent] = useState<CommunityEvent | null>(null);
+  const [viewingEvent, setViewingEvent] = useState<CommunityEvent | null>(null);
   const [errorNotice, setErrorNotice] = useState<string | null>(null);
 
   const toggleBookmark = (id: string) => {
@@ -140,13 +142,26 @@ export const App: React.FC = () => {
     );
     try {
       await triggerSync();
-      setTimeout(async () => {
-        await Promise.all([loadEvents(), loadMetadata()]);
-      }, 3000);
     } catch (err: any) {
       setErrorNotice(err.message || 'Sync failed');
+      setSyncStatus((prev) => (prev ? { ...prev, isSyncing: false } : null));
     }
   };
+
+  // While syncing is active, poll sync status every 2s and refresh events on completion
+  useEffect(() => {
+    if (!syncStatus?.isSyncing) return;
+    const interval = setInterval(async () => {
+      try {
+        const status = await fetchSyncStatus();
+        setSyncStatus(status);
+        if (!status.isSyncing) {
+          await Promise.all([loadEvents(), loadMetadata()]);
+        }
+      } catch {}
+    }, 2000);
+    return () => clearInterval(interval);
+  }, [syncStatus?.isSyncing, loadEvents, loadMetadata]);
 
   const handleAddSource = async (url: string, name?: string) => {
     await addSource(url, name);
@@ -313,6 +328,7 @@ export const App: React.FC = () => {
                 isBookmarked={savedIds.includes(evt.id)}
                 onToggleBookmark={toggleBookmark}
                 onShare={(e) => setSharingEvent(e)}
+                onViewDetails={(e) => setViewingEvent(e)}
               />
             ))}
           </div>
@@ -340,6 +356,19 @@ export const App: React.FC = () => {
       <ShareModal
         event={sharingEvent}
         onClose={() => setSharingEvent(null)}
+      />
+
+      {/* Event Details In-App Modal */}
+      <EventDetailModal
+        isOpen={!!viewingEvent}
+        event={viewingEvent}
+        onClose={() => setViewingEvent(null)}
+        isBookmarked={viewingEvent ? savedIds.includes(viewingEvent.id) : false}
+        onToggleBookmark={toggleBookmark}
+        onShare={(e) => {
+          setViewingEvent(null);
+          setSharingEvent(e);
+        }}
       />
     </div>
   );

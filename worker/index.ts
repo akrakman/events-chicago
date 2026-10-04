@@ -8,15 +8,29 @@ export default {
   async fetch(request: Request, env: Env): Promise<Response> {
     const url = new URL(request.url);
 
+    // Global CORS preflight handler
+    if (request.method === 'OPTIONS') {
+      return new Response(null, {
+        status: 204,
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+          'Access-Control-Allow-Headers': '*',
+        },
+      });
+    }
+
     // 1. Handle API sync trigger
-    if (url.pathname === '/api/sources/sync' && request.method === 'POST') {
+    if (url.pathname === '/api/sources/sync') {
       return new Response(
         JSON.stringify({
           success: true,
           message: 'Sources synchronization complete. Chicago Jewish events catalog is fully updated.',
+          isSyncing: false,
           results: [{ source: 'All 14 Community Sources', status: 'SUCCESS' }],
         }),
         {
+          status: 200,
           headers: {
             'Content-Type': 'application/json',
             'Access-Control-Allow-Origin': '*',
@@ -34,6 +48,7 @@ export default {
           totalEvents: 201,
         }),
         {
+          status: 200,
           headers: {
             'Content-Type': 'application/json',
             'Access-Control-Allow-Origin': '*',
@@ -43,7 +58,7 @@ export default {
     }
 
     // 3. Handle monitored sources list
-    if (url.pathname === '/api/sources' && request.method === 'GET') {
+    if (url.pathname === '/api/sources') {
       return new Response(
         JSON.stringify({
           sources: [
@@ -64,6 +79,7 @@ export default {
           ],
         }),
         {
+          status: 200,
           headers: {
             'Content-Type': 'application/json',
             'Access-Control-Allow-Origin': '*',
@@ -72,7 +88,15 @@ export default {
       );
     }
 
-    // 4. Default: Serve static assets (HTML, Vite JS/CSS, static JSON endpoints)
-    return env.ASSETS.fetch(request);
+    // 4. Default: Serve static assets (HTML, Vite JS/CSS, static JSON endpoints) with SPA fallback
+    try {
+      const response = await env.ASSETS.fetch(request);
+      if (response.status === 404 && !url.pathname.startsWith('/api')) {
+        return env.ASSETS.fetch(new Request(new URL('/', request.url), request));
+      }
+      return response;
+    } catch (err: any) {
+      return new Response(`Worker Error: ${err.message}`, { status: 500 });
+    }
   },
 };

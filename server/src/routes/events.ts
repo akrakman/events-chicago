@@ -344,11 +344,19 @@ export const eventRoutes: FastifyPluginAsync = async (fastify) => {
     }
   });
 
-  // 5. Trigger immediate manual sync of all sources
+  // 5. Trigger immediate manual sync of all sources (non-blocking)
   fastify.post('/api/sources/sync', async (_request, reply) => {
     try {
-      const result = await pollAllSources();
-      return reply.send(result);
+      // Fire polling in background
+      pollAllSources().catch((err) => {
+        fastify.log.error('Background sync failed:', err);
+      });
+
+      return reply.send({
+        success: true,
+        message: 'Sync started in background',
+        isSyncing: true,
+      });
     } catch (err: any) {
       return reply.status(500).send({ error: err.message });
     }

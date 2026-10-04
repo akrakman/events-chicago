@@ -5,7 +5,7 @@ import { ParsedItem, PlatformType, ScrapeResult } from '../types';
 const USER_AGENT =
   'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36';
 
-export async function scrapeWithCheerio(url: string): Promise<ScrapeResult | null> {
+export async function scrapeWithCheerio(url: string, timeoutMs = 10000): Promise<ScrapeResult | null> {
   const startTime = Date.now();
   const { platform, subPlatform, normalizedUrl } = detectPlatform(url);
 
@@ -18,7 +18,7 @@ export async function scrapeWithCheerio(url: string): Promise<ScrapeResult | nul
         'Accept-Language': 'en-US,en;q=0.9',
         'Cache-Control': 'no-cache',
       },
-      signal: AbortSignal.timeout(12000),
+      signal: AbortSignal.timeout(timeoutMs),
       redirect: 'follow',
     });
 

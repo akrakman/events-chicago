@@ -375,84 +375,83 @@ export async function pollSource(sourceId: string) {
 
       console.log(`[Poller] Found ${candidateEvents.length} event links on ${source.url}. Deep-scraping top events...`);
 
-      // Limit to top 20 candidate events to keep sync snappy
-      const eventsToEnrich = candidateEvents.slice(0, 20);
+      // Limit to top 6 candidate events to keep sync snappy
+      const eventsToEnrich = candidateEvents.slice(0, 6);
 
-      for (const candidate of eventsToEnrich) {
-        try {
-          if (candidate.platform === 'PARTIFUL') {
-            // First try fast Cheerio static Next.js payload (~200ms)
-            let chResult = await scrapeWithCheerio(candidate.url);
-            let primaryItem = chResult?.items.find((i) => i.itemType === 'EVENT') || chResult?.items[0];
+      const enrichedResults = await Promise.all(
+        eventsToEnrich.map(async (candidate) => {
+          try {
+            if (candidate.platform === 'PARTIFUL') {
+              // Try fast Cheerio static Next.js payload with 3.5s timeout
+              const chResult = await scrapeWithCheerio(candidate.url, 3500);
+              const primaryItem = chResult?.items.find((i) => i.itemType === 'EVENT') || chResult?.items[0];
 
-            // If Cheerio missed the date or failed, fallback to Playwright
-            if (!primaryItem || !primaryItem.eventDate) {
-              const pwResult = await scrapeWithPlaywright(candidate.url);
-              primaryItem = pwResult.items.find((i) => i.itemType === 'EVENT') || pwResult.items[0];
+              const cleanHost =
+                primaryItem?.hostName && primaryItem.hostName.length > 2 && !primaryItem.hostName.includes('◕')
+                  ? primaryItem.hostName
+                  : sourceName;
+
+              const dateInfo = parseEventDate(primaryItem?.eventDate, primaryItem?.title || candidate.title);
+
+              return {
+                title: primaryItem?.title || candidate.title,
+                url: candidate.url,
+                platform: 'PARTIFUL',
+                itemType: 'EVENT',
+                eventDate: dateInfo.date,
+                eventDateStr: dateInfo.dateStr || (typeof primaryItem?.eventDate === 'string' ? primaryItem.eventDate : null),
+                eventEndDate: primaryItem?.eventEndDate ? new Date(primaryItem.eventEndDate) : null,
+                description: primaryItem?.description || candidate.description || null,
+                imageUrl: primaryItem?.imageUrl || null,
+                location: primaryItem?.location || null,
+                hostName: cleanHost,
+                rsvpCount: primaryItem?.rsvpCount ?? null,
+                isPinned: true,
+              };
+            } else {
+              // OneTable or other community event pages: use fast Cheerio with 3s timeout
+              const chResult = await scrapeWithCheerio(candidate.url, 3000);
+              const isGenericPageTitle = !chResult?.title || chResult.title.startsWith('OneTable |') || chResult.title.includes('Sign In');
+              const finalTitle = (isGenericPageTitle ? candidate.title : chResult?.title) || candidate.title;
+              const dateInfo = parseEventDate(null, finalTitle);
+
+              return {
+                title: finalTitle,
+                url: candidate.url,
+                platform: candidate.platform,
+                itemType: 'EVENT',
+                eventDate: dateInfo.date,
+                eventDateStr: dateInfo.dateStr,
+                description: chResult?.description || candidate.description || null,
+                imageUrl: chResult?.avatarUrl || null,
+                location: null,
+                hostName: sourceName,
+                rsvpCount: null,
+                isPinned: false,
+              };
             }
-
-            const cleanHost =
-              primaryItem?.hostName && primaryItem.hostName.length > 2 && !primaryItem.hostName.includes('◕')
-                ? primaryItem.hostName
-                : sourceName;
-
-            const dateInfo = parseEventDate(primaryItem?.eventDate, primaryItem?.title || candidate.title);
-
-            enrichedEvents.push({
-              title: primaryItem?.title || candidate.title,
-              url: candidate.url,
-              platform: 'PARTIFUL',
-              itemType: 'EVENT',
-              eventDate: dateInfo.date,
-              eventDateStr: dateInfo.dateStr || (typeof primaryItem?.eventDate === 'string' ? primaryItem.eventDate : null),
-              eventEndDate: primaryItem?.eventEndDate ? new Date(primaryItem.eventEndDate) : null,
-              description: primaryItem?.description || candidate.description || null,
-              imageUrl: primaryItem?.imageUrl || null,
-              location: primaryItem?.location || null,
-              hostName: cleanHost,
-              rsvpCount: primaryItem?.rsvpCount ?? null,
-              isPinned: true,
-            });
-          } else {
-            // OneTable or other community event pages: use fast Cheerio
-            const chResult = await scrapeWithCheerio(candidate.url);
-            const isGenericPageTitle = !chResult?.title || chResult.title.startsWith('OneTable |') || chResult.title.includes('Sign In');
-            const finalTitle = (isGenericPageTitle ? candidate.title : chResult?.title) || candidate.title;
-            const dateInfo = parseEventDate(null, finalTitle);
-
-            enrichedEvents.push({
-              title: finalTitle,
+          } catch (evtErr: any) {
+            const dateInfo = parseEventDate(null, candidate.title);
+            return {
+              title: candidate.title,
               url: candidate.url,
               platform: candidate.platform,
               itemType: 'EVENT',
               eventDate: dateInfo.date,
               eventDateStr: dateInfo.dateStr,
-              description: chResult?.description || candidate.description || null,
-              imageUrl: chResult?.avatarUrl || null,
+              description: candidate.description || null,
+              imageUrl: null,
               location: null,
               hostName: sourceName,
               rsvpCount: null,
               isPinned: false,
-            });
+            };
           }
-        } catch (evtErr: any) {
-          console.warn(`[Poller] Error enriching ${candidate.url}:`, evtErr.message);
-          const dateInfo = parseEventDate(null, candidate.title);
-          enrichedEvents.push({
-            title: candidate.title,
-            url: candidate.url,
-            platform: candidate.platform,
-            itemType: 'EVENT',
-            eventDate: dateInfo.date,
-            eventDateStr: dateInfo.dateStr,
-            description: candidate.description || null,
-            imageUrl: null,
-            location: null,
-            hostName: sourceName,
-            rsvpCount: null,
-            isPinned: false,
-          });
-        }
+        })
+      );
+
+      for (const item of enrichedResults) {
+        if (item) enrichedEvents.push(item);
       }
     }
 

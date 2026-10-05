@@ -142,6 +142,9 @@ export const App: React.FC = () => {
     );
     try {
       await triggerSync();
+      const status = await fetchSyncStatus().catch(() => null);
+      if (status) setSyncStatus(status);
+      await Promise.all([loadEvents(), loadMetadata()]);
     } catch (err: any) {
       setErrorNotice(err.message || 'Sync failed');
       setSyncStatus((prev) => (prev ? { ...prev, isSyncing: false } : null));

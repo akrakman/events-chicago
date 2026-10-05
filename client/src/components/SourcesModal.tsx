@@ -162,13 +162,12 @@ export const SourcesModal: React.FC<SourcesModalProps> = ({
           <button
             onClick={() => {
               onSync();
-              onClose();
             }}
             disabled={isSyncing}
-            className="flex items-center gap-1.5 text-xs text-emerald-700 hover:text-emerald-800 font-semibold"
+            className="flex items-center gap-1.5 text-xs text-emerald-700 hover:text-emerald-800 font-semibold disabled:opacity-50"
           >
             <RefreshCw className={`w-3.5 h-3.5 ${isSyncing ? 'animate-spin' : ''}`} />
-            <span>Poll All Sources Now</span>
+            <span>{isSyncing ? 'Polling All Sources...' : 'Poll All Sources Now'}</span>
           </button>
           <button
             onClick={onClose}

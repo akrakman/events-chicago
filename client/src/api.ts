@@ -31,7 +31,17 @@ export async function fetchUpcomingEvents(params?: {
   if (params?.neighborhood && params.neighborhood !== 'ALL') query.set('neighborhood', params.neighborhood);
   if (params?.category && params.category !== 'ALL') query.set('category', params.category);
 
-  const res = await fetch(`${API_BASE}/events/upcoming?${query.toString()}`);
+  // Request /api/community-feed to prevent ad-blockers and privacy shields from blocking /api/events/*
+  let res: Response;
+  try {
+    res = await fetch(`${API_BASE}/community-feed?${query.toString()}`);
+    if (!res.ok) {
+      res = await fetch(`${API_BASE}/events/upcoming?${query.toString()}`);
+    }
+  } catch {
+    res = await fetch(`${API_BASE}/events/upcoming?${query.toString()}`);
+  }
+
   if (!res.ok) throw new Error('Failed to fetch events');
   return await res.json();
 }

@@ -108,7 +108,12 @@ export const App: React.FC = () => {
       }
     } catch (err: any) {
       console.error('Failed to load events:', err);
-      setErrorNotice(err.message || 'Failed to load events. Please check your network connection.');
+      const isNetworkErr = err?.message?.includes('NetworkError') || err?.name === 'TypeError';
+      setErrorNotice(
+        isNetworkErr
+          ? 'Network error loading events. If you have an ad blocker or privacy shield enabled, try pausing it for this domain.'
+          : (err.message || 'Failed to load events. Please check your network connection.')
+      );
     } finally {
       setIsLoading(false);
     }

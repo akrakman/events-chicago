@@ -7,7 +7,7 @@ import { classifyEvent, normalizeTitle } from '../utils/eventClassifier';
 
 export const eventRoutes: FastifyPluginAsync = async (fastify) => {
   // 1. Get upcoming events sorted by date ascending with smart filters and de-duplication
-  fastify.get('/api/events/upcoming', async (request, reply) => {
+  const getUpcomingEventsHandler = async (request: any, reply: any) => {
     const {
       filter = 'upcoming',
       search,
@@ -201,7 +201,10 @@ export const eventRoutes: FastifyPluginAsync = async (fastify) => {
     } catch (err: any) {
       return reply.status(500).send({ error: err.message });
     }
-  });
+  };
+
+  fastify.get('/api/events/upcoming', getUpcomingEventsHandler);
+  fastify.get('/api/community-feed', getUpcomingEventsHandler);
 
   // 1B. Live iCal / Webcal Subscription Feed for Apple / Google Calendar
   fastify.get('/api/calendar.ics', async (_request, reply) => {

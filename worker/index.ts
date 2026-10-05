@@ -564,26 +564,37 @@ function ensureTimestampsInitialized() {
   }
 }
 
-const API_HEADERS = {
-  'Content-Type': 'application/json',
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-  'Access-Control-Allow-Headers': '*',
-  'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
-  'Pragma': 'no-cache',
-  'Expires': '0',
-};
+function getApiHeaders(request: Request, contentType = 'application/json'): Record<string, string> {
+  const origin = request.headers.get('Origin');
+  const headers: Record<string, string> = {
+    'Content-Type': contentType,
+    'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS, HEAD',
+    'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Requested-With, Accept, Origin',
+    'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+    'Pragma': 'no-cache',
+    'Expires': '0',
+  };
+  if (origin) {
+    headers['Access-Control-Allow-Origin'] = origin;
+    headers['Access-Control-Allow-Credentials'] = 'true';
+    headers['Vary'] = 'Origin';
+  } else {
+    headers['Access-Control-Allow-Origin'] = '*';
+  }
+  return headers;
+}
 
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
     ensureTimestampsInitialized();
     const url = new URL(request.url);
+    const headers = getApiHeaders(request);
 
     // Global CORS preflight handler
     if (request.method === 'OPTIONS') {
       return new Response(null, {
         status: 204,
-        headers: API_HEADERS,
+        headers,
       });
     }
 
@@ -600,13 +611,14 @@ export default {
         }),
         {
           status: 200,
-          headers: API_HEADERS,
+          headers,
         }
       );
     }
 
     // 2. Sync Status
-    if (url.pathname === '/api/sync/status' && request.method === 'GET') {
+    if (url.pathname === '/api/sync/status' && (request.method === 'GET' || request.method === 'HEAD')) {
+      if (request.method === 'HEAD') return new Response(null, { status: 200, headers });
       return new Response(
         JSON.stringify({
           isSyncing: stateIsSyncing,
@@ -615,19 +627,20 @@ export default {
         }),
         {
           status: 200,
-          headers: API_HEADERS,
+          headers,
         }
       );
     }
 
     // 3. Monitored Sources (GET, POST)
     if (url.pathname === '/api/sources') {
-      if (request.method === 'GET') {
+      if (request.method === 'GET' || request.method === 'HEAD') {
+        if (request.method === 'HEAD') return new Response(null, { status: 200, headers });
         return new Response(
           JSON.stringify({ sources: stateSources }),
           {
             status: 200,
-            headers: API_HEADERS,
+            headers,
           }
         );
       }
@@ -641,7 +654,7 @@ export default {
           if (!targetUrl) {
             return new Response(JSON.stringify({ error: 'URL is required' }), {
               status: 400,
-              headers: API_HEADERS,
+              headers,
             });
           }
 
@@ -649,7 +662,7 @@ export default {
           if (existing) {
             return new Response(JSON.stringify({ error: 'Source already exists', source: existing }), {
               status: 409,
-              headers: API_HEADERS,
+              headers,
             });
           }
 
@@ -694,13 +707,13 @@ export default {
             }),
             {
               status: 201,
-              headers: API_HEADERS,
+              headers,
             }
           );
         } catch (err: any) {
           return new Response(JSON.stringify({ error: err.message || 'Failed to add source' }), {
             status: 500,
-            headers: API_HEADERS,
+            headers,
           });
         }
       }
@@ -713,7 +726,7 @@ export default {
       if (idx === -1) {
         return new Response(JSON.stringify({ error: 'Source not found' }), {
           status: 404,
-          headers: API_HEADERS,
+          headers,
         });
       }
 
@@ -727,12 +740,19 @@ export default {
 
       return new Response(JSON.stringify({ success: true, message: 'Source deleted' }), {
         status: 200,
-        headers: API_HEADERS,
+        headers,
       });
     }
 
-    // 5. Dynamic Filtered Events Feed (/api/events/upcoming)
-    if (url.pathname === '/api/events/upcoming' && request.method === 'GET') {
+    // 5. Dynamic Filtered Events Feed (/api/events/upcoming and /api/community-feed alias)
+    if (
+      (url.pathname === '/api/events/upcoming' || url.pathname === '/api/community-feed') &&
+      (request.method === 'GET' || request.method === 'HEAD')
+    ) {
+      if (request.method === 'HEAD') {
+        return new Response(null, { status: 200, headers });
+      }
+
       const filter = (url.searchParams.get('filter') || 'upcoming').toLowerCase();
       const search = (url.searchParams.get('search') || '').trim().toLowerCase();
       const platform = (url.searchParams.get('platform') || '').toUpperCase();
@@ -845,30 +865,40 @@ export default {
         }),
         {
           status: 200,
-          headers: API_HEADERS,
+          headers,
         }
       );
     }
 
     // 6. Live iCalendar (.ics) feed
-    if (url.pathname === '/api/calendar.ics' && request.method === 'GET') {
+    if (url.pathname === '/api/calendar.ics' && (request.method === 'GET' || request.method === 'HEAD')) {
+      const icsHeaders = {
+        ...getApiHeaders(request, 'text/calendar; charset=utf-8'),
+        'Content-Disposition': 'inline; filename="calendar.ics"',
+      };
+      if (request.method === 'HEAD') {
+        return new Response(null, { status: 200, headers: icsHeaders });
+      }
       const ics = generateICalendarFeed(stateEvents);
       return new Response(ics, {
         status: 200,
-        headers: {
-          'Content-Type': 'text/calendar; charset=utf-8',
-          'Content-Disposition': 'inline; filename="calendar.ics"',
-          'Access-Control-Allow-Origin': '*',
-          'Cache-Control': 'no-store, no-cache, must-revalidate',
-        },
+        headers: icsHeaders,
       });
     }
 
-    // 7. Default: Serve static assets (HTML, Vite JS/CSS, static assets) with SPA fallback
+    // 7. Guard: Return 404 JSON for any unhandled /api/* route to prevent falling through to HTML assets
+    if (url.pathname.startsWith('/api')) {
+      return new Response(JSON.stringify({ error: 'Endpoint not found' }), {
+        status: 404,
+        headers,
+      });
+    }
+
+    // 8. Default: Serve static assets (HTML, Vite JS/CSS, static assets) with SPA fallback
     try {
       if (env.ASSETS) {
         const response = await env.ASSETS.fetch(request);
-        if (response.status === 404 && !url.pathname.startsWith('/api')) {
+        if (response.status === 404) {
           return await env.ASSETS.fetch(
             new Request(new URL('/', request.url).toString(), {
               headers: request.headers,

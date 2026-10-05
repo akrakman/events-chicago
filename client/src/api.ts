@@ -23,6 +23,7 @@ export async function fetchUpcomingEvents(params?: {
   availableFilters?: AvailableFilters;
 }> {
   const query = new URLSearchParams();
+  query.set('_t', Date.now().toString());
   if (params?.filter) query.set('filter', params.filter);
   if (params?.search) query.set('search', params.search);
   if (params?.platform && params.platform !== 'ALL') query.set('platform', params.platform);
@@ -36,7 +37,7 @@ export async function fetchUpcomingEvents(params?: {
 }
 
 export async function fetchSources(): Promise<MonitoredSource[]> {
-  const res = await fetch(`${API_BASE}/sources`);
+  const res = await fetch(`${API_BASE}/sources?_t=${Date.now()}`);
   if (!res.ok) throw new Error('Failed to fetch monitored sources');
   const data = await res.json();
   return data.sources || [];
@@ -65,7 +66,7 @@ export async function triggerSync(): Promise<{ success: boolean; results?: any[]
 }
 
 export async function fetchSyncStatus(): Promise<SyncStatus> {
-  const res = await fetch(`${API_BASE}/sync/status`);
+  const res = await fetch(`${API_BASE}/sync/status?_t=${Date.now()}`);
   if (!res.ok) throw new Error('Failed to fetch sync status');
   return await res.json();
 }

@@ -564,6 +564,16 @@ function ensureTimestampsInitialized() {
   }
 }
 
+const API_HEADERS = {
+  'Content-Type': 'application/json',
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+  'Access-Control-Allow-Headers': '*',
+  'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+  'Pragma': 'no-cache',
+  'Expires': '0',
+};
+
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
     ensureTimestampsInitialized();
@@ -573,11 +583,7 @@ export default {
     if (request.method === 'OPTIONS') {
       return new Response(null, {
         status: 204,
-        headers: {
-          'Access-Control-Allow-Origin': '*',
-          'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-          'Access-Control-Allow-Headers': '*',
-        },
+        headers: API_HEADERS,
       });
     }
 
@@ -594,10 +600,7 @@ export default {
         }),
         {
           status: 200,
-          headers: {
-            'Content-Type': 'application/json',
-            'Access-Control-Allow-Origin': '*',
-          },
+          headers: API_HEADERS,
         }
       );
     }
@@ -612,10 +615,7 @@ export default {
         }),
         {
           status: 200,
-          headers: {
-            'Content-Type': 'application/json',
-            'Access-Control-Allow-Origin': '*',
-          },
+          headers: API_HEADERS,
         }
       );
     }
@@ -627,10 +627,7 @@ export default {
           JSON.stringify({ sources: stateSources }),
           {
             status: 200,
-            headers: {
-              'Content-Type': 'application/json',
-              'Access-Control-Allow-Origin': '*',
-            },
+            headers: API_HEADERS,
           }
         );
       }
@@ -644,7 +641,7 @@ export default {
           if (!targetUrl) {
             return new Response(JSON.stringify({ error: 'URL is required' }), {
               status: 400,
-              headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
+              headers: API_HEADERS,
             });
           }
 
@@ -652,7 +649,7 @@ export default {
           if (existing) {
             return new Response(JSON.stringify({ error: 'Source already exists', source: existing }), {
               status: 409,
-              headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
+              headers: API_HEADERS,
             });
           }
 
@@ -697,16 +694,13 @@ export default {
             }),
             {
               status: 201,
-              headers: {
-                'Content-Type': 'application/json',
-                'Access-Control-Allow-Origin': '*',
-              },
+              headers: API_HEADERS,
             }
           );
         } catch (err: any) {
           return new Response(JSON.stringify({ error: err.message || 'Failed to add source' }), {
             status: 500,
-            headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
+            headers: API_HEADERS,
           });
         }
       }
@@ -719,7 +713,7 @@ export default {
       if (idx === -1) {
         return new Response(JSON.stringify({ error: 'Source not found' }), {
           status: 404,
-          headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
+          headers: API_HEADERS,
         });
       }
 
@@ -733,7 +727,7 @@ export default {
 
       return new Response(JSON.stringify({ success: true, message: 'Source deleted' }), {
         status: 200,
-        headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
+        headers: API_HEADERS,
       });
     }
 
@@ -851,10 +845,7 @@ export default {
         }),
         {
           status: 200,
-          headers: {
-            'Content-Type': 'application/json',
-            'Access-Control-Allow-Origin': '*',
-          },
+          headers: API_HEADERS,
         }
       );
     }
@@ -868,17 +859,26 @@ export default {
           'Content-Type': 'text/calendar; charset=utf-8',
           'Content-Disposition': 'inline; filename="calendar.ics"',
           'Access-Control-Allow-Origin': '*',
+          'Cache-Control': 'no-store, no-cache, must-revalidate',
         },
       });
     }
 
     // 7. Default: Serve static assets (HTML, Vite JS/CSS, static assets) with SPA fallback
     try {
-      const response = await env.ASSETS.fetch(request);
-      if (response.status === 404 && !url.pathname.startsWith('/api')) {
-        return env.ASSETS.fetch(new Request(new URL('/', request.url), request));
+      if (env.ASSETS) {
+        const response = await env.ASSETS.fetch(request);
+        if (response.status === 404 && !url.pathname.startsWith('/api')) {
+          return await env.ASSETS.fetch(
+            new Request(new URL('/', request.url).toString(), {
+              headers: request.headers,
+              method: 'GET',
+            })
+          );
+        }
+        return response;
       }
-      return response;
+      return new Response('Not Found', { status: 404 });
     } catch (err: any) {
       return new Response(`Worker Error: ${err.message}`, { status: 500 });
     }

@@ -108,6 +108,7 @@ export const App: React.FC = () => {
       }
     } catch (err: any) {
       console.error('Failed to load events:', err);
+      setErrorNotice(err.message || 'Failed to load events. Please check your network connection.');
     } finally {
       setIsLoading(false);
     }

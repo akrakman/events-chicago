@@ -1,6 +1,41 @@
 {
   "events": [
     {
+      "id": "chabad_lakeview_5550835",
+      "title": "Young Adult Shabbat Dinner: YJP Fall Into Shabbat",
+      "url": "https://www.jewishlakeview.com/templates/articlecco_cdo/aid/5550835/jewish/Young-Adult-Shabbat-Dinner.htm",
+      "itemType": "EVENT",
+      "platform": "CHABAD",
+      "description": "Connect with Young Jewish Professionals (20's and 30's) in the area for a warm Friday night Shabbat dinner. Hors d'oeuvres & drinks at 6:30 pm, dinner at 7:30 pm. Please note: the dinner is intended for young adults between 23-35.",
+      "imageUrl": "https://w2.chabad.org/media/images/1387/ggUr13877392.png",
+      "icon": null,
+      "eventDate": "2026-10-09T23:30:00.000Z",
+      "eventDateStr": "2026-10-09 18:30:00",
+      "eventEndDate": "2026-10-10T02:00:00.000Z",
+      "location": "Chabad East Lakeview, 615 W Wellington Ave, Chicago, IL 60657",
+      "hostName": "Chabad East Lakeview",
+      "rsvpCount": null,
+      "isPinned": true,
+      "sourceName": "Chabad East Lakeview",
+      "sourceUrl": "https://www.jewishlakeview.com/templates/articlecco_cdo/aid/5550835/jewish/Young-Adult-Shabbat-Dinner.htm",
+      "metadata": {
+        "price": "$36",
+        "aid": 5550835,
+        "group": "YJP of Lakeview"
+      },
+      "createdAt": "2026-10-07T00:00:00.000Z",
+      "updatedAt": "2026-10-07T00:00:00.000Z",
+      "organization": "Chabad East Lakeview",
+      "orgGroup": "Chabad",
+      "neighborhood": "Lakeview / Wrigleyville",
+      "categories": [
+        "Shabbat",
+        "Food & Drink",
+        "Social"
+      ],
+      "secondaryUrls": []
+    },
+    {
       "id": "cmut3h24x007jw3eyqs1smndj",
       "jobId": "cmut3h23p006lw3eyqtsx1fvb",
       "title": "Simchat Torah Class in Chassidus",

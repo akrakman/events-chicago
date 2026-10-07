@@ -50,6 +50,15 @@ export function detectPlatform(rawUrl: string): {
     };
   }
 
+  // Chabad / Jewish CMS
+  if (hostname.includes('chabad') || hostname.includes('jewish') || urlObj.pathname.includes('articlecco_cdo') || urlObj.pathname.includes('section_cdo')) {
+    return {
+      platform: 'CHABAD',
+      subPlatform: 'CHABAD',
+      normalizedUrl: urlObj.toString(),
+    };
+  }
+
   // Socials
   if (hostname.includes('twitter.com') || hostname.includes('x.com')) {
     return { platform: 'SOCIAL', subPlatform: 'TWITTER', normalizedUrl: urlObj.toString() };

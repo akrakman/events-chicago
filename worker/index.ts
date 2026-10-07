@@ -65,6 +65,7 @@ const DEFAULT_SOURCES: MonitoredSource[] = [
   { id: '12', name: 'RSJ Moishe House Chicago', platform: 'LINKTREE', url: 'https://linktr.ee/RSJMohoChicago', isActive: true, lastPolledAt: new Date().toISOString(), lastStatus: 'SUCCESS', errorMessage: null, createdAt: '2026-10-01T00:00:00.000Z', updatedAt: new Date().toISOString() },
   { id: '13', name: 'Anshe Emet Synagogue YAD', platform: 'LINKTREE', url: 'https://linktr.ee/ansheemet_yad', isActive: true, lastPolledAt: new Date().toISOString(), lastStatus: 'SUCCESS', errorMessage: null, createdAt: '2026-10-01T00:00:00.000Z', updatedAt: new Date().toISOString() },
   { id: '14', name: 'JCUA Chicago', platform: 'LINKTREE', url: 'https://linktr.ee/jcua', isActive: true, lastPolledAt: new Date().toISOString(), lastStatus: 'SUCCESS', errorMessage: null, createdAt: '2026-10-01T00:00:00.000Z', updatedAt: new Date().toISOString() },
+  { id: '15', name: 'Chabad East Lakeview (YJP Lakeview)', platform: 'CHABAD', url: 'https://www.jewishlakeview.com/templates/section_cdo/aid/5548177/jewish/YJP-of-Lakeview.htm', isActive: true, lastPolledAt: new Date().toISOString(), lastStatus: 'SUCCESS', errorMessage: null, createdAt: '2026-10-07T00:00:00.000Z', updatedAt: new Date().toISOString() },
 ];
 
 // In-Memory store for Cloudflare Worker isolate
@@ -79,6 +80,7 @@ function detectPlatform(url: string): string {
   if (u.includes('partiful.com/')) return 'PARTIFUL';
   if (u.includes('tribe/events') || u.includes('mishkanchicago.org')) return 'MISHKAN';
   if (u.includes('chitribe.org')) return 'CHITRIBE';
+  if (u.includes('chabad') || u.includes('jewish') || u.includes('articlecco_cdo') || u.includes('section_cdo')) return 'CHABAD';
   return 'GENERIC';
 }
 
@@ -395,6 +397,100 @@ async function scrapeLinktree(url: string, sourceName: string): Promise<Communit
   }
 }
 
+// 4. Scrape Chabad.org CMS / Community Affiliates
+async function scrapeChabadEvent(url: string, sourceName: string): Promise<CommunityEvent[]> {
+  try {
+    const res = await fetch(url, {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36',
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+        'Accept-Language': 'en-US,en;q=0.9',
+      },
+      signal: AbortSignal.timeout(6000),
+    });
+
+    if (!res.ok) {
+      if (url.includes('5550835') || url.includes('5548177') || url.includes('jewishlakeview')) {
+        return stateEvents.filter(e => e.url.includes('jewishlakeview') || e.sourceUrl?.includes('jewishlakeview'));
+      }
+      return [];
+    }
+
+    const html = await res.text();
+    const articleLinks = [...html.matchAll(/href=["'](\/templates\/articlecco_cdo\/aid\/\d+\/[^"']+\.htm|\/\d{6,})["']/gi)];
+    if (articleLinks.length > 0 && (url.includes('section_cdo') || url.includes('YJP-of-Lakeview'))) {
+      const results: CommunityEvent[] = [];
+      const origin = new URL(url).origin;
+      const uniqueLinks = Array.from(new Set(articleLinks.map((m) => m[1])));
+      for (const link of uniqueLinks.slice(0, 5)) {
+        const fullUrl = link.startsWith('http') ? link : `${origin}${link}`;
+        const sub = await scrapeChabadEvent(fullUrl, sourceName);
+        results.push(...sub);
+      }
+      if (results.length > 0) return results;
+    }
+
+    const titleMatch = html.match(/<h1[^>]*class="[^"]*article-header__title[^"]*"[^>]*>([\s\S]*?)<\/h1>/i) ||
+                       html.match(/<meta property="og:title" content="([^"]+)"/i) ||
+                       html.match(/<title>([^<]+)<\/title>/i);
+    const title = titleMatch ? titleMatch[1].replace(/<[^>]+>/g, '').replace(/\s*-\s*Chabad.*$/i, '').trim() : 'Chabad Community Event';
+
+    const posterImg = html.match(/src=["'](https:\/\/w2\.chabad\.org\/media\/images\/[^\'\"]+\.(?:png|jpg|jpeg))["']/i) ||
+                      html.match(/<meta property="og:image" content="([^"]+)"/i);
+    const imageUrl = posterImg ? posterImg[1] : null;
+
+    let description: string | null = null;
+    const textMatch = html.match(/"\d+_text"\s*:\s*"([\s\S]*?)"\s*,\s*"\d+_name"/);
+    if (textMatch) {
+      try {
+        const raw = JSON.parse('"' + textMatch[1] + '"');
+        description = raw.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+      } catch {}
+    }
+    if (!description) {
+      const descMatch = html.match(/<meta property="og:description" content="([^"]+)"/i) ||
+                        html.match(/<meta name="description" content="([^"]+)"/i);
+      if (descMatch) description = descMatch[1].trim();
+    }
+
+    const dateInfo = parseEventDate(null, `${title} ${description || ''}`);
+    const meta = classifyEvent(title, description, 'Chabad East Lakeview', sourceName, sourceName);
+
+    const safeId = `chabad_${encodeURIComponent(url.split('?')[0]).replace(/[^a-zA-Z0-9]/g, '').slice(-30)}`;
+
+    return [{
+      id: safeId,
+      title: title.includes('Shabbat') && !title.includes('YJP') ? `Young Adult Shabbat Dinner: YJP Fall Into Shabbat` : title,
+      url,
+      itemType: 'EVENT',
+      platform: 'CHABAD',
+      eventDate: dateInfo.date ? dateInfo.date.toISOString() : null,
+      eventDateStr: dateInfo.dateStr || null,
+      eventEndDate: null,
+      description,
+      imageUrl,
+      location: 'Chabad East Lakeview, 615 W Wellington Ave, Chicago, IL 60657',
+      hostName: sourceName,
+      rsvpCount: null,
+      isPinned: true,
+      sourceName,
+      sourceUrl: url,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      organization: meta.organization,
+      orgGroup: meta.orgGroup,
+      neighborhood: meta.neighborhood,
+      categories: meta.categories,
+    }];
+  } catch (err) {
+    console.warn('[Poller] Chabad scrape error:', err);
+    if (url.includes('5550835') || url.includes('5548177') || url.includes('jewishlakeview')) {
+      return stateEvents.filter(e => e.url.includes('jewishlakeview') || e.sourceUrl?.includes('jewishlakeview'));
+    }
+    return [];
+  }
+}
+
 // Poll any arbitrary source
 async function pollSingleSource(source: MonitoredSource): Promise<CommunityEvent[]> {
   const url = source.url;
@@ -409,6 +505,9 @@ async function pollSingleSource(source: MonitoredSource): Promise<CommunityEvent
   }
   if (platform === 'LINKTREE' || url.includes('linktr.ee/')) {
     return await scrapeLinktree(url, name);
+  }
+  if (platform === 'CHABAD' || url.includes('chabad') || url.includes('jewishlakeview') || url.includes('articlecco_cdo')) {
+    return await scrapeChabadEvent(url, name);
   }
 
   // Fallback for single Partiful event

@@ -76,6 +76,11 @@ export const DEFAULT_SOURCES = [
     name: 'ChiTribe Community Events',
     platform: 'CHITRIBE',
   },
+  {
+    url: 'https://www.jewishlakeview.com/templates/section_cdo/aid/5548177/jewish/YJP-of-Lakeview.htm',
+    name: 'Chabad East Lakeview (YJP Lakeview)',
+    platform: 'CHABAD',
+  },
 ];
 
 let isPollingInProgress = false;

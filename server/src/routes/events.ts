@@ -418,6 +418,7 @@ export const eventRoutes: FastifyPluginAsync = async (fastify) => {
   const SubscribeSchema = z.object({
     email: z.string().trim().email('Please enter a valid email address'),
     resendApiKey: z.string().optional(),
+    senderEmail: z.string().optional(),
   });
 
   fastify.post('/api/newsletter/subscribe', async (request, reply) => {
@@ -438,7 +439,11 @@ export const eventRoutes: FastifyPluginAsync = async (fastify) => {
       });
 
       // Dispatch an immediate welcome/preview digest for this week's upcoming events
-      const dispatch = await sendWeeklyNewsletter(email, parse.data.resendApiKey);
+      const dispatch = await sendWeeklyNewsletter(
+        email,
+        parse.data.resendApiKey,
+        parse.data.senderEmail
+      );
       const digest = await buildWeeklyNewsletter();
       const subscriberCount = await prisma.newsletterSubscriber.count({ where: { isActive: true } });
 
@@ -447,6 +452,8 @@ export const eventRoutes: FastifyPluginAsync = async (fastify) => {
         message: `Subscribed ${email}! You will receive the weekly upcoming events digest every Sunday at 9:00 AM CT.`,
         subscriber,
         subscriberCount,
+        deliveryMode: dispatch.deliveryMode,
+        deliveryError: dispatch.deliveryError,
         dispatch,
         digest,
       });
@@ -478,9 +485,13 @@ export const eventRoutes: FastifyPluginAsync = async (fastify) => {
 
   // 11. Trigger Manual Send of Weekly Newsletter
   fastify.post('/api/newsletter/send', async (request, reply) => {
-    const body = (request.body || {}) as { email?: string; resendApiKey?: string };
+    const body = (request.body || {}) as {
+      email?: string;
+      resendApiKey?: string;
+      senderEmail?: string;
+    };
     try {
-      const result = await sendWeeklyNewsletter(body.email, body.resendApiKey);
+      const result = await sendWeeklyNewsletter(body.email, body.resendApiKey, body.senderEmail);
       return reply.send(result);
     } catch (err: any) {
       return reply.status(500).send({ error: err.message });

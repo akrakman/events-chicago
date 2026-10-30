@@ -25,13 +25,17 @@ import {
 import { WeeklyNewsletterDigest } from '../types';
 
 const NEWSLETTER_EMAIL_KEY = 'jewish_events_newsletter_email';
-const RESEND_KEY_STORAGE = 'jewish_events_resend_api_key';
+const EMAIL_API_KEY_STORAGE = 'jewish_events_resend_api_key';
+const SENDER_EMAIL_STORAGE = 'jewish_events_sender_email';
 
-function sanitizeResendKey(raw?: string | null): string {
+function sanitizeEmailApiKey(raw?: string | null): string {
   if (!raw) return '';
   const trimmed = raw.trim();
-  const match = trimmed.match(/re_[A-Za-z0-9]{8}_[A-Za-z0-9]{24}/);
-  return match ? match[0] : trimmed;
+  const brevoMatch = trimmed.match(/xkeysib-[A-Za-z0-9_-]+/);
+  if (brevoMatch) return brevoMatch[0];
+  const resendMatch = trimmed.match(/re_[A-Za-z0-9]{8}_[A-Za-z0-9]{24}/);
+  if (resendMatch) return resendMatch[0];
+  return trimmed;
 }
 
 export const NewsletterBanner: React.FC = () => {
@@ -43,15 +47,22 @@ export const NewsletterBanner: React.FC = () => {
       return null;
     }
   });
-  const [resendApiKey, setResendApiKey] = useState<string>(() => {
+  const [apiKey, setApiKey] = useState<string>(() => {
     try {
-      const cleaned = sanitizeResendKey(localStorage.getItem(RESEND_KEY_STORAGE));
+      const cleaned = sanitizeEmailApiKey(localStorage.getItem(EMAIL_API_KEY_STORAGE));
       if (cleaned) {
-        localStorage.setItem(RESEND_KEY_STORAGE, cleaned);
+        localStorage.setItem(EMAIL_API_KEY_STORAGE, cleaned);
       }
       return cleaned;
     } catch {
       return '';
+    }
+  });
+  const [senderEmail, setSenderEmail] = useState<string>(() => {
+    try {
+      return localStorage.getItem(SENDER_EMAIL_STORAGE) || 'akrakman@gmail.com';
+    } catch {
+      return 'akrakman@gmail.com';
     }
   });
   const [showKeyConfig, setShowKeyConfig] = useState(false);
@@ -77,14 +88,23 @@ export const NewsletterBanner: React.FC = () => {
       .catch(() => {});
   }, []);
 
-  const handleSaveResendKey = (val: string) => {
-    const cleaned = sanitizeResendKey(val);
-    setResendApiKey(cleaned);
+  const handleSaveApiKey = (val: string) => {
+    const cleaned = sanitizeEmailApiKey(val);
+    setApiKey(cleaned);
     try {
       if (cleaned) {
-        localStorage.setItem(RESEND_KEY_STORAGE, cleaned);
+        localStorage.setItem(EMAIL_API_KEY_STORAGE, cleaned);
       } else {
-        localStorage.removeItem(RESEND_KEY_STORAGE);
+        localStorage.removeItem(EMAIL_API_KEY_STORAGE);
+      }
+    } catch {}
+  };
+
+  const handleSaveSenderEmail = (val: string) => {
+    setSenderEmail(val);
+    try {
+      if (val.trim()) {
+        localStorage.setItem(SENDER_EMAIL_STORAGE, val.trim());
       }
     } catch {}
   };
@@ -119,7 +139,11 @@ export const NewsletterBanner: React.FC = () => {
     setStatusMessage(null);
 
     try {
-      const res = await subscribeToNewsletter(trimmed, resendApiKey.trim() || undefined);
+      const res = await subscribeToNewsletter(
+        trimmed,
+        apiKey.trim() || undefined,
+        senderEmail.trim() || undefined
+      );
       const cleanEmail = trimmed.toLowerCase();
       setSubscribedEmail(cleanEmail);
       try {
@@ -134,14 +158,19 @@ export const NewsletterBanner: React.FC = () => {
       setLastTestSentAt(new Date().toLocaleTimeString());
       setLastDeliveryMode(res.deliveryMode || 'DEV_SIMULATOR');
 
-      if (res.deliveryMode === 'RESEND_API') {
+      if (res.deliveryMode === 'BREVO_API') {
         setStatusMessage(
-          `✅ Subscribed ${cleanEmail} & sent the fully styled HTML newsletter directly to your Gmail inbox via Resend!`
+          `✅ Subscribed ${cleanEmail} & delivered the styled HTML newsletter directly to ${cleanEmail} via Brevo!`
+        );
+      } else if (res.deliveryMode === 'RESEND_API') {
+        setStatusMessage(
+          `✅ Subscribed ${cleanEmail} & sent the styled HTML newsletter via Resend!`
         );
       } else {
         setShowKeyConfig(true);
+        if (res.deliveryError) setError(res.deliveryError);
         setStatusMessage(
-          `✅ Subscribed ${cleanEmail} for Sundays at 9:00 AM CT! To send the exact styled HTML email directly to your Gmail inbox (with no FormSubmit wrapper), paste a free Resend API key below.`
+          `✅ Subscribed ${cleanEmail} for Sundays at 9:00 AM CT! Add a free Brevo API key (xkeysib-...) below to send styled HTML emails to any user without needing a custom domain.`
         );
       }
       setPreviewTab('email');
@@ -160,7 +189,11 @@ export const NewsletterBanner: React.FC = () => {
     setStatusMessage(null);
 
     try {
-      const res = await sendTestNewsletterNow(targetEmail, resendApiKey.trim() || undefined);
+      const res = await sendTestNewsletterNow(
+        targetEmail,
+        apiKey.trim() || undefined,
+        senderEmail.trim() || undefined
+      );
       const activeDigest = res.digest || digest;
       if (res.digest) {
         setDigest(res.digest);
@@ -177,12 +210,17 @@ export const NewsletterBanner: React.FC = () => {
       setLastTestSentAt(new Date().toLocaleTimeString());
       setLastDeliveryMode(res.deliveryMode);
 
-      if (res.deliveryMode === 'RESEND_API') {
+      if (res.deliveryMode === 'BREVO_API') {
+        setShowKeyConfig(false);
+        setStatusMessage(
+          `✅ Sent the fully styled HTML email (${res.eventsCount} events) to ${deliveredTo} via Brevo API! Check ${deliveredTo}'s inbox.`
+        );
+      } else if (res.deliveryMode === 'RESEND_API') {
         setShowKeyConfig(false);
         setStatusMessage(
           deliveredTo !== targetEmail
-            ? `✅ Sent the fully styled HTML email (${res.eventsCount} events) to ${deliveredTo} via Resend! (Note: Resend's free tier only allows test emails to your Resend account email ${deliveredTo} unless a custom domain is verified).`
-            : `✅ Sent the fully styled HTML email (${res.eventsCount} events) to ${deliveredTo} via Resend API! Check your Gmail inbox.`
+            ? `✅ Sent the styled HTML email (${res.eventsCount} events) to ${deliveredTo} via Resend! (To send to ${targetEmail} or any other user without a custom domain, paste a free Brevo API key xkeysib-... in Email Settings below).`
+            : `✅ Sent the fully styled HTML email (${res.eventsCount} events) to ${deliveredTo} via Resend API! Check your inbox.`
         );
       } else {
         if (activeDigest) {
@@ -193,7 +231,7 @@ export const NewsletterBanner: React.FC = () => {
           setError(res.deliveryError);
         }
         setStatusMessage(
-          `⚡ Rendered the styled HTML email for ${targetEmail} below (and copied the styled HTML to your clipboard)! To deliver the exact styled HTML email directly to your Gmail inbox, paste a free Resend API key below.`
+          `⚡ Rendered the styled HTML email for ${targetEmail} below! Paste a free Brevo API key (xkeysib-...) below to deliver styled HTML emails to any email address.`
         );
       }
       setPreviewTab('email');
@@ -234,6 +272,7 @@ export const NewsletterBanner: React.FC = () => {
   };
 
   const activeRecipient = lastTestSentTo || subscribedEmail || email.trim() || 'akrakman1@gmail.com';
+  const isBrevoKey = apiKey.startsWith('xkeysib-');
 
   return (
     <div
@@ -349,10 +388,10 @@ export const NewsletterBanner: React.FC = () => {
           <div className="flex items-center gap-2 self-end sm:self-center flex-shrink-0">
             <button
               type="button"
-              onClick={handleCopyAndOpenGmail}
-              className="px-2.5 py-1 rounded-lg bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-[11px] transition whitespace-nowrap"
+              onClick={() => setShowKeyConfig(true)}
+              className="px-2.5 py-1 rounded-lg bg-amber-100 hover:bg-amber-200 text-amber-900 font-bold text-[11px] transition whitespace-nowrap"
             >
-              Copy Styled HTML &amp; Open Gmail ↗
+              Configure Brevo (Send to Any User)
             </button>
             <button
               type="button"
@@ -386,7 +425,13 @@ export const NewsletterBanner: React.FC = () => {
               className="inline-flex items-center gap-1 text-[11px] font-semibold text-slate-600 hover:text-slate-900 transition"
             >
               <KeyRound className="w-3 h-3 text-amber-600" />
-              <span>{resendApiKey ? 'Resend API Key Active ✓' : 'Set Resend API Key (for Styled HTML Email)'}</span>
+              <span>
+                {isBrevoKey
+                  ? 'Brevo API Active (All Users) ✓'
+                  : apiKey
+                  ? 'Email API Key Active ✓ (Switch to Brevo for All Users)'
+                  : 'Configure Brevo API Key (Send to Any Email)'}
+              </span>
             </button>
             <button
               type="button"
@@ -401,43 +446,55 @@ export const NewsletterBanner: React.FC = () => {
         </div>
       )}
 
-      {/* Resend API Key Input for Direct Styled HTML Email Delivery */}
+      {/* Brevo / Resend API Key Input for Direct Styled HTML Email Delivery to ANY User */}
       {showKeyConfig && (
-        <div className="p-3.5 rounded-xl bg-amber-50/70 border border-amber-200 space-y-2 text-xs">
+        <div className="p-3.5 rounded-xl bg-amber-50/70 border border-amber-200 space-y-2.5 text-xs">
           <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
-            <div className="space-y-0.5">
+            <div className="space-y-1">
               <strong className="text-slate-900 block">
-                Send the Exact Styled HTML Email Directly to Your Inbox (No FormSubmit Wrapper)
+                Send Styled HTML Newsletters to Any User (Brevo Free API — No Custom Domain Required)
               </strong>
-              <span className="text-[11px] text-slate-600 block">
-                Paste a free API key (<code>re_...</code>) from{' '}
-                <a
-                  href="https://resend.com/api-keys"
-                  target="_blank"
-                  rel="noreferrer"
-                  className="text-emerald-700 underline font-bold"
-                >
-                  resend.com/api-keys
-                </a>{' '}
-                and click <strong>Send Styled Email Now</strong> — or click{' '}
-                <strong>Copy Styled HTML &amp; Open Gmail</strong> and press <code>Cmd+V</code> in Gmail Compose.
-              </span>
+              <ol className="list-decimal list-inside text-[11px] text-slate-700 space-y-0.5">
+                <li>
+                  Create a free account at{' '}
+                  <a
+                    href="https://app.brevo.com/settings/keys/api"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="text-emerald-700 underline font-bold"
+                  >
+                    app.brevo.com/settings/keys/api
+                  </a>{' '}
+                  (using your Gmail, e.g. <code>akrakman@gmail.com</code>).
+                </li>
+                <li>
+                  Click <strong>Generate a new API key</strong>, copy the key starting with <code>xkeysib-...</code>, and paste it below.
+                </li>
+              </ol>
             </div>
             <div className="flex flex-wrap items-center gap-2 flex-shrink-0">
               <input
+                type="email"
+                value={senderEmail}
+                onChange={(e) => handleSaveSenderEmail(e.target.value)}
+                placeholder="Verified Brevo Sender (e.g. akrakman@gmail.com)"
+                title="The Gmail address you signed up with on Brevo"
+                className="px-3 py-1.5 bg-white border border-amber-300 rounded-lg text-xs text-slate-900 w-48 focus:outline-none focus:border-emerald-600"
+              />
+              <input
                 type="password"
-                value={resendApiKey}
-                onChange={(e) => handleSaveResendKey(e.target.value)}
-                placeholder="Paste re_123456789..."
+                value={apiKey}
+                onChange={(e) => handleSaveApiKey(e.target.value)}
+                placeholder="Paste xkeysib-... (or re_...)"
                 className="px-3 py-1.5 bg-white border border-amber-300 rounded-lg text-xs text-slate-900 w-56 focus:outline-none focus:border-emerald-600"
               />
               <button
                 type="button"
                 onClick={handleTestSendNow}
-                disabled={isTestingSend || !resendApiKey.trim()}
+                disabled={isTestingSend || !apiKey.trim()}
                 className="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white font-bold text-xs whitespace-nowrap transition"
               >
-                {isTestingSend ? 'Sending...' : 'Send Styled Email Now'}
+                {isTestingSend ? 'Sending...' : 'Save & Test Send Now'}
               </button>
             </div>
           </div>
@@ -454,12 +511,16 @@ export const NewsletterBanner: React.FC = () => {
               <div>
                 <span className="text-[11px] font-bold text-emerald-400 uppercase tracking-wider block">
                   Newsletter Test &amp; Inbox Simulator (
-                  {lastDeliveryMode === 'RESEND_API' ? 'Sent Styled HTML via Resend' : 'Styled HTML Preview'}
+                  {lastDeliveryMode === 'BREVO_API'
+                    ? 'Sent Styled HTML via Brevo'
+                    : lastDeliveryMode === 'RESEND_API'
+                    ? 'Sent Styled HTML via Resend'
+                    : 'Styled HTML Preview'}
                   )
                 </span>
                 <span className="text-xs text-slate-300">
                   {lastTestSentAt
-                    ? `Triggered for ${activeRecipient} at ${lastTestSentAt}`
+                    ? `Delivered to ${activeRecipient} at ${lastTestSentAt}`
                     : 'Scheduled for Sunday at 9:00 AM CT'}
                 </span>
               </div>
@@ -502,7 +563,9 @@ export const NewsletterBanner: React.FC = () => {
             <div className="space-y-0.5">
               <div>
                 <span className="text-slate-400 font-medium">From:</span>{' '}
-                <strong className="text-slate-700">Chicago Jewish Events &lt;onboarding@resend.dev&gt;</strong>
+                <strong className="text-slate-700">
+                  Chicago Jewish Events &lt;{isBrevoKey ? senderEmail : 'onboarding@resend.dev'}&gt;
+                </strong>
               </div>
               <div>
                 <span className="text-slate-400 font-medium">To:</span>{' '}

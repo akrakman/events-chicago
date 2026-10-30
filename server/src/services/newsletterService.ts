@@ -232,7 +232,8 @@ export async function buildWeeklyNewsletter(referenceDate: Date = new Date()): P
  */
 export async function sendWeeklyNewsletter(
   targetEmail?: string,
-  overrideResendKey?: string
+  overrideApiKey?: string,
+  overrideSenderEmail?: string
 ): Promise<{
   success: boolean;
   sentAt: string;
@@ -240,7 +241,7 @@ export async function sendWeeklyNewsletter(
   recipients: string[];
   subject: string;
   eventsCount: number;
-  deliveryMode: 'RESEND_API' | 'LOCAL_OUTBOX';
+  deliveryMode: 'BREVO_API' | 'RESEND_API' | 'LOCAL_OUTBOX';
   deliveryError?: string | null;
   digest: WeeklyNewsletterDigest;
 }> {
@@ -256,22 +257,65 @@ export async function sendWeeklyNewsletter(
     recipients = subs.map((s) => s.email);
   }
 
-  let deliveryMode: 'RESEND_API' | 'LOCAL_OUTBOX' = 'LOCAL_OUTBOX';
+  let deliveryMode: 'BREVO_API' | 'RESEND_API' | 'LOCAL_OUTBOX' = 'LOCAL_OUTBOX';
   let deliveryError: string | null = null;
+
   const sanitizeKey = (raw?: string) => {
     if (!raw) return '';
-    const m = raw.trim().match(/re_[A-Za-z0-9]{8}_[A-Za-z0-9]{24}/);
-    return m ? m[0] : raw.trim();
+    const trimmed = raw.trim();
+    const brevoMatch = trimmed.match(/xkeysib-[A-Za-z0-9_-]+/);
+    if (brevoMatch) return brevoMatch[0];
+    const resendMatch = trimmed.match(/re_[A-Za-z0-9]{8}_[A-Za-z0-9]{24}/);
+    if (resendMatch) return resendMatch[0];
+    return trimmed;
   };
+
   const candidateKeys = Array.from(
     new Set(
-      [sanitizeKey(overrideResendKey), sanitizeKey(process.env.RESEND_API_KEY)].filter(
-        (k): k is string => Boolean(k)
-      )
+      [
+        sanitizeKey(overrideApiKey),
+        sanitizeKey(process.env.BREVO_API_KEY),
+        sanitizeKey(process.env.RESEND_API_KEY),
+      ].filter((k): k is string => Boolean(k))
     )
   );
-  const fromEmail =
+
+  const senderEmail = (
+    overrideSenderEmail ||
+    process.env.BREVO_SENDER_EMAIL ||
+    'akrakman@gmail.com'
+  )
+    .trim()
+    .toLowerCase();
+
+  const resendFromEmail =
     process.env.NEWSLETTER_FROM_EMAIL || 'Chicago Jewish Events <onboarding@resend.dev>';
+
+  const trySendWithBrevo = async (
+    apiKey: string,
+    toList: string[]
+  ): Promise<{ ok: boolean; status: number; bodyText: string }> => {
+    const res = await fetch('https://api.brevo.com/v3/smtp/email', {
+      method: 'POST',
+      headers: {
+        'api-key': apiKey,
+        'Content-Type': 'application/json',
+        accept: 'application/json',
+      },
+      body: JSON.stringify({
+        sender: {
+          name: 'Chicago Jewish Events',
+          email: senderEmail,
+        },
+        to: toList.map((email) => ({ email })),
+        subject: digest.subject,
+        htmlContent: digest.html,
+        textContent: digest.text,
+      }),
+    });
+    const bodyText = await res.text();
+    return { ok: res.ok, status: res.status, bodyText };
+  };
 
   const trySendWithResend = async (
     apiKey: string,
@@ -284,7 +328,7 @@ export async function sendWeeklyNewsletter(
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        from: fromEmail,
+        from: resendFromEmail,
         to: toList,
         subject: digest.subject,
         html: digest.html,
@@ -298,7 +342,24 @@ export async function sendWeeklyNewsletter(
   if (candidateKeys.length > 0 && recipients.length > 0) {
     try {
       for (const key of candidateKeys) {
-        let attempt = await trySendWithResend(key, recipients);
+        if (key.startsWith('xsmtpsib-')) {
+          deliveryError =
+            'That is a Brevo SMTP key (xsmtpsib-...). Please create a Brevo API v3 key (starts with xkeysib-...) under the "API Keys" tab at app.brevo.com/settings/keys/api.';
+          continue;
+        }
+
+        if (key.startsWith('xkeysib-')) {
+          const attempt = await trySendWithBrevo(key, recipients);
+          if (attempt.ok) {
+            deliveryMode = 'BREVO_API';
+            deliveryError = null;
+            break;
+          }
+          deliveryError = `Brevo API (${attempt.status}): ${attempt.bodyText}`;
+          continue;
+        }
+
+        const attempt = await trySendWithResend(key, recipients);
         if (attempt.ok) {
           deliveryMode = 'RESEND_API';
           deliveryError = null;
@@ -307,7 +368,9 @@ export async function sendWeeklyNewsletter(
 
         // If Resend free-tier sandbox restricts delivery to the account owner's email (e.g. akrakman@gmail.com),
         // automatically retry delivering to the verified owner address so dev testing works seamlessly.
-        const ownerMatch = attempt.bodyText.match(/\(([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})\)/);
+        const ownerMatch = attempt.bodyText.match(
+          /\(([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})\)/
+        );
         if (attempt.status === 403 && ownerMatch && ownerMatch[1]) {
           const ownerEmail = ownerMatch[1].toLowerCase();
           const retryOwner = await trySendWithResend(key, [ownerEmail]);
@@ -322,8 +385,11 @@ export async function sendWeeklyNewsletter(
         deliveryError = `Resend API (${attempt.status}): ${attempt.bodyText}`;
       }
     } catch (err: any) {
-      deliveryError = err.message || 'Network error calling Resend API';
-      console.warn('[Newsletter] External email provider error, falling back to local outbox:', err.message);
+      deliveryError = err.message || 'Network error calling email API';
+      console.warn(
+        '[Newsletter] External email provider error, falling back to local outbox:',
+        err.message
+      );
     }
   }
 

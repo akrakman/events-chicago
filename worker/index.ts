@@ -6,6 +6,8 @@ export interface Env {
   ASSETS: {
     fetch: (request: Request) => Promise<Response>;
   };
+  BREVO_API_KEY?: string;
+  BREVO_SENDER_EMAIL?: string;
   RESEND_API_KEY?: string;
   NEWSLETTER_FROM_EMAIL?: string;
 }
@@ -1182,24 +1184,38 @@ export default {
     const sendWorkerEmailIfConfigured = async (
       recipients: string[],
       digest: ReturnType<typeof buildWorkerNewsletter>,
-      overrideResendKey?: string
+      overrideApiKey?: string,
+      overrideSenderEmail?: string
     ): Promise<{
-      deliveryMode: 'RESEND_API' | 'DEV_SIMULATOR';
+      deliveryMode: 'BREVO_API' | 'RESEND_API' | 'DEV_SIMULATOR';
       deliveryError: string | null;
       deliveredRecipients: string[];
     }> => {
       const sanitizeKey = (raw?: string) => {
         if (!raw) return '';
-        const m = raw.trim().match(/re_[A-Za-z0-9]{8}_[A-Za-z0-9]{24}/);
-        return m ? m[0] : raw.trim();
+        const trimmed = raw.trim();
+        const brevoMatch = trimmed.match(/xkeysib-[A-Za-z0-9_-]+/);
+        if (brevoMatch) return brevoMatch[0];
+        const resendMatch = trimmed.match(/re_[A-Za-z0-9]{8}_[A-Za-z0-9]{24}/);
+        if (resendMatch) return resendMatch[0];
+        return trimmed;
       };
       const candidateKeys = Array.from(
         new Set(
-          [sanitizeKey(overrideResendKey), sanitizeKey(env.RESEND_API_KEY)].filter(
-            (k): k is string => Boolean(k)
-          )
+          [
+            sanitizeKey(overrideApiKey),
+            sanitizeKey(env.BREVO_API_KEY),
+            sanitizeKey(env.RESEND_API_KEY),
+          ].filter((k): k is string => Boolean(k))
         )
       );
+      const senderEmail = (
+        overrideSenderEmail ||
+        env.BREVO_SENDER_EMAIL ||
+        'akrakman@gmail.com'
+      )
+        .trim()
+        .toLowerCase();
       const fromEmail =
         env.NEWSLETTER_FROM_EMAIL || 'Chicago Jewish Events <onboarding@resend.dev>';
 
@@ -1211,7 +1227,30 @@ export default {
         };
       }
 
-      const trySend = async (apiKey: string, toList: string[]) => {
+      const trySendBrevo = async (apiKey: string, toList: string[]) => {
+        const res = await fetch('https://api.brevo.com/v3/smtp/email', {
+          method: 'POST',
+          headers: {
+            'api-key': apiKey,
+            'Content-Type': 'application/json',
+            accept: 'application/json',
+          },
+          body: JSON.stringify({
+            sender: {
+              name: 'Chicago Jewish Events',
+              email: senderEmail,
+            },
+            to: toList.map((email) => ({ email })),
+            subject: digest.subject,
+            htmlContent: digest.html,
+            textContent: digest.text,
+          }),
+        });
+        const bodyText = await res.text();
+        return { ok: res.ok, status: res.status, bodyText };
+      };
+
+      const trySendResend = async (apiKey: string, toList: string[]) => {
         const res = await fetch('https://api.resend.com/emails', {
           method: 'POST',
           headers: {
@@ -1233,7 +1272,26 @@ export default {
       let lastErr: string | null = null;
       try {
         for (const key of candidateKeys) {
-          const attempt = await trySend(key, recipients);
+          if (key.startsWith('xsmtpsib-')) {
+            lastErr =
+              'That is a Brevo SMTP key (xsmtpsib-...). Please create a Brevo API v3 key (starts with xkeysib-...) under the "API Keys" tab at app.brevo.com/settings/keys/api.';
+            continue;
+          }
+
+          if (key.startsWith('xkeysib-')) {
+            const attempt = await trySendBrevo(key, recipients);
+            if (attempt.ok) {
+              return {
+                deliveryMode: 'BREVO_API',
+                deliveryError: null,
+                deliveredRecipients: recipients,
+              };
+            }
+            lastErr = `Brevo API (${attempt.status}): ${attempt.bodyText}`;
+            continue;
+          }
+
+          const attempt = await trySendResend(key, recipients);
           if (attempt.ok) {
             return {
               deliveryMode: 'RESEND_API',
@@ -1249,7 +1307,7 @@ export default {
           );
           if (attempt.status === 403 && ownerMatch && ownerMatch[1]) {
             const ownerEmail = ownerMatch[1].toLowerCase();
-            const retryOwner = await trySend(key, [ownerEmail]);
+            const retryOwner = await trySendResend(key, [ownerEmail]);
             if (retryOwner.ok) {
               return {
                 deliveryMode: 'RESEND_API',
@@ -1262,7 +1320,7 @@ export default {
           lastErr = `Resend API (${attempt.status}): ${attempt.bodyText}`;
         }
       } catch (err: any) {
-        lastErr = err.message || 'Network error calling Resend API';
+        lastErr = err.message || 'Network error calling email API';
       }
 
       return {
@@ -1291,7 +1349,12 @@ export default {
         };
         stateSubscribers.set(email, sub);
         const digest = buildWorkerNewsletter();
-        const dispatch = await sendWorkerEmailIfConfigured([email], digest, body.resendApiKey);
+        const dispatch = await sendWorkerEmailIfConfigured(
+          [email],
+          digest,
+          body.resendApiKey,
+          body.senderEmail
+        );
         const activeCount = Array.from(stateSubscribers.values()).filter((s) => s.isActive).length;
 
         return new Response(
@@ -1337,11 +1400,15 @@ export default {
 
     if (url.pathname === '/api/newsletter/send' && request.method === 'POST') {
       let targetEmail: string | undefined;
-      let overrideResendKey: string | undefined;
+      let overrideApiKey: string | undefined;
+      let overrideSenderEmail: string | undefined;
       try {
         const body: any = await request.json();
         if (body && body.resendApiKey) {
-          overrideResendKey = String(body.resendApiKey).trim();
+          overrideApiKey = String(body.resendApiKey).trim();
+        }
+        if (body && body.senderEmail) {
+          overrideSenderEmail = String(body.senderEmail).trim();
         }
         if (body && body.email) {
           targetEmail = String(body.email).trim().toLowerCase();
@@ -1364,7 +1431,12 @@ export default {
             .filter((s) => s.isActive)
             .map((s) => s.email);
 
-      const dispatch = await sendWorkerEmailIfConfigured(recipients, digest, overrideResendKey);
+      const dispatch = await sendWorkerEmailIfConfigured(
+        recipients,
+        digest,
+        overrideApiKey,
+        overrideSenderEmail
+      );
 
       return new Response(
         JSON.stringify({

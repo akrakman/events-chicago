@@ -258,31 +258,68 @@ export async function sendWeeklyNewsletter(
 
   let deliveryMode: 'RESEND_API' | 'LOCAL_OUTBOX' = 'LOCAL_OUTBOX';
   let deliveryError: string | null = null;
-  const resendKey = (overrideResendKey || process.env.RESEND_API_KEY || '').trim();
+  const sanitizeKey = (raw?: string) => {
+    if (!raw) return '';
+    const m = raw.trim().match(/re_[A-Za-z0-9]{8}_[A-Za-z0-9]{24}/);
+    return m ? m[0] : raw.trim();
+  };
+  const candidateKeys = Array.from(
+    new Set(
+      [sanitizeKey(overrideResendKey), sanitizeKey(process.env.RESEND_API_KEY)].filter(
+        (k): k is string => Boolean(k)
+      )
+    )
+  );
   const fromEmail =
     process.env.NEWSLETTER_FROM_EMAIL || 'Chicago Jewish Events <onboarding@resend.dev>';
 
-  if (resendKey && recipients.length > 0) {
+  const trySendWithResend = async (
+    apiKey: string,
+    toList: string[]
+  ): Promise<{ ok: boolean; status: number; bodyText: string }> => {
+    const res = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        from: fromEmail,
+        to: toList,
+        subject: digest.subject,
+        html: digest.html,
+        text: digest.text,
+      }),
+    });
+    const bodyText = await res.text();
+    return { ok: res.ok, status: res.status, bodyText };
+  };
+
+  if (candidateKeys.length > 0 && recipients.length > 0) {
     try {
-      const res = await fetch('https://api.resend.com/emails', {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${resendKey}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          from: fromEmail,
-          to: recipients,
-          subject: digest.subject,
-          html: digest.html,
-          text: digest.text,
-        }),
-      });
-      if (res.ok) {
-        deliveryMode = 'RESEND_API';
-      } else {
-        const errBody = await res.text();
-        deliveryError = `Resend API (${res.status}): ${errBody}`;
+      for (const key of candidateKeys) {
+        let attempt = await trySendWithResend(key, recipients);
+        if (attempt.ok) {
+          deliveryMode = 'RESEND_API';
+          deliveryError = null;
+          break;
+        }
+
+        // If Resend free-tier sandbox restricts delivery to the account owner's email (e.g. akrakman@gmail.com),
+        // automatically retry delivering to the verified owner address so dev testing works seamlessly.
+        const ownerMatch = attempt.bodyText.match(/\(([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})\)/);
+        if (attempt.status === 403 && ownerMatch && ownerMatch[1]) {
+          const ownerEmail = ownerMatch[1].toLowerCase();
+          const retryOwner = await trySendWithResend(key, [ownerEmail]);
+          if (retryOwner.ok) {
+            deliveryMode = 'RESEND_API';
+            recipients = [ownerEmail];
+            deliveryError = null;
+            break;
+          }
+        }
+
+        deliveryError = `Resend API (${attempt.status}): ${attempt.bodyText}`;
       }
     } catch (err: any) {
       deliveryError = err.message || 'Network error calling Resend API';

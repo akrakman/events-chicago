@@ -27,6 +27,13 @@ import { WeeklyNewsletterDigest } from '../types';
 const NEWSLETTER_EMAIL_KEY = 'jewish_events_newsletter_email';
 const RESEND_KEY_STORAGE = 'jewish_events_resend_api_key';
 
+function sanitizeResendKey(raw?: string | null): string {
+  if (!raw) return '';
+  const trimmed = raw.trim();
+  const match = trimmed.match(/re_[A-Za-z0-9]{8}_[A-Za-z0-9]{24}/);
+  return match ? match[0] : trimmed;
+}
+
 export const NewsletterBanner: React.FC = () => {
   const [email, setEmail] = useState('');
   const [subscribedEmail, setSubscribedEmail] = useState<string | null>(() => {
@@ -38,7 +45,11 @@ export const NewsletterBanner: React.FC = () => {
   });
   const [resendApiKey, setResendApiKey] = useState<string>(() => {
     try {
-      return localStorage.getItem(RESEND_KEY_STORAGE) || '';
+      const cleaned = sanitizeResendKey(localStorage.getItem(RESEND_KEY_STORAGE));
+      if (cleaned) {
+        localStorage.setItem(RESEND_KEY_STORAGE, cleaned);
+      }
+      return cleaned;
     } catch {
       return '';
     }
@@ -67,10 +78,11 @@ export const NewsletterBanner: React.FC = () => {
   }, []);
 
   const handleSaveResendKey = (val: string) => {
-    setResendApiKey(val);
+    const cleaned = sanitizeResendKey(val);
+    setResendApiKey(cleaned);
     try {
-      if (val.trim()) {
-        localStorage.setItem(RESEND_KEY_STORAGE, val.trim());
+      if (cleaned) {
+        localStorage.setItem(RESEND_KEY_STORAGE, cleaned);
       } else {
         localStorage.removeItem(RESEND_KEY_STORAGE);
       }
@@ -160,13 +172,17 @@ export const NewsletterBanner: React.FC = () => {
         } catch {}
         setEmail('');
       }
-      setLastTestSentTo(targetEmail);
+      const deliveredTo = res.recipients?.[0] || targetEmail;
+      setLastTestSentTo(deliveredTo);
       setLastTestSentAt(new Date().toLocaleTimeString());
       setLastDeliveryMode(res.deliveryMode);
 
       if (res.deliveryMode === 'RESEND_API') {
+        setShowKeyConfig(false);
         setStatusMessage(
-          `✅ Sent the fully styled HTML email (${res.eventsCount} events) to ${targetEmail} via Resend API! Check your Gmail inbox.`
+          deliveredTo !== targetEmail
+            ? `✅ Sent the fully styled HTML email (${res.eventsCount} events) to ${deliveredTo} via Resend! (Note: Resend's free tier only allows test emails to your Resend account email ${deliveredTo} unless a custom domain is verified).`
+            : `✅ Sent the fully styled HTML email (${res.eventsCount} events) to ${deliveredTo} via Resend API! Check your Gmail inbox.`
         );
       } else {
         if (activeDigest) {

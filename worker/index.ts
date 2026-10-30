@@ -1183,44 +1183,93 @@ export default {
       recipients: string[],
       digest: ReturnType<typeof buildWorkerNewsletter>,
       overrideResendKey?: string
-    ): Promise<{ deliveryMode: 'RESEND_API' | 'DEV_SIMULATOR'; deliveryError: string | null }> => {
-      const resendKey = (overrideResendKey || env.RESEND_API_KEY || '').trim();
+    ): Promise<{
+      deliveryMode: 'RESEND_API' | 'DEV_SIMULATOR';
+      deliveryError: string | null;
+      deliveredRecipients: string[];
+    }> => {
+      const sanitizeKey = (raw?: string) => {
+        if (!raw) return '';
+        const m = raw.trim().match(/re_[A-Za-z0-9]{8}_[A-Za-z0-9]{24}/);
+        return m ? m[0] : raw.trim();
+      };
+      const candidateKeys = Array.from(
+        new Set(
+          [sanitizeKey(overrideResendKey), sanitizeKey(env.RESEND_API_KEY)].filter(
+            (k): k is string => Boolean(k)
+          )
+        )
+      );
       const fromEmail =
         env.NEWSLETTER_FROM_EMAIL || 'Chicago Jewish Events <onboarding@resend.dev>';
 
-      if (!resendKey || recipients.length === 0) {
-        return { deliveryMode: 'DEV_SIMULATOR', deliveryError: null };
+      if (candidateKeys.length === 0 || recipients.length === 0) {
+        return {
+          deliveryMode: 'DEV_SIMULATOR',
+          deliveryError: null,
+          deliveredRecipients: recipients,
+        };
       }
 
-      try {
+      const trySend = async (apiKey: string, toList: string[]) => {
         const res = await fetch('https://api.resend.com/emails', {
           method: 'POST',
           headers: {
-            Authorization: `Bearer ${resendKey}`,
+            Authorization: `Bearer ${apiKey}`,
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
             from: fromEmail,
-            to: recipients,
+            to: toList,
             subject: digest.subject,
             html: digest.html,
             text: digest.text,
           }),
         });
-        if (res.ok) {
-          return { deliveryMode: 'RESEND_API', deliveryError: null };
+        const bodyText = await res.text();
+        return { ok: res.ok, status: res.status, bodyText };
+      };
+
+      let lastErr: string | null = null;
+      try {
+        for (const key of candidateKeys) {
+          const attempt = await trySend(key, recipients);
+          if (attempt.ok) {
+            return {
+              deliveryMode: 'RESEND_API',
+              deliveryError: null,
+              deliveredRecipients: recipients,
+            };
+          }
+
+          // If Resend free-tier sandbox restricts delivery to the verified account owner (e.g. akrakman@gmail.com),
+          // automatically retry sending to that verified owner email.
+          const ownerMatch = attempt.bodyText.match(
+            /\(([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})\)/
+          );
+          if (attempt.status === 403 && ownerMatch && ownerMatch[1]) {
+            const ownerEmail = ownerMatch[1].toLowerCase();
+            const retryOwner = await trySend(key, [ownerEmail]);
+            if (retryOwner.ok) {
+              return {
+                deliveryMode: 'RESEND_API',
+                deliveryError: null,
+                deliveredRecipients: [ownerEmail],
+              };
+            }
+          }
+
+          lastErr = `Resend API (${attempt.status}): ${attempt.bodyText}`;
         }
-        const errBody = await res.text();
-        return {
-          deliveryMode: 'DEV_SIMULATOR',
-          deliveryError: `Resend API (${res.status}): ${errBody}`,
-        };
       } catch (err: any) {
-        return {
-          deliveryMode: 'DEV_SIMULATOR',
-          deliveryError: err.message || 'Network error calling Resend API',
-        };
+        lastErr = err.message || 'Network error calling Resend API';
       }
+
+      return {
+        deliveryMode: 'DEV_SIMULATOR',
+        deliveryError: lastErr,
+        deliveredRecipients: recipients,
+      };
     };
 
     if (url.pathname === '/api/newsletter/subscribe' && request.method === 'POST') {
@@ -1321,8 +1370,8 @@ export default {
         JSON.stringify({
           success: true,
           sentAt: new Date().toISOString(),
-          recipientsCount: recipients.length,
-          recipients,
+          recipientsCount: dispatch.deliveredRecipients.length,
+          recipients: dispatch.deliveredRecipients,
           subject: digest.subject,
           eventsCount: digest.eventsCount,
           deliveryMode: dispatch.deliveryMode,

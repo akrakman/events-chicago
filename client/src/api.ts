@@ -93,16 +93,21 @@ export async function fetchNewsletterPreview(): Promise<NewsletterPreviewRespons
   return await res.json();
 }
 
-export async function subscribeToNewsletter(email: string): Promise<{
+export async function subscribeToNewsletter(
+  email: string,
+  resendApiKey?: string
+): Promise<{
   success: boolean;
   message: string;
   subscriberCount: number;
+  deliveryMode?: string;
+  deliveryError?: string | null;
   digest?: WeeklyNewsletterDigest;
 }> {
   const res = await fetch(`${API_BASE}/newsletter/subscribe`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email }),
+    body: JSON.stringify({ email, resendApiKey }),
   });
   const data = await res.json();
   if (!res.ok) throw new Error(data.error || 'Failed to subscribe to newsletter');
@@ -123,7 +128,10 @@ export async function unsubscribeFromNewsletter(email: string): Promise<{
   return data;
 }
 
-export async function sendTestNewsletterNow(email?: string): Promise<{
+export async function sendTestNewsletterNow(
+  email?: string,
+  resendApiKey?: string
+): Promise<{
   success: boolean;
   sentAt?: string;
   recipientsCount: number;
@@ -131,12 +139,13 @@ export async function sendTestNewsletterNow(email?: string): Promise<{
   subject: string;
   eventsCount: number;
   deliveryMode: string;
+  deliveryError?: string | null;
   digest?: WeeklyNewsletterDigest;
 }> {
   const res = await fetch(`${API_BASE}/newsletter/send`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email }),
+    body: JSON.stringify({ email, resendApiKey }),
   });
   const data = await res.json();
   if (!res.ok) throw new Error(data.error || 'Failed to send test newsletter');

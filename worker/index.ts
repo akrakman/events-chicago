@@ -6,6 +6,8 @@ export interface Env {
   ASSETS: {
     fetch: (request: Request) => Promise<Response>;
   };
+  RESEND_API_KEY?: string;
+  NEWSLETTER_FROM_EMAIL?: string;
 }
 
 export interface MonitoredSource {
@@ -1164,6 +1166,50 @@ export default {
       );
     }
 
+    const sendWorkerEmailIfConfigured = async (
+      recipients: string[],
+      digest: ReturnType<typeof buildWorkerNewsletter>,
+      overrideResendKey?: string
+    ): Promise<{ deliveryMode: 'RESEND_API' | 'DEV_SIMULATOR'; deliveryError: string | null }> => {
+      const resendKey = (overrideResendKey || env.RESEND_API_KEY || '').trim();
+      const fromEmail =
+        env.NEWSLETTER_FROM_EMAIL || 'Chicago Jewish Events <onboarding@resend.dev>';
+
+      if (!resendKey || recipients.length === 0) {
+        return { deliveryMode: 'DEV_SIMULATOR', deliveryError: null };
+      }
+
+      try {
+        const res = await fetch('https://api.resend.com/emails', {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${resendKey}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            from: fromEmail,
+            to: recipients,
+            subject: digest.subject,
+            html: digest.html,
+            text: digest.text,
+          }),
+        });
+        if (res.ok) {
+          return { deliveryMode: 'RESEND_API', deliveryError: null };
+        }
+        const errBody = await res.text();
+        return {
+          deliveryMode: 'DEV_SIMULATOR',
+          deliveryError: `Resend API (${res.status}): ${errBody}`,
+        };
+      } catch (err: any) {
+        return {
+          deliveryMode: 'DEV_SIMULATOR',
+          deliveryError: err.message || 'Network error calling Resend API',
+        };
+      }
+    };
+
     if (url.pathname === '/api/newsletter/subscribe' && request.method === 'POST') {
       try {
         const body: any = await request.json();
@@ -1183,6 +1229,7 @@ export default {
         };
         stateSubscribers.set(email, sub);
         const digest = buildWorkerNewsletter();
+        const dispatch = await sendWorkerEmailIfConfigured([email], digest, body.resendApiKey);
         const activeCount = Array.from(stateSubscribers.values()).filter((s) => s.isActive).length;
 
         return new Response(
@@ -1191,6 +1238,8 @@ export default {
             message: `Subscribed ${email}! You will receive the weekly upcoming events digest every Sunday at 9:00 AM CT.`,
             subscriber: sub,
             subscriberCount: activeCount,
+            deliveryMode: dispatch.deliveryMode,
+            deliveryError: dispatch.deliveryError,
             digest,
           }),
           { status: 201, headers }
@@ -1226,8 +1275,12 @@ export default {
 
     if (url.pathname === '/api/newsletter/send' && request.method === 'POST') {
       let targetEmail: string | undefined;
+      let overrideResendKey: string | undefined;
       try {
         const body: any = await request.json();
+        if (body && body.resendApiKey) {
+          overrideResendKey = String(body.resendApiKey).trim();
+        }
         if (body && body.email) {
           targetEmail = String(body.email).trim().toLowerCase();
           if (targetEmail && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(targetEmail)) {
@@ -1249,6 +1302,8 @@ export default {
             .filter((s) => s.isActive)
             .map((s) => s.email);
 
+      const dispatch = await sendWorkerEmailIfConfigured(recipients, digest, overrideResendKey);
+
       return new Response(
         JSON.stringify({
           success: true,
@@ -1257,7 +1312,8 @@ export default {
           recipients,
           subject: digest.subject,
           eventsCount: digest.eventsCount,
-          deliveryMode: 'DEV_SIMULATOR',
+          deliveryMode: dispatch.deliveryMode,
+          deliveryError: dispatch.deliveryError,
           digest,
         }),
         { status: 200, headers }

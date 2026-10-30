@@ -221,7 +221,10 @@ export async function buildWeeklyNewsletter(referenceDate: Date = new Date()): P
 /**
  * Dispatches the weekly newsletter to a specific email or all active subscribers.
  */
-export async function sendWeeklyNewsletter(targetEmail?: string): Promise<{
+export async function sendWeeklyNewsletter(
+  targetEmail?: string,
+  overrideResendKey?: string
+): Promise<{
   success: boolean;
   sentAt: string;
   recipientsCount: number;
@@ -229,6 +232,7 @@ export async function sendWeeklyNewsletter(targetEmail?: string): Promise<{
   subject: string;
   eventsCount: number;
   deliveryMode: 'RESEND_API' | 'LOCAL_OUTBOX';
+  deliveryError?: string | null;
   digest: WeeklyNewsletterDigest;
 }> {
   const digest = await buildWeeklyNewsletter();
@@ -244,8 +248,10 @@ export async function sendWeeklyNewsletter(targetEmail?: string): Promise<{
   }
 
   let deliveryMode: 'RESEND_API' | 'LOCAL_OUTBOX' = 'LOCAL_OUTBOX';
-  const resendKey = process.env.RESEND_API_KEY;
-  const fromEmail = process.env.NEWSLETTER_FROM_EMAIL || 'Chicago Jewish Events <newsletter@jewishevents.chi>';
+  let deliveryError: string | null = null;
+  const resendKey = (overrideResendKey || process.env.RESEND_API_KEY || '').trim();
+  const fromEmail =
+    process.env.NEWSLETTER_FROM_EMAIL || 'Chicago Jewish Events <onboarding@resend.dev>';
 
   if (resendKey && recipients.length > 0) {
     try {
@@ -265,8 +271,12 @@ export async function sendWeeklyNewsletter(targetEmail?: string): Promise<{
       });
       if (res.ok) {
         deliveryMode = 'RESEND_API';
+      } else {
+        const errBody = await res.text();
+        deliveryError = `Resend API (${res.status}): ${errBody}`;
       }
     } catch (err: any) {
+      deliveryError = err.message || 'Network error calling Resend API';
       console.warn('[Newsletter] External email provider error, falling back to local outbox:', err.message);
     }
   }
@@ -297,6 +307,7 @@ export async function sendWeeklyNewsletter(targetEmail?: string): Promise<{
     subject: digest.subject,
     eventsCount: digest.eventsCount,
     deliveryMode,
+    deliveryError,
     digest,
   };
 }

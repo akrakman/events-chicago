@@ -14,6 +14,7 @@ import {
   Copy,
   Check,
   Eye,
+  KeyRound,
 } from 'lucide-react';
 import {
   fetchNewsletterPreview,
@@ -24,6 +25,7 @@ import {
 import { WeeklyNewsletterDigest } from '../types';
 
 const NEWSLETTER_EMAIL_KEY = 'jewish_events_newsletter_email';
+const RESEND_KEY_STORAGE = 'jewish_events_resend_api_key';
 
 export const NewsletterBanner: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -34,9 +36,18 @@ export const NewsletterBanner: React.FC = () => {
       return null;
     }
   });
+  const [resendApiKey, setResendApiKey] = useState<string>(() => {
+    try {
+      return localStorage.getItem(RESEND_KEY_STORAGE) || '';
+    } catch {
+      return '';
+    }
+  });
+  const [showKeyConfig, setShowKeyConfig] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isTestingSend, setIsTestingSend] = useState(false);
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
+  const [lastDeliveryMode, setLastDeliveryMode] = useState<string | null>(null);
   const [lastTestSentTo, setLastTestSentTo] = useState<string | null>(null);
   const [lastTestSentAt, setLastTestSentAt] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -55,6 +66,49 @@ export const NewsletterBanner: React.FC = () => {
       .catch(() => {});
   }, []);
 
+  const triggerZeroConfigBrowserRelay = async (
+    targetEmail: string,
+    newsletterDigest: WeeklyNewsletterDigest
+  ): Promise<boolean> => {
+    if (!targetEmail || targetEmail.endsWith('.chi') || targetEmail.endsWith('example.com')) {
+      return false;
+    }
+    try {
+      const rows: Record<string, string> = {
+        _subject: newsletterDigest.subject,
+        _template: 'box',
+        _captcha: 'false',
+        Schedule: `Weekly Chicago Jewish Events (${newsletterDigest.weekRangeLabel}) — Sent Sundays at 9:00 AM CT`,
+      };
+      newsletterDigest.events.slice(0, 20).forEach((ev, idx) => {
+        rows[`${idx + 1}. ${ev.dateFormatted}${ev.timeFormatted ? ' @ ' + ev.timeFormatted : ''}`] =
+          `${ev.title} (${ev.organization}) — ${ev.location || 'Chicago'} — RSVP: ${ev.url}`;
+      });
+      const res = await fetch(`https://formsubmit.co/ajax/${encodeURIComponent(targetEmail)}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+        },
+        body: JSON.stringify(rows),
+      });
+      return res.ok;
+    } catch {
+      return false;
+    }
+  };
+
+  const handleSaveResendKey = (val: string) => {
+    setResendApiKey(val);
+    try {
+      if (val.trim()) {
+        localStorage.setItem(RESEND_KEY_STORAGE, val.trim());
+      } else {
+        localStorage.removeItem(RESEND_KEY_STORAGE);
+      }
+    } catch {}
+  };
+
   const handleSubscribe = async (e: React.FormEvent) => {
     e.preventDefault();
     const trimmed = email.trim();
@@ -65,19 +119,37 @@ export const NewsletterBanner: React.FC = () => {
     setStatusMessage(null);
 
     try {
-      const res = await subscribeToNewsletter(trimmed);
-      setSubscribedEmail(trimmed.toLowerCase());
+      const res = await subscribeToNewsletter(trimmed, resendApiKey.trim() || undefined);
+      const cleanEmail = trimmed.toLowerCase();
+      setSubscribedEmail(cleanEmail);
       try {
-        localStorage.setItem(NEWSLETTER_EMAIL_KEY, trimmed.toLowerCase());
+        localStorage.setItem(NEWSLETTER_EMAIL_KEY, cleanEmail);
       } catch {}
       setEmail('');
-      setStatusMessage(res.message);
       setSubscriberCount(res.subscriberCount);
+      const activeDigest = res.digest || digest;
       if (res.digest) {
         setDigest(res.digest);
       }
-      setLastTestSentTo(trimmed.toLowerCase());
+      setLastTestSentTo(cleanEmail);
       setLastTestSentAt(new Date().toLocaleTimeString());
+      setLastDeliveryMode(res.deliveryMode || 'DEV_SIMULATOR');
+
+      if (res.deliveryMode === 'RESEND_API') {
+        setStatusMessage(
+          `✅ Subscribed ${cleanEmail} & delivered this week's HTML email straight to your inbox via Resend!`
+        );
+      } else {
+        let relayed = false;
+        if (activeDigest) {
+          relayed = await triggerZeroConfigBrowserRelay(cleanEmail, activeDigest);
+        }
+        setStatusMessage(
+          relayed
+            ? `✅ Subscribed ${cleanEmail}! Preview is open below, and a copy was relayed to ${cleanEmail} (if this is your first time without a Resend API key, check Gmail for a 1-time "FormSubmit" activation email, or click "Open in Gmail" below).`
+            : `✅ Subscribed ${cleanEmail} for Sundays at 9:00 AM CT! Inspect the email preview below, or click "Open in Gmail" / add a Resend API key to deliver directly to your inbox.`
+        );
+      }
       setPreviewTab('email');
       setShowPreview(true);
     } catch (err: any) {
@@ -88,13 +160,14 @@ export const NewsletterBanner: React.FC = () => {
   };
 
   const handleTestSendNow = async () => {
-    const targetEmail = (email.trim() || subscribedEmail || 'test@jewishevents.chi').toLowerCase();
+    const targetEmail = (email.trim() || subscribedEmail || 'akrakman1@gmail.com').toLowerCase();
     setIsTestingSend(true);
     setError(null);
     setStatusMessage(null);
 
     try {
-      const res = await sendTestNewsletterNow(targetEmail);
+      const res = await sendTestNewsletterNow(targetEmail, resendApiKey.trim() || undefined);
+      const activeDigest = res.digest || digest;
       if (res.digest) {
         setDigest(res.digest);
       }
@@ -107,9 +180,26 @@ export const NewsletterBanner: React.FC = () => {
       }
       setLastTestSentTo(targetEmail);
       setLastTestSentAt(new Date().toLocaleTimeString());
-      setStatusMessage(
-        `⚡ Developer Test Triggered! Dispatched this week's newsletter (${res.eventsCount} events) to ${targetEmail} immediately (simulating Sunday 9:00 AM CT job).`
-      );
+      setLastDeliveryMode(res.deliveryMode);
+
+      if (res.deliveryMode === 'RESEND_API') {
+        setStatusMessage(
+          `✅ Real HTML email sent to ${targetEmail} (${res.eventsCount} events) via Resend API! Check your Gmail inbox.`
+        );
+      } else {
+        let relayed = false;
+        if (activeDigest) {
+          relayed = await triggerZeroConfigBrowserRelay(targetEmail, activeDigest);
+        }
+        if (res.deliveryError) {
+          setError(res.deliveryError);
+        }
+        setStatusMessage(
+          relayed
+            ? `⚡ Test triggered for ${targetEmail}! Full HTML email is rendered below + relayed via FormSubmit (check ${targetEmail} spam/inbox for the 1-time "Activate FormSubmit" confirmation link, or click "Open in Gmail" below).`
+            : `⚡ Test triggered for ${targetEmail}! The full Sunday 9:00 AM email (${res.eventsCount} events) is rendered right below. Click "Open in Gmail" or add a Resend API key below for direct inbox delivery.`
+        );
+      }
       setPreviewTab('email');
       setShowPreview(true);
     } catch (err: any) {
@@ -142,14 +232,27 @@ export const NewsletterBanner: React.FC = () => {
     } catch {}
   };
 
+  const activeRecipient = lastTestSentTo || subscribedEmail || email.trim() || 'akrakman1@gmail.com';
+
   const mailtoHref = digest
-    ? `mailto:${encodeURIComponent(lastTestSentTo || subscribedEmail || email || '')}?subject=${encodeURIComponent(
+    ? `mailto:${encodeURIComponent(activeRecipient)}?subject=${encodeURIComponent(
         digest.subject
       )}&body=${encodeURIComponent((digest.text || '').slice(0, 1800))}`
     : '#';
 
+  const gmailComposeHref = digest
+    ? `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(
+        activeRecipient
+      )}&su=${encodeURIComponent(digest.subject)}&body=${encodeURIComponent(
+        (digest.text || '').slice(0, 1800)
+      )}`
+    : 'https://mail.google.com';
+
   return (
-    <div id="newsletter-section" className="bg-white border-2 border-emerald-200/90 rounded-2xl p-4 sm:p-5 shadow-xs space-y-4">
+    <div
+      id="newsletter-section"
+      className="bg-white border-2 border-emerald-200/90 rounded-2xl p-4 sm:p-5 shadow-xs space-y-4"
+    >
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
         {/* Left: Description */}
         <div className="space-y-1.5 flex-1">
@@ -175,7 +278,7 @@ export const NewsletterBanner: React.FC = () => {
           <p className="text-xs text-slate-600 leading-relaxed">
             Enter your email to receive a curated list of upcoming events for the week every{' '}
             <strong className="text-slate-800">Sunday at 9:00 AM</strong> — or use{' '}
-            <strong className="text-emerald-700">Test Send Now (Dev)</strong> to trigger &amp; inspect the email immediately.
+            <strong className="text-emerald-700">⚡ Test Send Now (Dev)</strong> to trigger &amp; inspect the email right now.
           </p>
         </div>
 
@@ -251,18 +354,28 @@ export const NewsletterBanner: React.FC = () => {
 
       {/* Status or Error Messages */}
       {statusMessage && (
-        <div className="px-3.5 py-2.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-900 text-xs flex items-center justify-between gap-2">
-          <div className="flex items-center gap-2">
-            <CheckCircle2 className="w-4 h-4 text-emerald-600 flex-shrink-0" />
+        <div className="px-3.5 py-2.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-900 text-xs flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+          <div className="flex items-start sm:items-center gap-2">
+            <CheckCircle2 className="w-4 h-4 text-emerald-600 flex-shrink-0 mt-0.5 sm:mt-0" />
             <span>{statusMessage}</span>
           </div>
-          <button
-            type="button"
-            onClick={() => setStatusMessage(null)}
-            className="text-[11px] font-bold text-emerald-700 hover:text-emerald-900"
-          >
-            Dismiss
-          </button>
+          <div className="flex items-center gap-2 self-end sm:self-center flex-shrink-0">
+            <a
+              href={gmailComposeHref}
+              target="_blank"
+              rel="noreferrer"
+              className="px-2.5 py-1 rounded-lg bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-[11px] transition whitespace-nowrap"
+            >
+              Open in Gmail ↗
+            </a>
+            <button
+              type="button"
+              onClick={() => setStatusMessage(null)}
+              className="text-[11px] font-bold text-emerald-700 hover:text-emerald-900"
+            >
+              Dismiss
+            </button>
+          </div>
         </div>
       )}
 
@@ -282,6 +395,14 @@ export const NewsletterBanner: React.FC = () => {
           <div className="flex items-center gap-3">
             <button
               type="button"
+              onClick={() => setShowKeyConfig(!showKeyConfig)}
+              className="inline-flex items-center gap-1 text-[11px] font-semibold text-slate-500 hover:text-slate-800 transition"
+            >
+              <KeyRound className="w-3 h-3" />
+              <span>{resendApiKey ? 'Resend API Key Active ✓' : 'Configure Email API Key'}</span>
+            </button>
+            <button
+              type="button"
               onClick={() => setShowPreview(!showPreview)}
               className="inline-flex items-center gap-1 text-xs font-bold text-emerald-700 hover:text-emerald-800 transition"
             >
@@ -289,6 +410,49 @@ export const NewsletterBanner: React.FC = () => {
               <span>{showPreview ? 'Hide Newsletter Inspector' : 'Preview & Inspect Weekly Email'}</span>
               {showPreview ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
             </button>
+          </div>
+        </div>
+      )}
+
+      {/* Optional Resend API Key Input for Direct HTML Email Delivery */}
+      {showKeyConfig && (
+        <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 space-y-2 text-xs">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+            <div>
+              <strong className="text-slate-800 block">
+                Direct HTML Email Delivery (Resend API Key)
+              </strong>
+              <span className="text-[11px] text-slate-500">
+                Paste a free API key (`re_...`) from{' '}
+                <a
+                  href="https://resend.com/api-keys"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-emerald-700 underline font-semibold"
+                >
+                  resend.com
+                </a>{' '}
+                to send the full styled HTML email directly to your Gmail inbox via{' '}
+                <code>onboarding@resend.dev</code>.
+              </span>
+            </div>
+            <div className="flex items-center gap-2">
+              <input
+                type="password"
+                value={resendApiKey}
+                onChange={(e) => handleSaveResendKey(e.target.value)}
+                placeholder="re_123456789..."
+                className="px-3 py-1.5 bg-white border border-slate-300 rounded-lg text-xs text-slate-900 w-56 focus:outline-none focus:border-emerald-500"
+              />
+              <button
+                type="button"
+                onClick={handleTestSendNow}
+                disabled={isTestingSend}
+                className="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs whitespace-nowrap"
+              >
+                Save &amp; Test Send
+              </button>
+            </div>
           </div>
         </div>
       )}
@@ -302,11 +466,11 @@ export const NewsletterBanner: React.FC = () => {
               <Terminal className="w-4 h-4 text-emerald-400" />
               <div>
                 <span className="text-[11px] font-bold text-emerald-400 uppercase tracking-wider block">
-                  Newsletter Test &amp; Inbox Simulator
+                  Newsletter Test &amp; Inbox Simulator ({lastDeliveryMode === 'RESEND_API' ? 'Sent via Resend API' : 'On-Page Preview + Relay'})
                 </span>
                 <span className="text-xs text-slate-300">
                   {lastTestSentAt
-                    ? `Dispatched to ${lastTestSentTo} at ${lastTestSentAt}`
+                    ? `Triggered for ${activeRecipient} at ${lastTestSentAt}`
                     : 'Scheduled for Sunday at 9:00 AM CT'}
                 </span>
               </div>
@@ -349,13 +513,11 @@ export const NewsletterBanner: React.FC = () => {
             <div className="space-y-0.5">
               <div>
                 <span className="text-slate-400 font-medium">From:</span>{' '}
-                <strong className="text-slate-700">Chicago Jewish Events &lt;newsletter@jewishevents.chi&gt;</strong>
+                <strong className="text-slate-700">Chicago Jewish Events &lt;onboarding@resend.dev&gt;</strong>
               </div>
               <div>
                 <span className="text-slate-400 font-medium">To:</span>{' '}
-                <strong className="text-emerald-700">
-                  {lastTestSentTo || subscribedEmail || email || 'subscriber@example.com'}
-                </strong>
+                <strong className="text-emerald-700">{activeRecipient}</strong>
               </div>
               <div>
                 <span className="text-slate-400 font-medium">Subject:</span>{' '}
@@ -363,7 +525,17 @@ export const NewsletterBanner: React.FC = () => {
               </div>
             </div>
 
-            <div className="flex items-center gap-2">
+            <div className="flex flex-wrap items-center gap-2">
+              <a
+                href={gmailComposeHref}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-[11px] font-bold transition"
+                title="Open this digest directly in Gmail in a new tab"
+              >
+                <Mail className="w-3 h-3" />
+                <span>Open in Gmail ↗</span>
+              </a>
               <a
                 href={mailtoHref}
                 className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 text-[11px] font-bold transition"

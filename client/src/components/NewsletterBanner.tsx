@@ -9,12 +9,12 @@ import {
   ChevronUp,
   Sparkles,
   MapPin,
-  Send,
   Terminal,
   Copy,
   Check,
   Eye,
   KeyRound,
+  AlertCircle,
 } from 'lucide-react';
 import {
   fetchNewsletterPreview,
@@ -55,7 +55,7 @@ export const NewsletterBanner: React.FC = () => {
   const [subscriberCount, setSubscriberCount] = useState<number>(0);
   const [showPreview, setShowPreview] = useState(false);
   const [previewTab, setPreviewTab] = useState<'email' | 'list' | 'text'>('email');
-  const [copiedText, setCopiedText] = useState(false);
+  const [copiedHtml, setCopiedHtml] = useState(false);
 
   useEffect(() => {
     fetchNewsletterPreview()
@@ -66,38 +66,6 @@ export const NewsletterBanner: React.FC = () => {
       .catch(() => {});
   }, []);
 
-  const triggerZeroConfigBrowserRelay = async (
-    targetEmail: string,
-    newsletterDigest: WeeklyNewsletterDigest
-  ): Promise<boolean> => {
-    if (!targetEmail || targetEmail.endsWith('.chi') || targetEmail.endsWith('example.com')) {
-      return false;
-    }
-    try {
-      const rows: Record<string, string> = {
-        _subject: newsletterDigest.subject,
-        _template: 'box',
-        _captcha: 'false',
-        Schedule: `Weekly Chicago Jewish Events (${newsletterDigest.weekRangeLabel}) — Sent Sundays at 9:00 AM CT`,
-      };
-      newsletterDigest.events.slice(0, 20).forEach((ev, idx) => {
-        rows[`${idx + 1}. ${ev.dateFormatted}${ev.timeFormatted ? ' @ ' + ev.timeFormatted : ''}`] =
-          `${ev.title} (${ev.organization}) — ${ev.location || 'Chicago'} — RSVP: ${ev.url}`;
-      });
-      const res = await fetch(`https://formsubmit.co/ajax/${encodeURIComponent(targetEmail)}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Accept: 'application/json',
-        },
-        body: JSON.stringify(rows),
-      });
-      return res.ok;
-    } catch {
-      return false;
-    }
-  };
-
   const handleSaveResendKey = (val: string) => {
     setResendApiKey(val);
     try {
@@ -107,6 +75,26 @@ export const NewsletterBanner: React.FC = () => {
         localStorage.removeItem(RESEND_KEY_STORAGE);
       }
     } catch {}
+  };
+
+  const copyStyledHtmlToClipboard = async (targetDigest: WeeklyNewsletterDigest): Promise<boolean> => {
+    if (!targetDigest.html) return false;
+    try {
+      if (typeof ClipboardItem !== 'undefined' && navigator.clipboard?.write) {
+        const htmlBlob = new Blob([targetDigest.html], { type: 'text/html' });
+        const textBlob = new Blob([targetDigest.text || ''], { type: 'text/plain' });
+        await navigator.clipboard.write([
+          new ClipboardItem({
+            'text/html': htmlBlob,
+            'text/plain': textBlob,
+          }),
+        ]);
+        setCopiedHtml(true);
+        setTimeout(() => setCopiedHtml(false), 3000);
+        return true;
+      }
+    } catch {}
+    return false;
   };
 
   const handleSubscribe = async (e: React.FormEvent) => {
@@ -127,7 +115,6 @@ export const NewsletterBanner: React.FC = () => {
       } catch {}
       setEmail('');
       setSubscriberCount(res.subscriberCount);
-      const activeDigest = res.digest || digest;
       if (res.digest) {
         setDigest(res.digest);
       }
@@ -137,17 +124,12 @@ export const NewsletterBanner: React.FC = () => {
 
       if (res.deliveryMode === 'RESEND_API') {
         setStatusMessage(
-          `✅ Subscribed ${cleanEmail} & delivered this week's HTML email straight to your inbox via Resend!`
+          `✅ Subscribed ${cleanEmail} & sent the fully styled HTML newsletter directly to your Gmail inbox via Resend!`
         );
       } else {
-        let relayed = false;
-        if (activeDigest) {
-          relayed = await triggerZeroConfigBrowserRelay(cleanEmail, activeDigest);
-        }
+        setShowKeyConfig(true);
         setStatusMessage(
-          relayed
-            ? `✅ Subscribed ${cleanEmail}! Preview is open below, and a copy was relayed to ${cleanEmail} (if this is your first time without a Resend API key, check Gmail for a 1-time "FormSubmit" activation email, or click "Open in Gmail" below).`
-            : `✅ Subscribed ${cleanEmail} for Sundays at 9:00 AM CT! Inspect the email preview below, or click "Open in Gmail" / add a Resend API key to deliver directly to your inbox.`
+          `✅ Subscribed ${cleanEmail} for Sundays at 9:00 AM CT! To send the exact styled HTML email directly to your Gmail inbox (with no FormSubmit wrapper), paste a free Resend API key below.`
         );
       }
       setPreviewTab('email');
@@ -184,20 +166,18 @@ export const NewsletterBanner: React.FC = () => {
 
       if (res.deliveryMode === 'RESEND_API') {
         setStatusMessage(
-          `✅ Real HTML email sent to ${targetEmail} (${res.eventsCount} events) via Resend API! Check your Gmail inbox.`
+          `✅ Sent the fully styled HTML email (${res.eventsCount} events) to ${targetEmail} via Resend API! Check your Gmail inbox.`
         );
       } else {
-        let relayed = false;
         if (activeDigest) {
-          relayed = await triggerZeroConfigBrowserRelay(targetEmail, activeDigest);
+          await copyStyledHtmlToClipboard(activeDigest);
         }
+        setShowKeyConfig(true);
         if (res.deliveryError) {
           setError(res.deliveryError);
         }
         setStatusMessage(
-          relayed
-            ? `⚡ Test triggered for ${targetEmail}! Full HTML email is rendered below + relayed via FormSubmit (check ${targetEmail} spam/inbox for the 1-time "Activate FormSubmit" confirmation link, or click "Open in Gmail" below).`
-            : `⚡ Test triggered for ${targetEmail}! The full Sunday 9:00 AM email (${res.eventsCount} events) is rendered right below. Click "Open in Gmail" or add a Resend API key below for direct inbox delivery.`
+          `⚡ Rendered the styled HTML email for ${targetEmail} below (and copied the styled HTML to your clipboard)! To deliver the exact styled HTML email directly to your Gmail inbox, paste a free Resend API key below.`
         );
       }
       setPreviewTab('email');
@@ -223,30 +203,21 @@ export const NewsletterBanner: React.FC = () => {
     }
   };
 
-  const handleCopyDigestText = async () => {
-    if (!digest?.text) return;
-    try {
-      await navigator.clipboard.writeText(digest.text);
-      setCopiedText(true);
-      setTimeout(() => setCopiedText(false), 2000);
-    } catch {}
+  const handleCopyAndOpenGmail = async () => {
+    if (digest) {
+      await copyStyledHtmlToClipboard(digest);
+    }
+    const activeRecipient = lastTestSentTo || subscribedEmail || email.trim() || 'akrakman1@gmail.com';
+    const subject = digest?.subject || 'Chicago Jewish Events This Week';
+    window.open(
+      `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(
+        activeRecipient
+      )}&su=${encodeURIComponent(subject)}`,
+      '_blank'
+    );
   };
 
   const activeRecipient = lastTestSentTo || subscribedEmail || email.trim() || 'akrakman1@gmail.com';
-
-  const mailtoHref = digest
-    ? `mailto:${encodeURIComponent(activeRecipient)}?subject=${encodeURIComponent(
-        digest.subject
-      )}&body=${encodeURIComponent((digest.text || '').slice(0, 1800))}`
-    : '#';
-
-  const gmailComposeHref = digest
-    ? `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(
-        activeRecipient
-      )}&su=${encodeURIComponent(digest.subject)}&body=${encodeURIComponent(
-        (digest.text || '').slice(0, 1800)
-      )}`
-    : 'https://mail.google.com';
 
   return (
     <div
@@ -278,7 +249,7 @@ export const NewsletterBanner: React.FC = () => {
           <p className="text-xs text-slate-600 leading-relaxed">
             Enter your email to receive a curated list of upcoming events for the week every{' '}
             <strong className="text-slate-800">Sunday at 9:00 AM</strong> — or use{' '}
-            <strong className="text-emerald-700">⚡ Test Send Now (Dev)</strong> to trigger &amp; inspect the email right now.
+            <strong className="text-emerald-700">⚡ Test Send Now (Dev)</strong> to trigger &amp; inspect the styled HTML email right now.
           </p>
         </div>
 
@@ -360,14 +331,13 @@ export const NewsletterBanner: React.FC = () => {
             <span>{statusMessage}</span>
           </div>
           <div className="flex items-center gap-2 self-end sm:self-center flex-shrink-0">
-            <a
-              href={gmailComposeHref}
-              target="_blank"
-              rel="noreferrer"
+            <button
+              type="button"
+              onClick={handleCopyAndOpenGmail}
               className="px-2.5 py-1 rounded-lg bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-[11px] transition whitespace-nowrap"
             >
-              Open in Gmail ↗
-            </a>
+              Copy Styled HTML &amp; Open Gmail ↗
+            </button>
             <button
               type="button"
               onClick={() => setStatusMessage(null)}
@@ -380,8 +350,9 @@ export const NewsletterBanner: React.FC = () => {
       )}
 
       {error && (
-        <div className="px-3.5 py-2 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs">
-          {error}
+        <div className="px-3.5 py-2 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs flex items-center gap-2">
+          <AlertCircle className="w-4 h-4 text-rose-600 flex-shrink-0" />
+          <span>{error}</span>
         </div>
       )}
 
@@ -396,10 +367,10 @@ export const NewsletterBanner: React.FC = () => {
             <button
               type="button"
               onClick={() => setShowKeyConfig(!showKeyConfig)}
-              className="inline-flex items-center gap-1 text-[11px] font-semibold text-slate-500 hover:text-slate-800 transition"
+              className="inline-flex items-center gap-1 text-[11px] font-semibold text-slate-600 hover:text-slate-900 transition"
             >
-              <KeyRound className="w-3 h-3" />
-              <span>{resendApiKey ? 'Resend API Key Active ✓' : 'Configure Email API Key'}</span>
+              <KeyRound className="w-3 h-3 text-amber-600" />
+              <span>{resendApiKey ? 'Resend API Key Active ✓' : 'Set Resend API Key (for Styled HTML Email)'}</span>
             </button>
             <button
               type="button"
@@ -414,43 +385,43 @@ export const NewsletterBanner: React.FC = () => {
         </div>
       )}
 
-      {/* Optional Resend API Key Input for Direct HTML Email Delivery */}
+      {/* Resend API Key Input for Direct Styled HTML Email Delivery */}
       {showKeyConfig && (
-        <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 space-y-2 text-xs">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-            <div>
-              <strong className="text-slate-800 block">
-                Direct HTML Email Delivery (Resend API Key)
+        <div className="p-3.5 rounded-xl bg-amber-50/70 border border-amber-200 space-y-2 text-xs">
+          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
+            <div className="space-y-0.5">
+              <strong className="text-slate-900 block">
+                Send the Exact Styled HTML Email Directly to Your Inbox (No FormSubmit Wrapper)
               </strong>
-              <span className="text-[11px] text-slate-500">
-                Paste a free API key (`re_...`) from{' '}
+              <span className="text-[11px] text-slate-600 block">
+                Paste a free API key (<code>re_...</code>) from{' '}
                 <a
                   href="https://resend.com/api-keys"
                   target="_blank"
                   rel="noreferrer"
-                  className="text-emerald-700 underline font-semibold"
+                  className="text-emerald-700 underline font-bold"
                 >
-                  resend.com
+                  resend.com/api-keys
                 </a>{' '}
-                to send the full styled HTML email directly to your Gmail inbox via{' '}
-                <code>onboarding@resend.dev</code>.
+                and click <strong>Send Styled Email Now</strong> — or click{' '}
+                <strong>Copy Styled HTML &amp; Open Gmail</strong> and press <code>Cmd+V</code> in Gmail Compose.
               </span>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex flex-wrap items-center gap-2 flex-shrink-0">
               <input
                 type="password"
                 value={resendApiKey}
                 onChange={(e) => handleSaveResendKey(e.target.value)}
-                placeholder="re_123456789..."
-                className="px-3 py-1.5 bg-white border border-slate-300 rounded-lg text-xs text-slate-900 w-56 focus:outline-none focus:border-emerald-500"
+                placeholder="Paste re_123456789..."
+                className="px-3 py-1.5 bg-white border border-amber-300 rounded-lg text-xs text-slate-900 w-56 focus:outline-none focus:border-emerald-600"
               />
               <button
                 type="button"
                 onClick={handleTestSendNow}
-                disabled={isTestingSend}
-                className="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs whitespace-nowrap"
+                disabled={isTestingSend || !resendApiKey.trim()}
+                className="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white font-bold text-xs whitespace-nowrap transition"
               >
-                Save &amp; Test Send
+                {isTestingSend ? 'Sending...' : 'Send Styled Email Now'}
               </button>
             </div>
           </div>
@@ -466,7 +437,9 @@ export const NewsletterBanner: React.FC = () => {
               <Terminal className="w-4 h-4 text-emerald-400" />
               <div>
                 <span className="text-[11px] font-bold text-emerald-400 uppercase tracking-wider block">
-                  Newsletter Test &amp; Inbox Simulator ({lastDeliveryMode === 'RESEND_API' ? 'Sent via Resend API' : 'On-Page Preview + Relay'})
+                  Newsletter Test &amp; Inbox Simulator (
+                  {lastDeliveryMode === 'RESEND_API' ? 'Sent Styled HTML via Resend' : 'Styled HTML Preview'}
+                  )
                 </span>
                 <span className="text-xs text-slate-300">
                   {lastTestSentAt
@@ -526,31 +499,23 @@ export const NewsletterBanner: React.FC = () => {
             </div>
 
             <div className="flex flex-wrap items-center gap-2">
-              <a
-                href={gmailComposeHref}
-                target="_blank"
-                rel="noreferrer"
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-[11px] font-bold transition"
-                title="Open this digest directly in Gmail in a new tab"
-              >
-                <Mail className="w-3 h-3" />
-                <span>Open in Gmail ↗</span>
-              </a>
-              <a
-                href={mailtoHref}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 text-[11px] font-bold transition"
-                title="Open pre-filled newsletter in your computer's Mail app"
-              >
-                <Send className="w-3 h-3" />
-                <span>Open in Mail App</span>
-              </a>
               <button
                 type="button"
-                onClick={handleCopyDigestText}
-                className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 text-[11px] font-bold transition"
+                onClick={() => copyStyledHtmlToClipboard(digest)}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 text-[11px] font-bold transition"
+                title="Copy the rich styled HTML email so you can paste (Cmd+V) it into Gmail with full styling"
               >
-                {copiedText ? <Check className="w-3 h-3 text-emerald-600" /> : <Copy className="w-3 h-3" />}
-                <span>{copiedText ? 'Copied!' : 'Copy Digest'}</span>
+                {copiedHtml ? <Check className="w-3 h-3 text-emerald-600" /> : <Copy className="w-3 h-3" />}
+                <span>{copiedHtml ? 'Copied Styled HTML!' : 'Copy Styled HTML'}</span>
+              </button>
+              <button
+                type="button"
+                onClick={handleCopyAndOpenGmail}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-[11px] font-bold transition"
+                title="Copies the styled HTML to clipboard and opens Gmail Compose — just press Cmd+V in the email body!"
+              >
+                <Mail className="w-3 h-3" />
+                <span>Copy Styled HTML &amp; Open Gmail ↗</span>
               </button>
             </div>
           </div>

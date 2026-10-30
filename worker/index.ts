@@ -1046,8 +1046,21 @@ export default {
           title: e.title,
           url: e.url,
           eventDate: e.eventDate,
-          dateFormatted: d ? d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' }) : 'Date TBD',
-          timeFormatted: d ? d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' }) : null,
+          dateFormatted: d
+            ? d.toLocaleDateString('en-US', {
+                weekday: 'short',
+                month: 'short',
+                day: 'numeric',
+                timeZone: 'America/Chicago',
+              })
+            : 'Date TBD',
+          timeFormatted: d
+            ? d.toLocaleTimeString('en-US', {
+                hour: 'numeric',
+                minute: '2-digit',
+                timeZone: 'America/Chicago',
+              })
+            : null,
           organization: e.organization || e.hostName || 'Community Organizer',
           neighborhood: e.neighborhood || null,
           location: e.location || e.neighborhood || 'Chicago, IL',
@@ -1096,14 +1109,14 @@ export default {
 <body style="margin: 0; padding: 20px; background-color: #f8fafc; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
   <table width="100%" cellpadding="0" cellspacing="0" style="max-width: 640px; margin: 0 auto; background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 16px; overflow: hidden;">
     <tr>
-      <td style="padding: 24px; background: linear-gradient(135deg, #059669, #0d9488); color: #ffffff;">
-        <div style="font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; opacity: 0.9;">
+      <td bgcolor="#059669" style="padding: 24px; background-color: #059669; background: linear-gradient(135deg, #059669, #0d9488); color: #ffffff;">
+        <div style="font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #ecfdf5;">
           Weekly Community Digest • Sent Sundays at 9:00 AM CT
         </div>
-        <h1 style="margin: 6px 0 4px; font-size: 22px; font-weight: 800;">
+        <h1 style="margin: 6px 0 4px; font-size: 22px; font-weight: 800; color: #ffffff;">
           Chicago Jewish Events This Week
         </h1>
-        <div style="font-size: 13px; opacity: 0.95;">
+        <div style="font-size: 13px; color: #ecfdf5;">
           ${weekRangeLabel} • ${mappedEvents.length} Upcoming Community Events
         </div>
       </td>

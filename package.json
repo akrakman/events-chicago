@@ -14,7 +14,8 @@
     "build:server": "npm --prefix server install && npm --prefix server run build",
     "build:all": "npm --prefix server install && npm --prefix server run build && npm --prefix client install && npm --prefix client run build",
     "start": "cd server && npm run start",
-    "test:scrapers": "tsx scripts/test-scrapers.ts"
+    "test:scrapers": "tsx scripts/test-scrapers.ts",
+    "check:parity": "tsx scripts/compare-with-chitribe.ts"
   },
   "devDependencies": {
     "@types/node": "^26.6.4",

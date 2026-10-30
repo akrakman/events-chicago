@@ -1,6 +1,6 @@
 import { scrapeWithCheerio } from './cheerioNextData';
 import { scrapeWithPlaywright } from './playwrightScraper';
-import { scrapeChiTribeEvents } from './chitribeScraper';
+import { scrapeCommunityOrg } from './communityOrgScraper';
 import { detectPlatform } from './detector';
 import { ScrapeModePreference, ScrapeResult } from '../types';
 
@@ -11,9 +11,9 @@ export async function orchestrateScrape(
   const overallStart = Date.now();
   const detected = detectPlatform(url);
 
-  // ChiTribe dedicated scraper
-  if (detected.platform === 'CHITRIBE' || url.toLowerCase().includes('chitribe.org')) {
-    return await scrapeChiTribeEvents(url);
+  // Primary community organization websites (Chabad, Synagogue, JUF, Community)
+  if (['CHABAD', 'SYNAGOGUE', 'JUF', 'COMMUNITY'].includes(detected.platform)) {
+    return await scrapeCommunityOrg(url, undefined, detected.platform);
   }
 
   if (mode === 'playwright') {

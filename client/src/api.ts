@@ -1,4 +1,10 @@
-import { CommunityEvent, MonitoredSource, SyncStatus } from './types';
+import {
+  CommunityEvent,
+  MonitoredSource,
+  NewsletterPreviewResponse,
+  SyncStatus,
+  WeeklyNewsletterDigest,
+} from './types';
 
 const API_BASE = '/api';
 
@@ -79,4 +85,60 @@ export async function fetchSyncStatus(): Promise<SyncStatus> {
   const res = await fetch(`${API_BASE}/sync/status?_t=${Date.now()}`);
   if (!res.ok) throw new Error('Failed to fetch sync status');
   return await res.json();
+}
+
+export async function fetchNewsletterPreview(): Promise<NewsletterPreviewResponse> {
+  const res = await fetch(`${API_BASE}/newsletter/preview?_t=${Date.now()}`);
+  if (!res.ok) throw new Error('Failed to load newsletter preview');
+  return await res.json();
+}
+
+export async function subscribeToNewsletter(email: string): Promise<{
+  success: boolean;
+  message: string;
+  subscriberCount: number;
+  digest?: WeeklyNewsletterDigest;
+}> {
+  const res = await fetch(`${API_BASE}/newsletter/subscribe`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email }),
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || 'Failed to subscribe to newsletter');
+  return data;
+}
+
+export async function unsubscribeFromNewsletter(email: string): Promise<{
+  success: boolean;
+  message: string;
+}> {
+  const res = await fetch(`${API_BASE}/newsletter/unsubscribe`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email }),
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || 'Failed to unsubscribe');
+  return data;
+}
+
+export async function sendTestNewsletterNow(email?: string): Promise<{
+  success: boolean;
+  sentAt?: string;
+  recipientsCount: number;
+  recipients: string[];
+  subject: string;
+  eventsCount: number;
+  deliveryMode: string;
+  digest?: WeeklyNewsletterDigest;
+}> {
+  const res = await fetch(`${API_BASE}/newsletter/send`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email }),
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || 'Failed to send test newsletter');
+  return data;
 }

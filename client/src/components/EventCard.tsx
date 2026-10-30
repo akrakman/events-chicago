@@ -96,11 +96,32 @@ function getPlatformBadge(platform: string) {
       btn: 'bg-indigo-600 hover:bg-indigo-700 text-white shadow-xs shadow-indigo-600/20',
     };
   }
-  if (p === 'CHITRIBE') {
+  if (p === 'CHABAD') {
     return {
-      name: 'ChiTribe',
+      name: 'Chabad',
       badge: 'bg-sky-50 text-sky-700 border-sky-200',
       btn: 'bg-sky-600 hover:bg-sky-700 text-white shadow-sm shadow-sky-600/20',
+    };
+  }
+  if (p === 'SYNAGOGUE') {
+    return {
+      name: 'Synagogue',
+      badge: 'bg-teal-50 text-teal-800 border-teal-200',
+      btn: 'bg-teal-600 hover:bg-teal-700 text-white shadow-sm shadow-teal-600/20',
+    };
+  }
+  if (p === 'JUF') {
+    return {
+      name: 'JUF / YLD',
+      badge: 'bg-blue-50 text-blue-700 border-blue-200',
+      btn: 'bg-blue-600 hover:bg-blue-700 text-white shadow-sm shadow-blue-600/20',
+    };
+  }
+  if (p === 'COMMUNITY') {
+    return {
+      name: 'Community Org',
+      badge: 'bg-violet-50 text-violet-700 border-violet-200',
+      btn: 'bg-violet-600 hover:bg-violet-700 text-white shadow-sm shadow-violet-600/20',
     };
   }
   return {

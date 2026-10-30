@@ -1,4 +1,13 @@
-export type PlatformType = 'LINKTREE' | 'PARTIFUL' | 'CHITRIBE' | 'MISHKAN' | 'CHABAD' | 'SOCIAL' | 'GENERIC';
+export type PlatformType =
+  | 'LINKTREE'
+  | 'PARTIFUL'
+  | 'MISHKAN'
+  | 'CHABAD'
+  | 'SYNAGOGUE'
+  | 'JUF'
+  | 'COMMUNITY'
+  | 'SOCIAL'
+  | 'GENERIC';
 export type ItemType = 'LINK' | 'EVENT' | 'SOCIAL' | 'MEDIA';
 export type ScrapeMethod = 'CHEERIO_NEXT_DATA' | 'CHEERIO_STATIC' | 'PLAYWRIGHT';
 export type JobStatus = 'COMPLETED' | 'FAILED' | 'RUNNING';

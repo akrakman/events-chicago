@@ -1,6 +1,8 @@
 import { FastifyPluginAsync } from 'fastify';
 import { prisma } from '../db';
 import { getPollingState, pollAllSources, pollSource } from '../services/eventPoller';
+import { buildWeeklyNewsletter, sendWeeklyNewsletter } from '../services/newsletterService';
+import { runChiTribeParityCheck } from '../services/parityChecker';
 import { z } from 'zod';
 import { detectPlatform } from '../scraper/detector';
 import { classifyEvent, normalizeTitle } from '../utils/eventClassifier';
@@ -380,6 +382,105 @@ export const eventRoutes: FastifyPluginAsync = async (fastify) => {
         lastPolledAt: latestSource?.lastPolledAt || null,
         totalEvents,
       });
+    } catch (err: any) {
+      return reply.status(500).send({ error: err.message });
+    }
+  });
+
+  // 7. Parity verification endpoint (compares direct primary sources against ChiTribe benchmark)
+  fastify.get('/api/parity', async (_request, reply) => {
+    try {
+      const report = await runChiTribeParityCheck();
+      return reply.send(report);
+    } catch (err: any) {
+      return reply.status(500).send({ error: err.message });
+    }
+  });
+
+  // 8. Weekly Newsletter Preview & Schedule Info (Sent Sundays at 9:00 AM CT)
+  fastify.get('/api/newsletter/preview', async (_request, reply) => {
+    try {
+      const [digest, subscriberCount] = await Promise.all([
+        buildWeeklyNewsletter(),
+        prisma.newsletterSubscriber.count({ where: { isActive: true } }),
+      ]);
+      return reply.send({
+        schedule: 'Every Sunday at 9:00 AM CT',
+        subscriberCount,
+        digest,
+      });
+    } catch (err: any) {
+      return reply.status(500).send({ error: err.message });
+    }
+  });
+
+  // 9. Subscribe to Weekly Sunday 9:00 AM Newsletter
+  const SubscribeSchema = z.object({
+    email: z.string().trim().email('Please enter a valid email address'),
+  });
+
+  fastify.post('/api/newsletter/subscribe', async (request, reply) => {
+    const parse = SubscribeSchema.safeParse(request.body);
+    if (!parse.success) {
+      return reply.status(400).send({
+        error: parse.error.issues[0]?.message || 'Please enter a valid email address',
+      });
+    }
+
+    const email = parse.data.email.toLowerCase();
+
+    try {
+      const subscriber = await prisma.newsletterSubscriber.upsert({
+        where: { email },
+        update: { isActive: true },
+        create: { email, isActive: true },
+      });
+
+      // Dispatch an immediate welcome/preview digest for this week's upcoming events
+      const dispatch = await sendWeeklyNewsletter(email);
+      const digest = await buildWeeklyNewsletter();
+      const subscriberCount = await prisma.newsletterSubscriber.count({ where: { isActive: true } });
+
+      return reply.status(201).send({
+        success: true,
+        message: `Subscribed ${email}! You will receive the weekly upcoming events digest every Sunday at 9:00 AM CT.`,
+        subscriber,
+        subscriberCount,
+        dispatch,
+        digest,
+      });
+    } catch (err: any) {
+      return reply.status(500).send({ error: err.message });
+    }
+  });
+
+  // 10. Unsubscribe from Weekly Newsletter
+  fastify.post('/api/newsletter/unsubscribe', async (request, reply) => {
+    const parse = SubscribeSchema.safeParse(request.body);
+    if (!parse.success) {
+      return reply.status(400).send({ error: 'Valid email is required' });
+    }
+    const email = parse.data.email.toLowerCase();
+    try {
+      await prisma.newsletterSubscriber.updateMany({
+        where: { email },
+        data: { isActive: false },
+      });
+      return reply.send({
+        success: true,
+        message: `${email} has been unsubscribed from the Sunday 9:00 AM newsletter.`,
+      });
+    } catch (err: any) {
+      return reply.status(500).send({ error: err.message });
+    }
+  });
+
+  // 11. Trigger Manual Send of Weekly Newsletter
+  fastify.post('/api/newsletter/send', async (request, reply) => {
+    const body = (request.body || {}) as { email?: string };
+    try {
+      const result = await sendWeeklyNewsletter(body.email);
+      return reply.send(result);
     } catch (err: any) {
       return reply.status(500).send({ error: err.message });
     }

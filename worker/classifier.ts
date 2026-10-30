@@ -79,12 +79,30 @@ export function classifyEvent(
   } else if (combined.includes('temple beth-el') || combined.includes('beth-el')) {
     orgGroup = 'Synagogues & Congregations';
     organization = 'Temple Beth-El';
-  } else if (combined.includes('rodfei zedek')) {
+  } else if (combined.includes('rodfei zedek') || combined.includes('crz')) {
     orgGroup = 'Synagogues & Congregations';
     organization = 'Congregation Rodfei Zedek';
-  } else if (combined.includes('chitribe')) {
-    orgGroup = 'ChiTribe';
-    organization = hostName && hostName !== 'ChiTribe' ? hostName : 'ChiTribe';
+  } else if (combined.includes('north suburban synagogue') || combined.includes('nssbe')) {
+    orgGroup = 'Synagogues & Congregations';
+    organization = 'North Suburban Synagogue Beth El';
+  } else if (combined.includes('central avenue synagogue')) {
+    orgGroup = 'Synagogues & Congregations';
+    organization = 'Central Avenue Synagogue';
+  } else if (combined.includes('chicago loop synagogue')) {
+    orgGroup = 'Synagogues & Congregations';
+    organization = 'Chicago Loop Synagogue';
+  } else if (combined.includes('kol hadash')) {
+    orgGroup = 'Synagogues & Congregations';
+    organization = 'Kol Hadash Humanistic Congregation';
+  } else if (combined.includes('just harvest')) {
+    orgGroup = 'Civic & Social Justice';
+    organization = 'A Just Harvest';
+  } else if (combined.includes('shalva')) {
+    orgGroup = 'Civic & Social Justice';
+    organization = 'Shalva Chicago';
+  } else if (combined.includes('israeli cinema') || combined.includes('cultural')) {
+    orgGroup = 'Arts & Culture';
+    organization = hostName || 'Chicago Jewish Cultural Collaborative';
   }
 
   // 2. Neighborhood

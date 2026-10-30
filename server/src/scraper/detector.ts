@@ -41,20 +41,72 @@ export function detectPlatform(rawUrl: string): {
     };
   }
 
-  // ChiTribe
-  if (hostname.includes('chitribe.org')) {
+  // Mishkan
+  if (hostname.includes('mishkanchicago.org') || urlObj.pathname.includes('/tribe/events')) {
     return {
-      platform: 'CHITRIBE',
-      subPlatform: 'CHITRIBE',
+      platform: 'MISHKAN',
+      subPlatform: 'MISHKAN',
       normalizedUrl: urlObj.toString(),
     };
   }
 
   // Chabad / Jewish CMS
-  if (hostname.includes('chabad') || hostname.includes('jewish') || urlObj.pathname.includes('articlecco_cdo') || urlObj.pathname.includes('section_cdo')) {
+  if (
+    hostname.includes('chabad') ||
+    hostname.includes('jewishlakeview') ||
+    hostname.includes('jewishbucktown') ||
+    hostname.includes('jewishdowntown') ||
+    urlObj.pathname.includes('articlecco_cdo') ||
+    urlObj.pathname.includes('section_cdo')
+  ) {
     return {
       platform: 'CHABAD',
       subPlatform: 'CHABAD',
+      normalizedUrl: urlObj.toString(),
+    };
+  }
+
+  // Synagogues
+  if (
+    hostname.includes('ansheemet') ||
+    hostname.includes('kamii.org') ||
+    hostname.includes('irz.org') ||
+    hostname.includes('makomshalom') ||
+    hostname.includes('nssbethel') ||
+    hostname.includes('templebeth-el') ||
+    hostname.includes('centralavenuesynagogue') ||
+    hostname.includes('chicagoloopsynagogue') ||
+    hostname.includes('kolhadash') ||
+    hostname.includes('shulcloud')
+  ) {
+    return {
+      platform: 'SYNAGOGUE',
+      subPlatform: 'SYNAGOGUE',
+      normalizedUrl: urlObj.toString(),
+    };
+  }
+
+  // JUF / YLD
+  if (hostname.includes('juf.org')) {
+    return {
+      platform: 'JUF',
+      subPlatform: 'JUF',
+      normalizedUrl: urlObj.toString(),
+    };
+  }
+
+  // Community Organizations
+  if (
+    hostname.includes('werepair.org') ||
+    hostname.includes('israelifilmchi') ||
+    hostname.includes('jcua.org') ||
+    hostname.includes('shalvacares') ||
+    hostname.includes('ajustharvest') ||
+    hostname.includes('jgsi.org')
+  ) {
+    return {
+      platform: 'COMMUNITY',
+      subPlatform: 'COMMUNITY',
       normalizedUrl: urlObj.toString(),
     };
   }
@@ -103,7 +155,9 @@ export function inferItemPlatform(linkUrl: string): string {
     if (host.includes('github.com')) return 'GITHUB';
     if (host.includes('linkedin.com')) return 'LINKEDIN';
     if (host.includes('partiful.com')) return 'PARTIFUL';
-    if (host.includes('chitribe.org')) return 'CHITRIBE';
+    if (host.includes('onetable.org')) return 'ONETABLE';
+    if (host.includes('mishkanchicago.org')) return 'MISHKAN';
+    if (host.includes('juf.org')) return 'JUF';
     if (host.includes('discord.gg') || host.includes('discord.com')) return 'DISCORD';
     if (host.includes('patreon.com')) return 'PATREON';
     if (host.includes('substack.com')) return 'SUBSTACK';

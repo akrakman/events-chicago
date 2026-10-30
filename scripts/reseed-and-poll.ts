@@ -10,7 +10,7 @@ async function main() {
   console.log(`Found ${sources.length} sources in DB:`);
   sources.forEach((s) => console.log(` - [${s.platform}] ${s.name} (${s.url})`));
 
-  console.log('\n--- 3. Polling all 12 primary sources ---');
+  console.log(`\n--- 3. Polling all ${sources.length} primary sources ---`);
   const res = await pollAllSources();
   console.log('Poll completed:', JSON.stringify(res, null, 2));
 

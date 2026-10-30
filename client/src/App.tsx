@@ -6,6 +6,7 @@ import { SourcesModal } from './components/SourcesModal';
 import { ShareModal } from './components/ShareModal';
 import { CalendarSubscribeModal } from './components/CalendarSubscribeModal';
 import { EventDetailModal } from './components/EventDetailModal';
+import { NewsletterBanner } from './components/NewsletterBanner';
 import {
   fetchUpcomingEvents,
   fetchSources,
@@ -238,8 +239,8 @@ export const App: React.FC = () => {
                 Jewish Events
               </h2>
               <p className="text-xs sm:text-sm text-slate-600 max-w-2xl leading-relaxed">
-                Aggregated daily from Chicago Moishe Houses, Moishe Pods, Silverstein Base, Anshe Emet YAD, JCUA, and grassroots organizers.
-                Filter by organization, neighborhood, or weekend plans, and subscribe to your phone calendar.
+                Aggregated directly from 28 Chicago Jewish community websites — including Moishe Houses, Moishe Pods, Silverstein Base, Mishkan Chicago, Chabad, JUF YLD, JCUA, and local synagogues.
+                Subscribe to the Sunday 9:00 AM weekly email digest or sync directly to your phone calendar.
               </p>
             </div>
 
@@ -258,6 +259,9 @@ export const App: React.FC = () => {
             )}
           </div>
         </div>
+
+        {/* Weekly Sunday 9:00 AM Email Newsletter Signup & Digest Preview */}
+        <NewsletterBanner />
 
         {/* Filter Controls (Tabs, Organization, Neighborhood, Category, Search) */}
         <EventFilters

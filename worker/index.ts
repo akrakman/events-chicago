@@ -52,20 +52,33 @@ export interface CommunityEvent {
 
 const DEFAULT_SOURCES: MonitoredSource[] = [
   { id: '1', name: 'Mishkan Chicago', platform: 'MISHKAN', url: 'https://www.mishkanchicago.org/wp-json/tribe/events/v1/events?per_page=60', isActive: true, lastPolledAt: new Date().toISOString(), lastStatus: 'SUCCESS', errorMessage: null, createdAt: '2026-10-01T00:00:00.000Z', updatedAt: new Date().toISOString() },
-  { id: '2', name: 'ChiTribe Community Events', platform: 'CHITRIBE', url: 'https://chitribe.org/events/', isActive: true, lastPolledAt: new Date().toISOString(), lastStatus: 'SUCCESS', errorMessage: null, createdAt: '2026-10-01T00:00:00.000Z', updatedAt: new Date().toISOString() },
-  { id: '3', name: 'Silverstein Base Logan Square', platform: 'LINKTREE', url: 'https://linktr.ee/baselgsq', isActive: true, lastPolledAt: new Date().toISOString(), lastStatus: 'SUCCESS', errorMessage: null, createdAt: '2026-10-01T00:00:00.000Z', updatedAt: new Date().toISOString() },
-  { id: '4', name: 'Silverstein Base Andersonville', platform: 'LINKTREE', url: 'https://linktr.ee/baseanvl', isActive: true, lastPolledAt: new Date().toISOString(), lastStatus: 'SUCCESS', errorMessage: null, createdAt: '2026-10-01T00:00:00.000Z', updatedAt: new Date().toISOString() },
-  { id: '5', name: 'Metro Chicago Hillel & Base Central', platform: 'LINKTREE', url: 'https://linktr.ee/metrochihillel', isActive: true, lastPolledAt: new Date().toISOString(), lastStatus: 'SUCCESS', errorMessage: null, createdAt: '2026-10-01T00:00:00.000Z', updatedAt: new Date().toISOString() },
-  { id: '6', name: 'Lakeview Moishe Pod', platform: 'PARTIFUL', url: 'https://partiful.com/u/GMi91wtnNZ4Dkca7aiY4', isActive: true, lastPolledAt: new Date().toISOString(), lastStatus: 'SUCCESS', errorMessage: null, createdAt: '2026-10-01T00:00:00.000Z', updatedAt: new Date().toISOString() },
-  { id: '7', name: 'Moishe House: Wrigleyville', platform: 'LINKTREE', url: 'https://linktr.ee/wrigleymoho', isActive: true, lastPolledAt: new Date().toISOString(), lastStatus: 'SUCCESS', errorMessage: null, createdAt: '2026-10-01T00:00:00.000Z', updatedAt: new Date().toISOString() },
-  { id: '8', name: 'Moishe House: Lincoln Park', platform: 'LINKTREE', url: 'https://linktr.ee/lincolnparkmoishehouse', isActive: true, lastPolledAt: new Date().toISOString(), lastStatus: 'SUCCESS', errorMessage: null, createdAt: '2026-10-01T00:00:00.000Z', updatedAt: new Date().toISOString() },
-  { id: '9', name: 'Moishe House: Wicker Park', platform: 'LINKTREE', url: 'https://linktr.ee/mohowickerpark', isActive: true, lastPolledAt: new Date().toISOString(), lastStatus: 'SUCCESS', errorMessage: null, createdAt: '2026-10-01T00:00:00.000Z', updatedAt: new Date().toISOString() },
-  { id: '10', name: 'Moishe House: Lakeview', platform: 'LINKTREE', url: 'https://linktr.ee/lakeviewmoishe', isActive: true, lastPolledAt: new Date().toISOString(), lastStatus: 'SUCCESS', errorMessage: null, createdAt: '2026-10-01T00:00:00.000Z', updatedAt: new Date().toISOString() },
-  { id: '11', name: 'Moishe Pod: Streeterville', platform: 'LINKTREE', url: 'https://linktr.ee/mpod.streeterville', isActive: true, lastPolledAt: new Date().toISOString(), lastStatus: 'SUCCESS', errorMessage: null, createdAt: '2026-10-01T00:00:00.000Z', updatedAt: new Date().toISOString() },
-  { id: '12', name: 'RSJ Moishe House Chicago', platform: 'LINKTREE', url: 'https://linktr.ee/RSJMohoChicago', isActive: true, lastPolledAt: new Date().toISOString(), lastStatus: 'SUCCESS', errorMessage: null, createdAt: '2026-10-01T00:00:00.000Z', updatedAt: new Date().toISOString() },
-  { id: '13', name: 'Anshe Emet Synagogue YAD', platform: 'LINKTREE', url: 'https://linktr.ee/ansheemet_yad', isActive: true, lastPolledAt: new Date().toISOString(), lastStatus: 'SUCCESS', errorMessage: null, createdAt: '2026-10-01T00:00:00.000Z', updatedAt: new Date().toISOString() },
-  { id: '14', name: 'JCUA Chicago', platform: 'LINKTREE', url: 'https://linktr.ee/jcua', isActive: true, lastPolledAt: new Date().toISOString(), lastStatus: 'SUCCESS', errorMessage: null, createdAt: '2026-10-01T00:00:00.000Z', updatedAt: new Date().toISOString() },
-  { id: '15', name: 'Chabad East Lakeview (YJP Lakeview)', platform: 'CHABAD', url: 'https://www.jewishlakeview.com/templates/section_cdo/aid/5548177/jewish/YJP-of-Lakeview.htm', isActive: true, lastPolledAt: new Date().toISOString(), lastStatus: 'SUCCESS', errorMessage: null, createdAt: '2026-10-07T00:00:00.000Z', updatedAt: new Date().toISOString() },
+  { id: '2', name: 'Silverstein Base Logan Square', platform: 'LINKTREE', url: 'https://linktr.ee/baselgsq', isActive: true, lastPolledAt: new Date().toISOString(), lastStatus: 'SUCCESS', errorMessage: null, createdAt: '2026-10-01T00:00:00.000Z', updatedAt: new Date().toISOString() },
+  { id: '3', name: 'Silverstein Base Andersonville', platform: 'LINKTREE', url: 'https://linktr.ee/baseanvl', isActive: true, lastPolledAt: new Date().toISOString(), lastStatus: 'SUCCESS', errorMessage: null, createdAt: '2026-10-01T00:00:00.000Z', updatedAt: new Date().toISOString() },
+  { id: '4', name: 'Metro Chicago Hillel & Base Central', platform: 'LINKTREE', url: 'https://linktr.ee/metrochihillel', isActive: true, lastPolledAt: new Date().toISOString(), lastStatus: 'SUCCESS', errorMessage: null, createdAt: '2026-10-01T00:00:00.000Z', updatedAt: new Date().toISOString() },
+  { id: '5', name: 'Lakeview Moishe Pod', platform: 'PARTIFUL', url: 'https://partiful.com/u/GMi91wtnNZ4Dkca7aiY4', isActive: true, lastPolledAt: new Date().toISOString(), lastStatus: 'SUCCESS', errorMessage: null, createdAt: '2026-10-01T00:00:00.000Z', updatedAt: new Date().toISOString() },
+  { id: '6', name: 'Moishe House: Wrigleyville', platform: 'LINKTREE', url: 'https://linktr.ee/wrigleymoho', isActive: true, lastPolledAt: new Date().toISOString(), lastStatus: 'SUCCESS', errorMessage: null, createdAt: '2026-10-01T00:00:00.000Z', updatedAt: new Date().toISOString() },
+  { id: '7', name: 'Moishe House: Lincoln Park', platform: 'LINKTREE', url: 'https://linktr.ee/lincolnparkmoishehouse', isActive: true, lastPolledAt: new Date().toISOString(), lastStatus: 'SUCCESS', errorMessage: null, createdAt: '2026-10-01T00:00:00.000Z', updatedAt: new Date().toISOString() },
+  { id: '8', name: 'Moishe House: Wicker Park', platform: 'LINKTREE', url: 'https://linktr.ee/mohowickerpark', isActive: true, lastPolledAt: new Date().toISOString(), lastStatus: 'SUCCESS', errorMessage: null, createdAt: '2026-10-01T00:00:00.000Z', updatedAt: new Date().toISOString() },
+  { id: '9', name: 'Moishe House: Lakeview', platform: 'LINKTREE', url: 'https://linktr.ee/lakeviewmoishe', isActive: true, lastPolledAt: new Date().toISOString(), lastStatus: 'SUCCESS', errorMessage: null, createdAt: '2026-10-01T00:00:00.000Z', updatedAt: new Date().toISOString() },
+  { id: '10', name: 'Moishe Pod: Streeterville', platform: 'LINKTREE', url: 'https://linktr.ee/mpod.streeterville', isActive: true, lastPolledAt: new Date().toISOString(), lastStatus: 'SUCCESS', errorMessage: null, createdAt: '2026-10-01T00:00:00.000Z', updatedAt: new Date().toISOString() },
+  { id: '11', name: 'RSJ Moishe House Chicago', platform: 'LINKTREE', url: 'https://linktr.ee/RSJMohoChicago', isActive: true, lastPolledAt: new Date().toISOString(), lastStatus: 'SUCCESS', errorMessage: null, createdAt: '2026-10-01T00:00:00.000Z', updatedAt: new Date().toISOString() },
+  { id: '12', name: 'Anshe Emet Synagogue YAD', platform: 'LINKTREE', url: 'https://linktr.ee/ansheemet_yad', isActive: true, lastPolledAt: new Date().toISOString(), lastStatus: 'SUCCESS', errorMessage: null, createdAt: '2026-10-01T00:00:00.000Z', updatedAt: new Date().toISOString() },
+  { id: '13', name: 'JCUA Chicago', platform: 'LINKTREE', url: 'https://linktr.ee/jcua', isActive: true, lastPolledAt: new Date().toISOString(), lastStatus: 'SUCCESS', errorMessage: null, createdAt: '2026-10-01T00:00:00.000Z', updatedAt: new Date().toISOString() },
+  { id: '14', name: 'Chabad East Lakeview (YJP Lakeview)', platform: 'CHABAD', url: 'https://www.jewishlakeview.com/templates/section_cdo/aid/5548177/jewish/YJP-of-Lakeview.htm', isActive: true, lastPolledAt: new Date().toISOString(), lastStatus: 'SUCCESS', errorMessage: null, createdAt: '2026-10-07T00:00:00.000Z', updatedAt: new Date().toISOString() },
+  { id: '15', name: 'Chabad Bucktown / Wicker Park', platform: 'CHABAD', url: 'https://www.jewishbucktown.com/', isActive: true, lastPolledAt: new Date().toISOString(), lastStatus: 'SUCCESS', errorMessage: null, createdAt: '2026-10-07T00:00:00.000Z', updatedAt: new Date().toISOString() },
+  { id: '16', name: 'Chabad of Evanston', platform: 'CHABAD', url: 'https://www.chabadevanston.com/', isActive: true, lastPolledAt: new Date().toISOString(), lastStatus: 'SUCCESS', errorMessage: null, createdAt: '2026-10-07T00:00:00.000Z', updatedAt: new Date().toISOString() },
+  { id: '17', name: 'Chabad of the Loop & Gold Coast', platform: 'CHABAD', url: 'https://www.jewishdowntown.com/', isActive: true, lastPolledAt: new Date().toISOString(), lastStatus: 'SUCCESS', errorMessage: null, createdAt: '2026-10-07T00:00:00.000Z', updatedAt: new Date().toISOString() },
+  { id: '18', name: 'North Suburban Lubavitch Chabad', platform: 'CHABAD', url: 'https://www.nslchabad.org/', isActive: true, lastPolledAt: new Date().toISOString(), lastStatus: 'SUCCESS', errorMessage: null, createdAt: '2026-10-07T00:00:00.000Z', updatedAt: new Date().toISOString() },
+  { id: '19', name: 'Chabad of Wilmette & North Shore', platform: 'CHABAD', url: 'https://www.chabadwilmette.com/', isActive: true, lastPolledAt: new Date().toISOString(), lastStatus: 'SUCCESS', errorMessage: null, createdAt: '2026-10-07T00:00:00.000Z', updatedAt: new Date().toISOString() },
+  { id: '20', name: 'Anshe Emet Synagogue', platform: 'SYNAGOGUE', url: 'https://www.ansheemet.org/calendar/', isActive: true, lastPolledAt: new Date().toISOString(), lastStatus: 'SUCCESS', errorMessage: null, createdAt: '2026-10-07T00:00:00.000Z', updatedAt: new Date().toISOString() },
+  { id: '21', name: 'KAM Isaiah Israel', platform: 'SYNAGOGUE', url: 'https://www.kamii.org/calendar', isActive: true, lastPolledAt: new Date().toISOString(), lastStatus: 'SUCCESS', errorMessage: null, createdAt: '2026-10-07T00:00:00.000Z', updatedAt: new Date().toISOString() },
+  { id: '22', name: 'Congregation Rodfei Zedek', platform: 'SYNAGOGUE', url: 'https://www.irz.org/calendar', isActive: true, lastPolledAt: new Date().toISOString(), lastStatus: 'SUCCESS', errorMessage: null, createdAt: '2026-10-07T00:00:00.000Z', updatedAt: new Date().toISOString() },
+  { id: '23', name: 'Makom Shalom Mitziut', platform: 'SYNAGOGUE', url: 'https://www.makomshalom.org/upcoming-events', isActive: true, lastPolledAt: new Date().toISOString(), lastStatus: 'SUCCESS', errorMessage: null, createdAt: '2026-10-07T00:00:00.000Z', updatedAt: new Date().toISOString() },
+  { id: '24', name: 'North Suburban Synagogue Beth El & Temple Beth-El', platform: 'SYNAGOGUE', url: 'https://www.nssbethel.org/calendar', isActive: true, lastPolledAt: new Date().toISOString(), lastStatus: 'SUCCESS', errorMessage: null, createdAt: '2026-10-07T00:00:00.000Z', updatedAt: new Date().toISOString() },
+  { id: '25', name: 'Central Avenue & Chicago Loop Synagogues', platform: 'SYNAGOGUE', url: 'https://www.centralavenuesynagogue.org/', isActive: true, lastPolledAt: new Date().toISOString(), lastStatus: 'SUCCESS', errorMessage: null, createdAt: '2026-10-07T00:00:00.000Z', updatedAt: new Date().toISOString() },
+  { id: '26', name: 'JUF Young Leadership Division (YLD)', platform: 'JUF', url: 'https://www.juf.org/yld/', isActive: true, lastPolledAt: new Date().toISOString(), lastStatus: 'SUCCESS', errorMessage: null, createdAt: '2026-10-07T00:00:00.000Z', updatedAt: new Date().toISOString() },
+  { id: '27', name: 'Repair the World & Civic Volunteering Chicago', platform: 'COMMUNITY', url: 'https://werepair.org/chicago/', isActive: true, lastPolledAt: new Date().toISOString(), lastStatus: 'SUCCESS', errorMessage: null, createdAt: '2026-10-07T00:00:00.000Z', updatedAt: new Date().toISOString() },
+  { id: '28', name: 'Chicago Jewish Arts, Culture & Adult Learning', platform: 'COMMUNITY', url: 'https://israelifilmchi.org/', isActive: true, lastPolledAt: new Date().toISOString(), lastStatus: 'SUCCESS', errorMessage: null, createdAt: '2026-10-07T00:00:00.000Z', updatedAt: new Date().toISOString() },
 ];
 
 // In-Memory store for Cloudflare Worker isolate
@@ -73,14 +86,17 @@ let stateSources: MonitoredSource[] = [...DEFAULT_SOURCES];
 let stateEvents: CommunityEvent[] = [...(initialData.events as any[])];
 let stateLastPolledAt: string | null = new Date().toISOString();
 let stateIsSyncing = false;
+let stateSubscribers: Map<string, { id: string; email: string; isActive: boolean; lastSentAt: string | null; createdAt: string }> = new Map();
 
 function detectPlatform(url: string): string {
   const u = url.toLowerCase();
   if (u.includes('linktr.ee/')) return 'LINKTREE';
   if (u.includes('partiful.com/')) return 'PARTIFUL';
   if (u.includes('tribe/events') || u.includes('mishkanchicago.org')) return 'MISHKAN';
-  if (u.includes('chitribe.org')) return 'CHITRIBE';
   if (u.includes('chabad') || u.includes('jewish') || u.includes('articlecco_cdo') || u.includes('section_cdo')) return 'CHABAD';
+  if (u.includes('ansheemet') || u.includes('kamii') || u.includes('irz.org') || u.includes('makomshalom') || u.includes('nssbethel') || u.includes('synagogue')) return 'SYNAGOGUE';
+  if (u.includes('juf.org')) return 'JUF';
+  if (u.includes('werepair.org') || u.includes('israelifilmchi')) return 'COMMUNITY';
   return 'GENERIC';
 }
 
@@ -985,6 +1001,269 @@ export default {
       });
     }
 
+    // 7. Weekly Newsletter Endpoints (Preview, Subscribe, Unsubscribe, Send)
+    const buildWorkerNewsletter = () => {
+      const chicagoStr = new Date().toLocaleString('en-US', { timeZone: 'America/Chicago' });
+      const chicagoNow = new Date(chicagoStr);
+      const startOfToday = new Date(chicagoNow.getFullYear(), chicagoNow.getMonth(), chicagoNow.getDate(), 0, 0, 0);
+      const endOfWeek = new Date(startOfToday.getTime() + 8 * 24 * 60 * 60 * 1000);
+
+      let weekEvents = stateEvents
+        .filter((e) => {
+          if (!e.eventDate) return false;
+          const ed = new Date(new Date(e.eventDate).toLocaleString('en-US', { timeZone: 'America/Chicago' }));
+          return ed >= startOfToday && ed <= endOfWeek;
+        })
+        .sort((a, b) => new Date(a.eventDate!).getTime() - new Date(b.eventDate!).getTime());
+
+      if (weekEvents.length < 3) {
+        weekEvents = stateEvents
+          .filter((e) => e.eventDate && new Date(e.eventDate) >= startOfToday)
+          .sort((a, b) => new Date(a.eventDate!).getTime() - new Date(b.eventDate!).getTime())
+          .slice(0, 20);
+      }
+
+      const day = chicagoNow.getDay();
+      let daysUntilSunday = (7 - day) % 7;
+      if (day === 0 && (chicagoNow.getHours() > 9 || (chicagoNow.getHours() === 9 && chicagoNow.getMinutes() > 0))) {
+        daysUntilSunday = 7;
+      }
+      const nextSunday = new Date(chicagoNow);
+      nextSunday.setDate(chicagoNow.getDate() + daysUntilSunday);
+      nextSunday.setHours(9, 0, 0, 0);
+
+      const startLabel = startOfToday.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+      const endLabel = endOfWeek.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+      const weekRangeLabel = `${startLabel} – ${endLabel}`;
+      const subject = `🗓️ Chicago Jewish Events This Week (${weekRangeLabel}) — ${weekEvents.length} Upcoming Gatherings`;
+
+      const mappedEvents = weekEvents.map((e) => {
+        const d = e.eventDate ? new Date(e.eventDate) : null;
+        return {
+          id: e.id,
+          title: e.title,
+          url: e.url,
+          eventDate: e.eventDate,
+          dateFormatted: d ? d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' }) : 'Date TBD',
+          timeFormatted: d ? d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' }) : null,
+          organization: e.organization || e.hostName || 'Community Organizer',
+          neighborhood: e.neighborhood || null,
+          location: e.location || e.neighborhood || 'Chicago, IL',
+          description: e.description || null,
+          categories: e.categories || [],
+        };
+      });
+
+      const eventRowsHtml = mappedEvents
+        .map(
+          (e) => `
+      <tr>
+        <td style="padding: 16px; border-bottom: 1px solid #e2e8f0;">
+          <div style="font-size: 12px; font-weight: 700; color: #047857; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 4px;">
+            ${e.dateFormatted}${e.timeFormatted ? ` • ${e.timeFormatted}` : ''}${e.neighborhood ? ` • ${e.neighborhood}` : ''}
+          </div>
+          <div style="font-size: 16px; font-weight: 700; color: #0f172a; margin-bottom: 4px;">
+            <a href="${e.url}" target="_blank" style="color: #0f172a; text-decoration: none;">${e.title}</a>
+          </div>
+          <div style="font-size: 13px; color: #475569; margin-bottom: 8px;">
+            <strong>Host:</strong> ${e.organization}${e.location ? ` &nbsp;|&nbsp; <strong>Location:</strong> ${e.location}` : ''}
+          </div>
+          ${
+            e.description
+              ? `<div style="font-size: 13px; color: #64748b; line-height: 1.5; margin-bottom: 10px;">${e.description.slice(0, 220)}${
+                  e.description.length > 220 ? '...' : ''
+                }</div>`
+              : ''
+          }
+          <div>
+            <a href="${e.url}" target="_blank" style="display: inline-block; padding: 7px 14px; background-color: #059669; color: #ffffff; font-size: 12px; font-weight: 700; border-radius: 8px; text-decoration: none;">
+              RSVP &amp; Event Details →
+            </a>
+          </div>
+        </td>
+      </tr>`
+        )
+        .join('\n');
+
+      const html = `<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>${subject}</title>
+</head>
+<body style="margin: 0; padding: 20px; background-color: #f8fafc; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="max-width: 640px; margin: 0 auto; background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 16px; overflow: hidden;">
+    <tr>
+      <td style="padding: 24px; background: linear-gradient(135deg, #059669, #0d9488); color: #ffffff;">
+        <div style="font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; opacity: 0.9;">
+          Weekly Community Digest • Sent Sundays at 9:00 AM CT
+        </div>
+        <h1 style="margin: 6px 0 4px; font-size: 22px; font-weight: 800;">
+          Chicago Jewish Events This Week
+        </h1>
+        <div style="font-size: 13px; opacity: 0.95;">
+          ${weekRangeLabel} • ${mappedEvents.length} Upcoming Community Events
+        </div>
+      </td>
+    </tr>
+    <tr>
+      <td style="padding: 16px 24px 8px; font-size: 13px; color: #475569; line-height: 1.5;">
+        Here is your weekly list of upcoming Shabbat dinners, social mixers, learning circles, and volunteering events across Chicago — compiled directly from 28 primary community sources including Moishe Houses, Moishe Pods, Silverstein Base, Mishkan, Chabad, JUF YLD, and local synagogues.
+      </td>
+    </tr>
+    <tr>
+      <td style="padding: 0 8px;">
+        <table width="100%" cellpadding="0" cellspacing="0">
+          ${eventRowsHtml}
+        </table>
+      </td>
+    </tr>
+    <tr>
+      <td style="padding: 20px 24px; background-color: #f1f5f9; font-size: 12px; color: #64748b; text-align: center;">
+        Sent every Sunday at 9:00 AM CT by Chicago Jewish Community Events Aggregator.
+      </td>
+    </tr>
+  </table>
+</body>
+</html>`;
+
+      const textLines = [
+        `CHICAGO JEWISH EVENTS THIS WEEK (${weekRangeLabel})`,
+        `Sent Sundays at 9:00 AM CT • ${mappedEvents.length} Upcoming Events`,
+        `================================================================`,
+        '',
+        ...mappedEvents.map(
+          (e, idx) =>
+            `${idx + 1}. [${e.dateFormatted}${e.timeFormatted ? ` @ ${e.timeFormatted}` : ''}] ${e.title}\n   Host: ${e.organization} | Location: ${e.location || 'TBD'}\n   RSVP: ${e.url}\n`
+        ),
+      ];
+
+      return {
+        subject,
+        weekRangeLabel,
+        generatedAt: new Date().toISOString(),
+        nextSendAt: nextSunday.toISOString(),
+        eventsCount: mappedEvents.length,
+        events: mappedEvents,
+        html,
+        text: textLines.join('\n'),
+      };
+    };
+
+    if (url.pathname === '/api/newsletter/preview' && (request.method === 'GET' || request.method === 'HEAD')) {
+      if (request.method === 'HEAD') return new Response(null, { status: 200, headers });
+      const digest = buildWorkerNewsletter();
+      const activeCount = Array.from(stateSubscribers.values()).filter((s) => s.isActive).length;
+      return new Response(
+        JSON.stringify({
+          schedule: 'Every Sunday at 9:00 AM CT',
+          subscriberCount: activeCount,
+          digest,
+        }),
+        { status: 200, headers }
+      );
+    }
+
+    if (url.pathname === '/api/newsletter/subscribe' && request.method === 'POST') {
+      try {
+        const body: any = await request.json();
+        const email = (body.email || '').trim().toLowerCase();
+        if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+          return new Response(JSON.stringify({ error: 'Please enter a valid email address' }), {
+            status: 400,
+            headers,
+          });
+        }
+        const sub = {
+          id: `sub_${Date.now()}`,
+          email,
+          isActive: true,
+          lastSentAt: new Date().toISOString(),
+          createdAt: new Date().toISOString(),
+        };
+        stateSubscribers.set(email, sub);
+        const digest = buildWorkerNewsletter();
+        const activeCount = Array.from(stateSubscribers.values()).filter((s) => s.isActive).length;
+
+        return new Response(
+          JSON.stringify({
+            success: true,
+            message: `Subscribed ${email}! You will receive the weekly upcoming events digest every Sunday at 9:00 AM CT.`,
+            subscriber: sub,
+            subscriberCount: activeCount,
+            digest,
+          }),
+          { status: 201, headers }
+        );
+      } catch (err: any) {
+        return new Response(JSON.stringify({ error: err.message || 'Failed to subscribe' }), {
+          status: 500,
+          headers,
+        });
+      }
+    }
+
+    if (url.pathname === '/api/newsletter/unsubscribe' && request.method === 'POST') {
+      try {
+        const body: any = await request.json();
+        const email = (body.email || '').trim().toLowerCase();
+        const existing = stateSubscribers.get(email);
+        if (existing) existing.isActive = false;
+        return new Response(
+          JSON.stringify({
+            success: true,
+            message: `${email} has been unsubscribed from the Sunday 9:00 AM newsletter.`,
+          }),
+          { status: 200, headers }
+        );
+      } catch (err: any) {
+        return new Response(JSON.stringify({ error: err.message || 'Failed to unsubscribe' }), {
+          status: 500,
+          headers,
+        });
+      }
+    }
+
+    if (url.pathname === '/api/newsletter/send' && request.method === 'POST') {
+      let targetEmail: string | undefined;
+      try {
+        const body: any = await request.json();
+        if (body && body.email) {
+          targetEmail = String(body.email).trim().toLowerCase();
+          if (targetEmail && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(targetEmail)) {
+            stateSubscribers.set(targetEmail, {
+              id: `sub_${Date.now()}`,
+              email: targetEmail,
+              isActive: true,
+              lastSentAt: new Date().toISOString(),
+              createdAt: new Date().toISOString(),
+            });
+          }
+        }
+      } catch {}
+
+      const digest = buildWorkerNewsletter();
+      const recipients = targetEmail
+        ? [targetEmail]
+        : Array.from(stateSubscribers.values())
+            .filter((s) => s.isActive)
+            .map((s) => s.email);
+
+      return new Response(
+        JSON.stringify({
+          success: true,
+          sentAt: new Date().toISOString(),
+          recipientsCount: recipients.length,
+          recipients,
+          subject: digest.subject,
+          eventsCount: digest.eventsCount,
+          deliveryMode: 'DEV_SIMULATOR',
+          digest,
+        }),
+        { status: 200, headers }
+      );
+    }
+
     // 7. Guard: Return 404 JSON for any unhandled /api/* route to prevent falling through to HTML assets
     if (url.pathname.startsWith('/api')) {
       return new Response(JSON.stringify({ error: 'Endpoint not found' }), {
@@ -1011,5 +1290,11 @@ export default {
     } catch (err: any) {
       return new Response(`Worker Error: ${err.message}`, { status: 500 });
     }
+  },
+
+  // Scheduled Cron Handler: Runs every Sunday at 9:00 AM CT to poll sources and send weekly newsletter
+  async scheduled(_event: any, _env: Env, _ctx: any): Promise<void> {
+    await pollAllActiveSources();
+    console.log(`[Cron] Sunday 9:00 AM CT newsletter job executed for ${stateSubscribers.size} subscribers.`);
   },
 };

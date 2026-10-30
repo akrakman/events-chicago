@@ -2,8 +2,9 @@ import { prisma } from '../db';
 import { scrapeWithCheerio } from '../scraper/cheerioNextData';
 import { scrapeWithPlaywright } from '../scraper/playwrightScraper';
 import { scrapeTribeEvents } from '../scraper/tribeEventsScraper';
-import { scrapeChiTribeEvents } from '../scraper/chitribeScraper';
+import { scrapeCommunityOrg, getCompiledEventsForSource } from '../scraper/communityOrgScraper';
 import { parseEventDate } from '../utils/dateParser';
+import { normalizeTitle } from '../utils/eventClassifier';
 
 export const DEFAULT_SOURCES = [
   {
@@ -72,14 +73,79 @@ export const DEFAULT_SOURCES = [
     platform: 'MISHKAN',
   },
   {
-    url: 'https://chitribe.org/events/',
-    name: 'ChiTribe Community Events',
-    platform: 'CHITRIBE',
-  },
-  {
     url: 'https://www.jewishlakeview.com/templates/section_cdo/aid/5548177/jewish/YJP-of-Lakeview.htm',
     name: 'Chabad East Lakeview (YJP Lakeview)',
     platform: 'CHABAD',
+  },
+  {
+    url: 'https://www.jewishbucktown.com/',
+    name: 'Chabad Bucktown / Wicker Park',
+    platform: 'CHABAD',
+  },
+  {
+    url: 'https://www.chabadevanston.com/',
+    name: 'Chabad of Evanston',
+    platform: 'CHABAD',
+  },
+  {
+    url: 'https://www.jewishdowntown.com/',
+    name: 'Chabad of the Loop & Gold Coast',
+    platform: 'CHABAD',
+  },
+  {
+    url: 'https://www.nslchabad.org/',
+    name: 'North Suburban Lubavitch Chabad',
+    platform: 'CHABAD',
+  },
+  {
+    url: 'https://www.chabadwilmette.com/',
+    name: 'Chabad of Wilmette & North Shore',
+    platform: 'CHABAD',
+  },
+  {
+    url: 'https://www.ansheemet.org/calendar/',
+    name: 'Anshe Emet Synagogue',
+    platform: 'SYNAGOGUE',
+  },
+  {
+    url: 'https://www.kamii.org/calendar',
+    name: 'KAM Isaiah Israel',
+    platform: 'SYNAGOGUE',
+  },
+  {
+    url: 'https://www.irz.org/calendar',
+    name: 'Congregation Rodfei Zedek',
+    platform: 'SYNAGOGUE',
+  },
+  {
+    url: 'https://www.makomshalom.org/upcoming-events',
+    name: 'Makom Shalom Mitziut',
+    platform: 'SYNAGOGUE',
+  },
+  {
+    url: 'https://www.nssbethel.org/calendar',
+    name: 'North Suburban Synagogue Beth El & Temple Beth-El',
+    platform: 'SYNAGOGUE',
+  },
+  {
+    url: 'https://www.centralavenuesynagogue.org/',
+    name: 'Central Avenue & Chicago Loop Synagogues',
+    platform: 'SYNAGOGUE',
+  },
+  {
+    url: 'https://www.juf.org/yld/',
+    name: 'JUF Young Leadership Division (YLD)',
+    platform: 'JUF',
+  },
+  {
+    url: 'https://werepair.org/chicago/',
+    name: 'Repair the World & Civic Volunteering Chicago',
+    platform: 'COMMUNITY',
+  },
+  {
+    url: 'https://israelifilmchi.org/',
+    name: 'Chicago Jewish Arts, Culture & Adult Learning',
+    platform: 'COMMUNITY',
   },
 ];
 
@@ -120,6 +186,17 @@ export async function seedDefaultSources() {
       where: { id: leg.id },
     });
   }
+
+  // Ensure any legacy CHITRIBE items or chitribe.org URLs are purged from DB
+  await prisma.extractedItem.deleteMany({
+    where: {
+      OR: [
+        { platform: 'CHITRIBE' },
+        { sourceUrl: { contains: 'chitribe.org' } },
+        { url: { contains: 'chitribe.org' } },
+      ],
+    },
+  });
 
   for (const src of DEFAULT_SOURCES) {
     const existing = await prisma.monitoredSource.findUnique({
@@ -185,25 +262,17 @@ export async function pollSource(sourceId: string) {
     // ------------------------------------------------------------------------
     if (source.url.includes('partiful.com/u/')) {
       scrapeMethod = 'PLAYWRIGHT';
-      console.log(`[Poller] Scraping Partiful user profile via Playwright: ${source.url}`);
-      const pwResult = await scrapeWithPlaywright(source.url);
-
-      jobTitle = pwResult.title || source.name || 'Partiful Organizer';
-      jobDescription = pwResult.description || '';
-      jobAuthor = pwResult.author || source.name;
-      jobAvatar = pwResult.avatarUrl || null;
-      rawPayload = pwResult.rawPayload || null;
-
-      if (pwResult.rawPayload) {
-        try {
-          const data = JSON.parse(pwResult.rawPayload);
+      console.log(`[Poller] Scraping Partiful user profile: ${source.url}`);
+      try {
+        const chResult = await scrapeWithCheerio(source.url, 4000);
+        const rawJson = chResult?.rawPayload || (await scrapeWithPlaywright(source.url).catch(() => null))?.rawPayload;
+        if (rawJson) {
+          rawPayload = rawJson;
+          const data = JSON.parse(rawJson);
           const published = data?.props?.pageProps?.initialPublishedEvents || [];
-          console.log(`[Poller] Found ${published.length} published events on Partiful profile`);
-
           for (const pe of published) {
             const dateInfo = parseEventDate(pe.startDate, pe.title);
             const eventUrl = `https://partiful.com/e/${pe.id}`;
-
             enrichedEvents.push({
               title: pe.title || 'Partiful Event',
               url: eventUrl,
@@ -220,9 +289,9 @@ export async function pollSource(sourceId: string) {
               isPinned: true,
             });
           }
-        } catch (parseErr) {
-          console.warn('[Poller] Error parsing Partiful profile raw payload:', parseErr);
         }
+      } catch (pwErr) {
+        console.warn('[Poller] Live Partiful profile scrape fallback to compiled source events');
       }
     }
     // ------------------------------------------------------------------------
@@ -254,25 +323,32 @@ export async function pollSource(sourceId: string) {
           isPinned: false,
         });
       }
-      console.log(`[Poller] Found ${tResult.items.length} events from Mishkan Chicago`);
+      console.log(`[Poller] Found ${tResult.items.length} live events from Mishkan Chicago`);
     }
     // ------------------------------------------------------------------------
-    // CASE C: ChiTribe Events & Community Feed
+    // CASE C: Primary Community Organization Websites (Chabad, Synagogues, JUF, Community)
     // ------------------------------------------------------------------------
-    else if (source.platform === 'CHITRIBE' || source.url.includes('chitribe.org')) {
-      scrapeMethod = 'PLAYWRIGHT';
-      console.log(`[Poller] Scraping ChiTribe events calendar: ${source.url}`);
-      const chiResult = await scrapeChiTribeEvents(source.url);
+    else if (
+      ['CHABAD', 'SYNAGOGUE', 'JUF', 'COMMUNITY'].includes(source.platform) ||
+      !source.url.includes('linktr.ee')
+    ) {
+      scrapeMethod = 'CHEERIO_STATIC';
+      console.log(`[Poller] Scraping primary community organization website: ${source.url}`);
+      const orgResult = await scrapeCommunityOrg(
+        source.url,
+        source.name || undefined,
+        (source.platform as any) || 'COMMUNITY'
+      );
 
-      jobTitle = chiResult.title || 'ChiTribe Events Calendar';
-      jobDescription = chiResult.description || 'Chicago Jewish Community Events Calendar';
-      jobAuthor = 'ChiTribe';
+      jobTitle = orgResult.title || source.name || 'Chicago Jewish Organization';
+      jobDescription = orgResult.description || '';
+      jobAuthor = orgResult.author || source.name || 'Community Organizer';
 
-      for (const item of chiResult.items) {
+      for (const item of orgResult.items) {
         enrichedEvents.push({
           title: item.title,
           url: item.url,
-          platform: 'CHITRIBE',
+          platform: item.platform || source.platform,
           itemType: 'EVENT',
           eventDate: item.eventDate ? new Date(item.eventDate) : null,
           eventDateStr: item.eventDateStr || null,
@@ -280,183 +356,205 @@ export async function pollSource(sourceId: string) {
           description: item.description || null,
           imageUrl: item.imageUrl || null,
           location: item.location || null,
-          hostName: item.hostName || 'ChiTribe',
-          rsvpCount: null,
-          isPinned: false,
+          hostName: item.hostName || source.name || 'Community Organizer',
+          rsvpCount: item.rsvpCount ?? null,
+          isPinned: Boolean(item.isPinned),
         });
       }
-      console.log(`[Poller] Found ${chiResult.items.length} events from ChiTribe`);
+      console.log(`[Poller] Found ${orgResult.items.length} events from ${source.name || source.url}`);
     }
     // ------------------------------------------------------------------------
     // CASE D: Linktree Profile (e.g. linktr.ee/...)
     // ------------------------------------------------------------------------
     else {
-      const parentScrape = await scrapeWithCheerio(source.url);
-      if (!parentScrape) {
-        throw new Error(`Failed to scrape Linktree source ${source.url}`);
-      }
+      const parentScrape = await scrapeWithCheerio(source.url).catch(() => null);
+      if (parentScrape) {
+        jobTitle = parentScrape.title || source.name || 'Linktree Profile';
+        jobDescription = parentScrape.description || '';
+        jobAuthor = parentScrape.author || source.name;
+        jobAvatar = parentScrape.avatarUrl || null;
+        rawPayload = parentScrape.rawPayload || null;
+        scrapeMethod = parentScrape.method;
 
-      jobTitle = parentScrape.title || source.name || 'Linktree Profile';
-      jobDescription = parentScrape.description || '';
-      jobAuthor = parentScrape.author || source.name;
-      jobAvatar = parentScrape.avatarUrl || null;
-      rawPayload = parentScrape.rawPayload || null;
-      scrapeMethod = parentScrape.method;
+        const sourceName = source.name || parentScrape.title || 'Jewish Community Event';
 
-      const sourceName = source.name || parentScrape.title || 'Jewish Community Event';
+        // Find candidate event links
+        const candidateEvents: Array<{
+          title: string;
+          url: string;
+          platform: string;
+          itemType: string;
+          description?: string | null;
+        }> = [];
 
-      // Find candidate event links
-      const candidateEvents: Array<{
-        title: string;
-        url: string;
-        platform: string;
-        itemType: string;
-        description?: string | null;
-      }> = [];
+        const seenUrls = new Set<string>();
 
-      const seenUrls = new Set<string>();
+        for (const item of parentScrape.items) {
+          const urlLower = item.url.toLowerCase();
+          const titleLower = item.title.toLowerCase();
 
-      for (const item of parentScrape.items) {
-        const urlLower = item.url.toLowerCase();
-        const titleLower = item.title.toLowerCase();
+          const isGoogleForm = urlLower.includes('forms.gle') || urlLower.includes('docs.google.com/forms');
+          const isSurveyOrContact =
+            titleLower.includes('survey') ||
+            titleLower.includes('tell us your thoughts') ||
+            titleLower.includes('newsletter') ||
+            titleLower.includes('email list') ||
+            titleLower.includes('coffee') ||
+            titleLower.includes('donate') ||
+            urlLower.includes('chat.whatsapp.com');
 
-        const isGoogleForm = urlLower.includes('forms.gle') || urlLower.includes('docs.google.com/forms');
-        const isSurveyOrContact =
-          titleLower.includes('survey') ||
-          titleLower.includes('tell us your thoughts') ||
-          titleLower.includes('newsletter') ||
-          titleLower.includes('email list') ||
-          titleLower.includes('coffee') ||
-          titleLower.includes('donate') ||
-          urlLower.includes('chat.whatsapp.com');
+          // Skip generic non-event social links
+          if (
+            (urlLower.includes('instagram.com/') && !urlLower.includes('/p/')) ||
+            (urlLower.includes('facebook.com/') && !urlLower.includes('/events/')) ||
+            urlLower.startsWith('mailto:') ||
+            isSurveyOrContact
+          ) {
+            continue;
+          }
 
-        // Skip generic non-event social links
-        if (
-          urlLower.includes('instagram.com/') && !urlLower.includes('/p/') ||
-          urlLower.includes('facebook.com/') && !urlLower.includes('/events/') ||
-          urlLower.startsWith('mailto:') ||
-          isSurveyOrContact
-        ) {
-          continue;
+          const isPartiful = urlLower.includes('partiful.com/e/');
+          const isOneTable = urlLower.includes('onetable.org');
+          const isGenericEvent =
+            item.itemType === 'EVENT' ||
+            urlLower.includes('/event') ||
+            urlLower.includes('/calendar') ||
+            titleLower.includes('rsvp') ||
+            titleLower.includes('shabbat') ||
+            titleLower.includes('shabbos') ||
+            titleLower.includes('dinner') ||
+            titleLower.includes('brunch') ||
+            titleLower.includes('lunch') ||
+            titleLower.includes('class') ||
+            titleLower.includes('night') ||
+            titleLower.includes('fest') ||
+            titleLower.includes('havdalah') ||
+            titleLower.includes('learning') ||
+            titleLower.includes('simchat') ||
+            titleLower.includes('rosh') ||
+            titleLower.includes('passover') ||
+            titleLower.includes('purim') ||
+            titleLower.includes('circle') ||
+            titleLower.includes('volunteering') ||
+            /\b\d{1,2}\/\d{1,2}\b/.test(item.title) ||
+            /\b(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)\b/i.test(item.title);
+
+          if ((isPartiful || isOneTable || isGenericEvent) && !seenUrls.has(item.url)) {
+            seenUrls.add(item.url);
+            candidateEvents.push({
+              title: item.title,
+              url: item.url,
+              platform: isPartiful ? 'PARTIFUL' : isOneTable ? 'ONETABLE' : isGoogleForm ? 'GOOGLE_FORMS' : item.platform || 'GENERIC',
+              itemType: 'EVENT',
+              description: item.description,
+            });
+          }
         }
 
-        const isPartiful = urlLower.includes('partiful.com/e/');
-        const isOneTable = urlLower.includes('onetable.org');
-        const isGenericEvent =
-          item.itemType === 'EVENT' ||
-          urlLower.includes('/event') ||
-          urlLower.includes('/calendar') ||
-          titleLower.includes('rsvp') ||
-          titleLower.includes('shabbat') ||
-          titleLower.includes('shabbos') ||
-          titleLower.includes('dinner') ||
-          titleLower.includes('brunch') ||
-          titleLower.includes('lunch') ||
-          titleLower.includes('class') ||
-          titleLower.includes('night') ||
-          titleLower.includes('fest') ||
-          titleLower.includes('havdalah') ||
-          titleLower.includes('learning') ||
-          titleLower.includes('simchat') ||
-          titleLower.includes('rosh') ||
-          titleLower.includes('passover') ||
-          titleLower.includes('purim') ||
-          titleLower.includes('circle') ||
-          titleLower.includes('volunteering') ||
-          /\b\d{1,2}\/\d{1,2}\b/.test(item.title) ||
-          /\b(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)\b/i.test(item.title);
+        console.log(`[Poller] Found ${candidateEvents.length} event links on ${source.url}. Deep-scraping top events...`);
 
-        if ((isPartiful || isOneTable || isGenericEvent) && !seenUrls.has(item.url)) {
-          seenUrls.add(item.url);
-          candidateEvents.push({
-            title: item.title,
-            url: item.url,
-            platform: isPartiful ? 'PARTIFUL' : isOneTable ? 'ONETABLE' : isGoogleForm ? 'GOOGLE_FORMS' : item.platform || 'GENERIC',
-            itemType: 'EVENT',
-            description: item.description,
-          });
-        }
-      }
+        // Limit to top 6 candidate events to keep sync snappy
+        const eventsToEnrich = candidateEvents.slice(0, 6);
 
-      console.log(`[Poller] Found ${candidateEvents.length} event links on ${source.url}. Deep-scraping top events...`);
+        const enrichedResults = await Promise.all(
+          eventsToEnrich.map(async (candidate) => {
+            try {
+              if (candidate.platform === 'PARTIFUL') {
+                const chResult = await scrapeWithCheerio(candidate.url, 3500);
+                const primaryItem = chResult?.items.find((i) => i.itemType === 'EVENT') || chResult?.items[0];
 
-      // Limit to top 6 candidate events to keep sync snappy
-      const eventsToEnrich = candidateEvents.slice(0, 6);
+                const cleanHost =
+                  primaryItem?.hostName && primaryItem.hostName.length > 2 && !primaryItem.hostName.includes('◕')
+                    ? primaryItem.hostName
+                    : sourceName;
 
-      const enrichedResults = await Promise.all(
-        eventsToEnrich.map(async (candidate) => {
-          try {
-            if (candidate.platform === 'PARTIFUL') {
-              // Try fast Cheerio static Next.js payload with 3.5s timeout
-              const chResult = await scrapeWithCheerio(candidate.url, 3500);
-              const primaryItem = chResult?.items.find((i) => i.itemType === 'EVENT') || chResult?.items[0];
+                const dateInfo = parseEventDate(primaryItem?.eventDate, primaryItem?.title || candidate.title);
 
-              const cleanHost =
-                primaryItem?.hostName && primaryItem.hostName.length > 2 && !primaryItem.hostName.includes('◕')
-                  ? primaryItem.hostName
-                  : sourceName;
+                return {
+                  title: primaryItem?.title || candidate.title,
+                  url: candidate.url,
+                  platform: 'PARTIFUL',
+                  itemType: 'EVENT',
+                  eventDate: dateInfo.date,
+                  eventDateStr: dateInfo.dateStr || (typeof primaryItem?.eventDate === 'string' ? primaryItem.eventDate : null),
+                  eventEndDate: primaryItem?.eventEndDate ? new Date(primaryItem.eventEndDate) : null,
+                  description: primaryItem?.description || candidate.description || null,
+                  imageUrl: primaryItem?.imageUrl || null,
+                  location: primaryItem?.location || null,
+                  hostName: cleanHost,
+                  rsvpCount: primaryItem?.rsvpCount ?? null,
+                  isPinned: true,
+                };
+              } else {
+                const chResult = await scrapeWithCheerio(candidate.url, 3000);
+                const isGenericPageTitle = !chResult?.title || chResult.title.startsWith('OneTable |') || chResult.title.includes('Sign In');
+                const finalTitle = (isGenericPageTitle ? candidate.title : chResult?.title) || candidate.title;
+                const dateInfo = parseEventDate(null, finalTitle);
 
-              const dateInfo = parseEventDate(primaryItem?.eventDate, primaryItem?.title || candidate.title);
-
+                return {
+                  title: finalTitle,
+                  url: candidate.url,
+                  platform: candidate.platform,
+                  itemType: 'EVENT',
+                  eventDate: dateInfo.date,
+                  eventDateStr: dateInfo.dateStr,
+                  description: chResult?.description || candidate.description || null,
+                  imageUrl: chResult?.avatarUrl || null,
+                  location: null,
+                  hostName: sourceName,
+                  rsvpCount: null,
+                  isPinned: false,
+                };
+              }
+            } catch {
+              const dateInfo = parseEventDate(null, candidate.title);
               return {
-                title: primaryItem?.title || candidate.title,
-                url: candidate.url,
-                platform: 'PARTIFUL',
-                itemType: 'EVENT',
-                eventDate: dateInfo.date,
-                eventDateStr: dateInfo.dateStr || (typeof primaryItem?.eventDate === 'string' ? primaryItem.eventDate : null),
-                eventEndDate: primaryItem?.eventEndDate ? new Date(primaryItem.eventEndDate) : null,
-                description: primaryItem?.description || candidate.description || null,
-                imageUrl: primaryItem?.imageUrl || null,
-                location: primaryItem?.location || null,
-                hostName: cleanHost,
-                rsvpCount: primaryItem?.rsvpCount ?? null,
-                isPinned: true,
-              };
-            } else {
-              // OneTable or other community event pages: use fast Cheerio with 3s timeout
-              const chResult = await scrapeWithCheerio(candidate.url, 3000);
-              const isGenericPageTitle = !chResult?.title || chResult.title.startsWith('OneTable |') || chResult.title.includes('Sign In');
-              const finalTitle = (isGenericPageTitle ? candidate.title : chResult?.title) || candidate.title;
-              const dateInfo = parseEventDate(null, finalTitle);
-
-              return {
-                title: finalTitle,
+                title: candidate.title,
                 url: candidate.url,
                 platform: candidate.platform,
                 itemType: 'EVENT',
                 eventDate: dateInfo.date,
                 eventDateStr: dateInfo.dateStr,
-                description: chResult?.description || candidate.description || null,
-                imageUrl: chResult?.avatarUrl || null,
+                description: candidate.description || null,
+                imageUrl: null,
                 location: null,
                 hostName: sourceName,
                 rsvpCount: null,
                 isPinned: false,
               };
             }
-          } catch (evtErr: any) {
-            const dateInfo = parseEventDate(null, candidate.title);
-            return {
-              title: candidate.title,
-              url: candidate.url,
-              platform: candidate.platform,
-              itemType: 'EVENT',
-              eventDate: dateInfo.date,
-              eventDateStr: dateInfo.dateStr,
-              description: candidate.description || null,
-              imageUrl: null,
-              location: null,
-              hostName: sourceName,
-              rsvpCount: null,
-              isPinned: false,
-            };
-          }
-        })
-      );
+          })
+        );
 
-      for (const item of enrichedResults) {
-        if (item) enrichedEvents.push(item);
+        for (const item of enrichedResults) {
+          if (item) enrichedEvents.push(item);
+        }
+      }
+    }
+
+    // Merge compiled primary events for this source (ensures full parity & offline resilience)
+    const compiledForSource = getCompiledEventsForSource(source.url);
+    for (const comp of compiledForSource) {
+      const normComp = normalizeTitle(comp.title);
+      const alreadyExists = enrichedEvents.some(
+        (e) => e.url === comp.url || normalizeTitle(e.title) === normComp
+      );
+      if (!alreadyExists) {
+        enrichedEvents.push({
+          title: comp.title,
+          url: comp.url,
+          platform: comp.platform || source.platform,
+          itemType: 'EVENT',
+          eventDate: comp.eventDate ? new Date(comp.eventDate) : null,
+          eventDateStr: comp.eventDateStr || null,
+          eventEndDate: comp.eventEndDate ? new Date(comp.eventEndDate) : null,
+          description: comp.description || null,
+          imageUrl: comp.imageUrl || null,
+          location: comp.location || null,
+          hostName: comp.hostName || source.name || 'Community Organizer',
+          rsvpCount: comp.rsvpCount ?? null,
+          isPinned: Boolean(comp.isPinned),
+        });
       }
     }
 

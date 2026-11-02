@@ -41,23 +41,23 @@ export const Header: React.FC<HeaderProps> = ({
   const isSyncing = syncStatus?.isSyncing ?? false;
 
   return (
-    <header className="sticky top-0 z-30 border-b border-slate-200/80 bg-white/90 backdrop-blur-md shadow-xs">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-3">
+    <header className="sticky top-0 z-30 border-b border-slate-200/80 bg-white/95 backdrop-blur-md shadow-xs pt-[env(safe-area-inset-top,0px)]">
+      <div className="max-w-6xl mx-auto px-3 sm:px-6 lg:px-8 min-h-16 sm:h-20 py-2 sm:py-0 flex items-center justify-between gap-2 sm:gap-3">
         {/* Brand & Subtitle */}
-        <div className="flex items-center gap-3">
-          <div className="w-11 h-11 rounded-2xl bg-gradient-to-tr from-emerald-600 via-teal-600 to-cyan-600 flex items-center justify-center shadow-md shadow-emerald-600/20 ring-1 ring-black/5 flex-shrink-0">
-            <Calendar className="w-6 h-6 text-white stroke-[2.5]" />
+        <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
+          <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-xl sm:rounded-2xl bg-gradient-to-tr from-emerald-600 via-teal-600 to-cyan-600 flex items-center justify-center shadow-md shadow-emerald-600/20 ring-1 ring-black/5 flex-shrink-0">
+            <Calendar className="w-5 h-5 sm:w-6 sm:h-6 text-white stroke-[2.5]" />
           </div>
-          <div>
-            <div className="flex items-center gap-2">
-              <h1 className="font-extrabold text-xl tracking-tight text-slate-900">
+          <div className="min-w-0">
+            <div className="flex items-center gap-1.5 sm:gap-2">
+              <h1 className="font-extrabold text-base sm:text-xl tracking-tight text-slate-900 truncate">
                 Jewish Events
               </h1>
-              <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
+              <span className="text-[10px] sm:text-[11px] font-bold px-1.5 sm:px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 flex-shrink-0">
                 {upcomingCount} Events
               </span>
             </div>
-            <p className="text-xs text-slate-500 flex items-center gap-1.5 mt-0.5">
+            <p className="hidden sm:flex text-xs text-slate-500 items-center gap-1.5 mt-0.5">
               <span>Automatically aggregated daily</span>
               <span>•</span>
               <span className="text-emerald-700 font-semibold">Chicago Community Gatherings</span>
@@ -66,7 +66,7 @@ export const Header: React.FC<HeaderProps> = ({
         </div>
 
         {/* Action Controls */}
-        <div className="flex items-center gap-1.5 sm:gap-2.5">
+        <div className="flex items-center gap-1.5 sm:gap-2.5 flex-shrink-0">
           {/* Sync Time Pill */}
           <div className="hidden lg:flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-100/80 border border-slate-200 text-xs text-slate-600">
             <Clock className="w-3.5 h-3.5 text-slate-400" />
@@ -76,7 +76,7 @@ export const Header: React.FC<HeaderProps> = ({
           {/* My Plan Button */}
           <button
             onClick={onOpenMyPlan}
-            className={`flex items-center gap-1.5 px-3 py-2 rounded-xl transition text-xs font-bold border shadow-xs ${
+            className={`flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-xl transition text-xs font-bold border shadow-xs ${
               savedCount > 0
                 ? 'bg-emerald-50 hover:bg-emerald-100 text-emerald-900 border-emerald-300'
                 : 'bg-white hover:bg-slate-50 text-slate-700 border-slate-200'
@@ -84,7 +84,7 @@ export const Header: React.FC<HeaderProps> = ({
             title="View your saved events plan"
           >
             <Bookmark className={`w-3.5 h-3.5 ${savedCount > 0 ? 'fill-emerald-700 text-emerald-700' : 'text-slate-500'}`} />
-            <span>My Plan</span>
+            <span className="hidden xs:inline sm:inline">My Plan</span>
             {savedCount > 0 && (
               <span className="px-1.5 py-0.2 rounded-full text-[10px] bg-emerald-700 text-white font-extrabold">
                 {savedCount}
@@ -116,7 +116,7 @@ export const Header: React.FC<HeaderProps> = ({
           <button
             onClick={onSync}
             disabled={isSyncing}
-            className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 active:scale-95 disabled:opacity-60 disabled:cursor-not-allowed text-white font-bold text-xs shadow-sm shadow-emerald-600/20 transition"
+            className="flex items-center gap-1.5 px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 active:scale-95 disabled:opacity-60 disabled:cursor-not-allowed text-white font-bold text-xs shadow-sm shadow-emerald-600/20 transition"
             title="Poll and refresh events now"
           >
             <RefreshCw className={`w-3.5 h-3.5 ${isSyncing ? 'animate-spin' : ''}`} />
@@ -126,7 +126,7 @@ export const Header: React.FC<HeaderProps> = ({
           {/* Sources Config Button */}
           <button
             onClick={onOpenSources}
-            className="flex items-center gap-1.5 px-2.5 sm:px-3 py-2 rounded-xl bg-white hover:bg-slate-50 text-slate-700 hover:text-slate-900 border border-slate-200 shadow-xs transition text-xs font-semibold"
+            className="flex items-center gap-1.5 px-2 sm:px-3 py-1.5 sm:py-2 rounded-xl bg-white hover:bg-slate-50 text-slate-700 hover:text-slate-900 border border-slate-200 shadow-xs transition text-xs font-semibold"
             title="Manage Monitored Sources"
           >
             <Settings className="w-3.5 h-3.5 text-slate-400" />

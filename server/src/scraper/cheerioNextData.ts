@@ -270,6 +270,30 @@ function parsePartiful(params: {
   method: 'CHEERIO_NEXT_DATA' | 'CHEERIO_STATIC';
 }): ScrapeResult {
   const { normalizedUrl, $, nextData, jsonLdList, ogTitle, ogDesc, ogImage, durationMs, method } = params;
+
+  // Detect dead or deleted Partiful events immediately
+  const pageTitle = $('title').text().trim();
+  const bodyText = $('body').text();
+  const isDead =
+    Boolean(nextData?.props?.pageProps?.notFound) ||
+    pageTitle.toLowerCase().includes('not found') ||
+    pageTitle.toLowerCase().includes('event not found') ||
+    bodyText.includes('Event not found') ||
+    (!nextData?.props?.pageProps?.event && !jsonLdList.some((item) => item['@type'] === 'Event' || item.type === 'Event') && !$('h1').text().trim());
+
+  if (isDead) {
+    return {
+      url: normalizedUrl,
+      platform: 'PARTIFUL',
+      method,
+      durationMs,
+      title: 'Not Found',
+      description: 'Event not found or has been deleted.',
+      items: [],
+      errorMessage: 'Partiful event not found or deleted',
+    };
+  }
+
   const items: ParsedItem[] = [];
 
   let title = ogTitle;
@@ -312,8 +336,16 @@ function parsePartiful(params: {
     if (evt.endDate || evt.endDateTime) eventEndDate = evt.endDate || evt.endDateTime;
     if (evt.locationName || evt.location) location = evt.locationName || evt.location;
     if (evt.hostName || evt.host?.name) author = evt.hostName || evt.host?.name;
-    if (evt.coverPhotoUrl || evt.coverPhoto) avatarUrl = evt.coverPhotoUrl || evt.coverPhoto;
-    if (typeof evt.rsvpCount === 'number') rsvpCount = evt.rsvpCount;
+    if (!author && Array.isArray(pageProps.hosts) && pageProps.hosts[0]?.name) {
+      author = pageProps.hosts[0].name;
+    }
+    if (evt.image?.upload?.url || evt.image?.url) {
+      avatarUrl = evt.image?.upload?.url || evt.image?.url;
+    } else if (evt.coverPhotoUrl || evt.coverPhoto) {
+      avatarUrl = evt.coverPhotoUrl || evt.coverPhoto;
+    }
+    if (typeof evt.goingGuestCount === 'number') rsvpCount = evt.goingGuestCount;
+    else if (typeof evt.rsvpCount === 'number') rsvpCount = evt.rsvpCount;
     else if (Array.isArray(evt.rsvps)) rsvpCount = evt.rsvps.length;
     else if (Array.isArray(evt.guests)) rsvpCount = evt.guests.length;
 
@@ -333,7 +365,10 @@ function parsePartiful(params: {
 
   // Fallback to DOM elements
   if (!title) {
-    title = $('h1').first().text().trim() || 'Partiful Event';
+    const h1 = $('h1').first().text().trim();
+    if (h1 && !h1.toLowerCase().includes('not found')) {
+      title = h1;
+    }
   }
   if (!author) {
     const hostEl = $('[data-testid*="host"], [class*="host"], [class*="Host"]').first().text().trim();
@@ -341,11 +376,28 @@ function parsePartiful(params: {
   }
   if (author) {
     author = author.replace(/^Hosted\s+by\s*([A-Z]{2})?\s*/i, '').trim();
+    if (author === ':)' || author === ':-)' || /^[\s:;)‿•◕]+$/.test(author) || author.length < 2) {
+      author = null;
+    }
+  }
+
+  // If still no valid title or if title is generic/empty, this is not an active event
+  if (!title || title.toLowerCase() === 'partiful' || title.toLowerCase() === 'not found') {
+    return {
+      url: normalizedUrl,
+      platform: 'PARTIFUL',
+      method,
+      durationMs,
+      title: 'Not Found',
+      description: 'Event not found or has been deleted.',
+      items: [],
+      errorMessage: 'Partiful event not found or deleted',
+    };
   }
 
   // Add the primary event itself as the main item in items
   items.unshift({
-    title: title || 'Partiful Event',
+    title,
     url: normalizedUrl,
     itemType: 'EVENT',
     platform: 'PARTIFUL',

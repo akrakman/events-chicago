@@ -223,7 +223,7 @@ async function scrapePartifulProfile(url: string, sourceName: string): Promise<C
   }
 }
 
-// Deep enrich individual Partiful event page
+// Deep enrich individual Partiful event page, returning null if deleted or dead
 async function enrichPartifulEvent(url: string): Promise<Partial<CommunityEvent> | null> {
   try {
     const res = await fetch(url, {
@@ -235,25 +235,35 @@ async function enrichPartifulEvent(url: string): Promise<Partial<CommunityEvent>
     });
     if (!res.ok) return null;
     const html = await res.text();
+    if (
+      html.includes('Event not found') ||
+      html.includes('Not Found | Partiful') ||
+      html.includes('<title>Not Found')
+    ) {
+      return null;
+    }
+
     const match = html.match(/<script id="__NEXT_DATA__"[^>]*>([\s\S]*?)<\/script>/);
     if (!match) return null;
     const nextData = JSON.parse(match[1]);
     const pageProps = nextData?.props?.pageProps;
+    if (pageProps?.notFound) return null;
+
     const event = pageProps?.event || pageProps?.initialEvent;
-    if (!event) return null;
+    if (!event || !event.title || event.title.toLowerCase().includes('not found')) return null;
 
     const host = event.host?.name || pageProps?.hosts?.[0]?.name || pageProps?.hosts?.[0]?.user?.name;
 
     return {
       title: event.title,
-      description: event.description,
-      imageUrl: event.coverPhotoUrl || event.coverPhoto?.url,
+      description: event.description || null,
+      imageUrl: event.image?.upload?.url || event.image?.url || event.coverPhotoUrl || event.coverPhoto?.url || null,
       eventDate: event.startDate ? new Date(event.startDate).toISOString() : null,
-      eventDateStr: event.startDate,
+      eventDateStr: event.startDate || null,
       eventEndDate: event.endDate ? new Date(event.endDate).toISOString() : null,
-      location: event.locationName || event.location,
-      rsvpCount: event.rsvpCount,
-      hostName: host,
+      location: event.locationName || event.location || null,
+      rsvpCount: typeof event.goingGuestCount === 'number' ? event.goingGuestCount : event.rsvpCount ?? null,
+      hostName: host || null,
     };
   } catch {
     return null;

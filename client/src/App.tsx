@@ -248,10 +248,10 @@ export const App: React.FC = () => {
         savedCount={savedIds.length}
       />
 
-      <main className="flex-1 max-w-5xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-6">
+      <main className="flex-1 max-w-5xl w-full mx-auto px-3 sm:px-6 lg:px-8 py-3.5 sm:py-6 space-y-4 sm:space-y-6">
         {/* Error notification banner */}
         {errorNotice && (
-          <div className="p-4 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-sm flex items-center justify-between gap-3 shadow-xs">
+          <div className="p-3.5 sm:p-4 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-sm flex items-center justify-between gap-3 shadow-xs">
             <div className="flex items-center gap-2">
               <AlertCircle className="w-5 h-5 flex-shrink-0 text-rose-600" />
               <span>{errorNotice}</span>
@@ -266,7 +266,7 @@ export const App: React.FC = () => {
         )}
 
         {/* Community Intro Banner */}
-        <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-white via-emerald-50/20 to-teal-50/30 border border-slate-200/90 p-5 sm:p-6 shadow-xs">
+        <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-white via-emerald-50/20 to-teal-50/30 border border-slate-200/90 p-4 sm:p-6 shadow-xs">
           <div className="absolute top-0 right-0 w-80 h-80 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
           <div className="relative z-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div className="space-y-1">

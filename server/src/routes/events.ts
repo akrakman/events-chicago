@@ -420,10 +420,10 @@ export const eventRoutes: FastifyPluginAsync = async (fastify) => {
       const existingSource = await prisma.monitoredSource.findUnique({ where: { url } });
       const existingItem = await prisma.extractedItem.findFirst({ where: { url } });
 
-      // Automatically add to monitored sources if not present
+      // Automatically add to monitored sources if not present and trigger immediate poll
       if (!existingSource) {
         const detected = detectPlatform(url);
-        await prisma.monitoredSource.create({
+        const created = await prisma.monitoredSource.create({
           data: {
             url,
             name: title || organization || 'Community Submitted Link',
@@ -431,6 +431,9 @@ export const eventRoutes: FastifyPluginAsync = async (fastify) => {
             isActive: true,
           },
         });
+        pollSource(created.id).catch((e) => console.warn('[CommunityTip] Background poll failed:', e));
+      } else if (!existingItem) {
+        pollSource(existingSource.id).catch((e) => console.warn('[CommunityTip] Background poll failed:', e));
       }
 
       console.log(`[CommunityTip] New event submitted: ${url} (${title || 'No title'}) from ${organization || 'Anonymous'}`);

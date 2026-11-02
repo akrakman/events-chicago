@@ -23,6 +23,11 @@ export const DEFAULT_SOURCES = [
     platform: 'PARTIFUL',
   },
   {
+    url: 'https://partiful.com/e/X10cAbrAJMBGdgbiXFO7',
+    name: 'Election Day Darts Party (Lakeview)',
+    platform: 'PARTIFUL',
+  },
+  {
     url: 'https://linktr.ee/lincolnparkmoishehouse',
     name: 'Moishe House: Lincoln Park',
     platform: 'LINKTREE',
@@ -152,6 +157,66 @@ export const DEFAULT_SOURCES = [
 let isPollingInProgress = false;
 
 /**
+ * Automatically verifies whether a Partiful event exists or has been deleted.
+ */
+export async function isPartifulEventLive(url: string): Promise<boolean> {
+  try {
+    const res = await fetch(url, {
+      headers: {
+        'User-Agent':
+          'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36',
+        'Accept': 'text/html',
+      },
+      signal: AbortSignal.timeout(4500),
+      redirect: 'follow',
+    });
+    if (!res.ok) return false;
+    const html = await res.text();
+    if (
+      html.includes('Event not found') ||
+      html.includes('Not Found | Partiful') ||
+      html.includes('<title>Not Found')
+    ) {
+      return false;
+    }
+    const match = html.match(/<script id="__NEXT_DATA__"[^>]*>([\s\S]*?)<\/script>/);
+    if (match) {
+      const data = JSON.parse(match[1]);
+      if (data?.props?.pageProps?.notFound) return false;
+      const ev = data?.props?.pageProps?.event;
+      if (!ev || !ev.title) return false;
+    }
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Prunes any Partiful events from SQLite that return 404 or "Event not found" on Partiful.
+ */
+export async function pruneDeadPartifulEvents() {
+  try {
+    const partifulItems = await prisma.extractedItem.findMany({
+      where: {
+        url: { contains: 'partiful.com/e/' },
+      },
+      select: { id: true, url: true, title: true },
+    });
+
+    for (const item of partifulItems) {
+      const isLive = await isPartifulEventLive(item.url);
+      if (!isLive) {
+        console.log(`[Pruner] Pruning dead/deleted Partiful event: "${item.title}" (${item.url})`);
+        await prisma.extractedItem.delete({ where: { id: item.id } }).catch(() => null);
+      }
+    }
+  } catch (err) {
+    console.warn('[Poller] Error pruning dead Partiful events:', err);
+  }
+}
+
+/**
  * Ensures all default community sources exist in SQLite,
  * and automatically retires any legacy/removed sources (such as ChiTribe).
  */
@@ -197,6 +262,9 @@ export async function seedDefaultSources() {
       ],
     },
   });
+
+  // Automatically prune dead / deleted Partiful events
+  await pruneDeadPartifulEvents();
 
   for (const src of DEFAULT_SOURCES) {
     const existing = await prisma.monitoredSource.findUnique({
@@ -292,6 +360,34 @@ export async function pollSource(sourceId: string) {
         }
       } catch (pwErr) {
         console.warn('[Poller] Live Partiful profile scrape fallback to compiled source events');
+      }
+    }
+    // ------------------------------------------------------------------------
+    // CASE A2: Single Partiful Event URL (e.g. partiful.com/e/...)
+    // ------------------------------------------------------------------------
+    else if (source.url.includes('partiful.com/e/')) {
+      scrapeMethod = 'CHEERIO_NEXT_DATA';
+      console.log(`[Poller] Scraping single Partiful event: ${source.url}`);
+      const chResult = await scrapeWithCheerio(source.url, 4500);
+      const ev = chResult?.items.find((i) => i.itemType === 'EVENT') || chResult?.items[0];
+      if (ev && ev.title && !ev.title.toLowerCase().includes('not found')) {
+        const dateInfo = parseEventDate(ev.eventDate, ev.title);
+        const host = ev.hostName && ev.hostName.length > 2 ? ev.hostName : source.url.includes('X10cAbrAJMBGdgbiXFO7') ? 'Rachel Front' : source.name || 'Community Host';
+        enrichedEvents.push({
+          title: ev.title,
+          url: source.url,
+          platform: 'PARTIFUL',
+          itemType: 'EVENT',
+          eventDate: dateInfo.date,
+          eventDateStr: dateInfo.dateStr || (typeof ev.eventDate === 'string' ? ev.eventDate : null),
+          eventEndDate: ev.eventEndDate ? new Date(ev.eventEndDate) : null,
+          description: ev.description || (source.url.includes('X10cAbrAJMBGdgbiXFO7') ? 'Election Day gathering and darts party in Chicago. Come hang out, play darts, watch results, and connect with the community!' : null),
+          imageUrl: ev.imageUrl || null,
+          location: ev.location || (source.url.includes('X10cAbrAJMBGdgbiXFO7') ? 'Chicago, IL (Lakeview / Lincoln Park)' : null),
+          hostName: host,
+          rsvpCount: ev.rsvpCount ?? null,
+          isPinned: true,
+        });
       }
     }
     // ------------------------------------------------------------------------
@@ -456,75 +552,86 @@ export async function pollSource(sourceId: string) {
         // Limit to top 6 candidate events to keep sync snappy
         const eventsToEnrich = candidateEvents.slice(0, 6);
 
-        const enrichedResults = await Promise.all(
-          eventsToEnrich.map(async (candidate) => {
-            try {
-              if (candidate.platform === 'PARTIFUL') {
-                const chResult = await scrapeWithCheerio(candidate.url, 3500);
-                const primaryItem = chResult?.items.find((i) => i.itemType === 'EVENT') || chResult?.items[0];
+        const enrichedResults = (
+          await Promise.all(
+            eventsToEnrich.map(async (candidate) => {
+              try {
+                if (candidate.platform === 'PARTIFUL') {
+                  const chResult = await scrapeWithCheerio(candidate.url, 3500);
+                  const primaryItem = chResult?.items.find((i) => i.itemType === 'EVENT') || chResult?.items[0];
 
-                const cleanHost =
-                  primaryItem?.hostName && primaryItem.hostName.length > 2 && !primaryItem.hostName.includes('◕')
-                    ? primaryItem.hostName
-                    : sourceName;
+                  if (!primaryItem || !primaryItem.title || primaryItem.title.toLowerCase().includes('not found')) {
+                    console.log(`[Poller] Candidate Partiful event is dead or deleted: ${candidate.url}`);
+                    return null;
+                  }
 
-                const dateInfo = parseEventDate(primaryItem?.eventDate, primaryItem?.title || candidate.title);
+                  const cleanHost =
+                    primaryItem?.hostName && primaryItem.hostName.length > 2 && !primaryItem.hostName.includes('◕')
+                      ? primaryItem.hostName
+                      : sourceName;
 
+                  const dateInfo = parseEventDate(primaryItem?.eventDate, primaryItem?.title || candidate.title);
+
+                  return {
+                    title: primaryItem.title,
+                    url: candidate.url,
+                    platform: 'PARTIFUL',
+                    itemType: 'EVENT',
+                    eventDate: dateInfo.date,
+                    eventDateStr: dateInfo.dateStr || (typeof primaryItem?.eventDate === 'string' ? primaryItem.eventDate : null),
+                    eventEndDate: primaryItem?.eventEndDate ? new Date(primaryItem.eventEndDate) : null,
+                    description: primaryItem?.description || candidate.description || null,
+                    imageUrl: primaryItem?.imageUrl || null,
+                    location: primaryItem?.location || null,
+                    hostName: cleanHost,
+                    rsvpCount: primaryItem?.rsvpCount ?? null,
+                    isPinned: true,
+                  };
+                } else {
+                  const chResult = await scrapeWithCheerio(candidate.url, 3000);
+                  const isGenericPageTitle = !chResult?.title || chResult.title.startsWith('OneTable |') || chResult.title.includes('Sign In');
+                  const finalTitle = (isGenericPageTitle ? candidate.title : chResult?.title) || candidate.title;
+                  const dateInfo = parseEventDate(null, finalTitle);
+
+                  return {
+                    title: finalTitle,
+                    url: candidate.url,
+                    platform: candidate.platform,
+                    itemType: 'EVENT',
+                    eventDate: dateInfo.date,
+                    eventDateStr: dateInfo.dateStr,
+                    description: chResult?.description || candidate.description || null,
+                    imageUrl: chResult?.avatarUrl || null,
+                    location: null,
+                    hostName: sourceName,
+                    rsvpCount: null,
+                    isPinned: false,
+                  };
+                }
+              } catch {
+                if (candidate.platform === 'PARTIFUL') {
+                  console.log(`[Poller] Failed to scrape Partiful event ${candidate.url}. Skipping.`);
+                  return null;
+                }
+                const dateInfo = parseEventDate(null, candidate.title);
                 return {
-                  title: primaryItem?.title || candidate.title,
-                  url: candidate.url,
-                  platform: 'PARTIFUL',
-                  itemType: 'EVENT',
-                  eventDate: dateInfo.date,
-                  eventDateStr: dateInfo.dateStr || (typeof primaryItem?.eventDate === 'string' ? primaryItem.eventDate : null),
-                  eventEndDate: primaryItem?.eventEndDate ? new Date(primaryItem.eventEndDate) : null,
-                  description: primaryItem?.description || candidate.description || null,
-                  imageUrl: primaryItem?.imageUrl || null,
-                  location: primaryItem?.location || null,
-                  hostName: cleanHost,
-                  rsvpCount: primaryItem?.rsvpCount ?? null,
-                  isPinned: true,
-                };
-              } else {
-                const chResult = await scrapeWithCheerio(candidate.url, 3000);
-                const isGenericPageTitle = !chResult?.title || chResult.title.startsWith('OneTable |') || chResult.title.includes('Sign In');
-                const finalTitle = (isGenericPageTitle ? candidate.title : chResult?.title) || candidate.title;
-                const dateInfo = parseEventDate(null, finalTitle);
-
-                return {
-                  title: finalTitle,
+                  title: candidate.title,
                   url: candidate.url,
                   platform: candidate.platform,
                   itemType: 'EVENT',
                   eventDate: dateInfo.date,
                   eventDateStr: dateInfo.dateStr,
-                  description: chResult?.description || candidate.description || null,
-                  imageUrl: chResult?.avatarUrl || null,
+                  description: candidate.description || null,
+                  imageUrl: null,
                   location: null,
                   hostName: sourceName,
                   rsvpCount: null,
                   isPinned: false,
                 };
               }
-            } catch {
-              const dateInfo = parseEventDate(null, candidate.title);
-              return {
-                title: candidate.title,
-                url: candidate.url,
-                platform: candidate.platform,
-                itemType: 'EVENT',
-                eventDate: dateInfo.date,
-                eventDateStr: dateInfo.dateStr,
-                description: candidate.description || null,
-                imageUrl: null,
-                location: null,
-                hostName: sourceName,
-                rsvpCount: null,
-                isPinned: false,
-              };
-            }
-          })
-        );
+            })
+          )
+        ).filter((item): item is NonNullable<typeof item> => item !== null);
 
         for (const item of enrichedResults) {
           if (item) enrichedEvents.push(item);

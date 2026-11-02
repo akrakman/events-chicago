@@ -1,9 +1,7 @@
 import {
   CommunityEvent,
   MonitoredSource,
-  NewsletterPreviewResponse,
   SyncStatus,
-  WeeklyNewsletterDigest,
 } from './types';
 
 const API_BASE = '/api';
@@ -87,69 +85,24 @@ export async function fetchSyncStatus(): Promise<SyncStatus> {
   return await res.json();
 }
 
-export async function fetchNewsletterPreview(): Promise<NewsletterPreviewResponse> {
-  const res = await fetch(`${API_BASE}/newsletter/preview?_t=${Date.now()}`);
-  if (!res.ok) throw new Error('Failed to load newsletter preview');
-  return await res.json();
+export interface CommunitySuggestion {
+  url: string;
+  title?: string;
+  organization?: string;
+  neighborhood?: string;
+  notes?: string;
 }
 
-export async function subscribeToNewsletter(
-  email: string,
-  resendApiKey?: string,
-  senderEmail?: string
-): Promise<{
-  success: boolean;
-  message: string;
-  subscriberCount: number;
-  deliveryMode?: string;
-  deliveryError?: string | null;
-  digest?: WeeklyNewsletterDigest;
-}> {
-  const res = await fetch(`${API_BASE}/newsletter/subscribe`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email, resendApiKey, senderEmail }),
-  });
-  const data = await res.json();
-  if (!res.ok) throw new Error(data.error || 'Failed to subscribe to newsletter');
-  return data;
-}
-
-export async function unsubscribeFromNewsletter(email: string): Promise<{
+export async function submitCommunityEvent(data: CommunitySuggestion): Promise<{
   success: boolean;
   message: string;
 }> {
-  const res = await fetch(`${API_BASE}/newsletter/unsubscribe`, {
+  const res = await fetch(`${API_BASE}/submit-event`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email }),
+    body: JSON.stringify(data),
   });
-  const data = await res.json();
-  if (!res.ok) throw new Error(data.error || 'Failed to unsubscribe');
-  return data;
-}
-
-export async function sendTestNewsletterNow(
-  email?: string,
-  resendApiKey?: string,
-  senderEmail?: string
-): Promise<{
-  success: boolean;
-  sentAt?: string;
-  recipientsCount: number;
-  recipients: string[];
-  subject: string;
-  eventsCount: number;
-  deliveryMode: string;
-  deliveryError?: string | null;
-  digest?: WeeklyNewsletterDigest;
-}> {
-  const res = await fetch(`${API_BASE}/newsletter/send`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email, resendApiKey, senderEmail }),
-  });
-  const data = await res.json();
-  if (!res.ok) throw new Error(data.error || 'Failed to send test newsletter');
-  return data;
+  const resData = await res.json();
+  if (!res.ok) throw new Error(resData.error || 'Failed to submit event');
+  return resData;
 }

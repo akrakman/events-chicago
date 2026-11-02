@@ -7,7 +7,6 @@ import { itemRoutes } from './routes/items';
 import { sampleRoutes } from './routes/samples';
 import { eventRoutes } from './routes/events';
 import { startDailyPollingScheduler } from './services/eventPoller';
-import { startWeeklyNewsletterScheduler } from './services/newsletterService';
 
 const fastify = Fastify({
   logger: true,
@@ -56,9 +55,8 @@ async function main() {
     });
   }
 
-  // Initialize automated daily polling background scheduler & Sunday 9:00 AM newsletter scheduler
+  // Initialize automated daily polling background scheduler
   await startDailyPollingScheduler();
-  startWeeklyNewsletterScheduler();
 
   const port = parseInt(process.env.PORT || '3001', 10);
   const host = process.env.HOST || '0.0.0.0';

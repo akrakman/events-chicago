@@ -6,10 +6,6 @@ export interface Env {
   ASSETS: {
     fetch: (request: Request) => Promise<Response>;
   };
-  BREVO_API_KEY?: string;
-  BREVO_SENDER_EMAIL?: string;
-  RESEND_API_KEY?: string;
-  NEWSLETTER_FROM_EMAIL?: string;
 }
 
 export interface MonitoredSource {
@@ -90,7 +86,6 @@ let stateSources: MonitoredSource[] = [...DEFAULT_SOURCES];
 let stateEvents: CommunityEvent[] = [...(initialData.events as any[])];
 let stateLastPolledAt: string | null = new Date().toISOString();
 let stateIsSyncing = false;
-let stateSubscribers: Map<string, { id: string; email: string; isActive: boolean; lastSentAt: string | null; createdAt: string }> = new Map();
 
 function detectPlatform(url: string): string {
   const u = url.toLowerCase();
@@ -1005,456 +1000,50 @@ export default {
       });
     }
 
-    // 7. Weekly Newsletter Endpoints (Preview, Subscribe, Unsubscribe, Send)
-    const buildWorkerNewsletter = () => {
-      const chicagoStr = new Date().toLocaleString('en-US', { timeZone: 'America/Chicago' });
-      const chicagoNow = new Date(chicagoStr);
-      const startOfToday = new Date(chicagoNow.getFullYear(), chicagoNow.getMonth(), chicagoNow.getDate(), 0, 0, 0);
-      const endOfWeek = new Date(startOfToday.getTime() + 8 * 24 * 60 * 60 * 1000);
-
-      let weekEvents = stateEvents
-        .filter((e) => {
-          if (!e.eventDate) return false;
-          const ed = new Date(new Date(e.eventDate).toLocaleString('en-US', { timeZone: 'America/Chicago' }));
-          return ed >= startOfToday && ed <= endOfWeek;
-        })
-        .sort((a, b) => new Date(a.eventDate!).getTime() - new Date(b.eventDate!).getTime());
-
-      if (weekEvents.length < 3) {
-        weekEvents = stateEvents
-          .filter((e) => e.eventDate && new Date(e.eventDate) >= startOfToday)
-          .sort((a, b) => new Date(a.eventDate!).getTime() - new Date(b.eventDate!).getTime())
-          .slice(0, 20);
-      }
-
-      const day = chicagoNow.getDay();
-      let daysUntilSunday = (7 - day) % 7;
-      if (day === 0 && (chicagoNow.getHours() > 9 || (chicagoNow.getHours() === 9 && chicagoNow.getMinutes() > 0))) {
-        daysUntilSunday = 7;
-      }
-      const nextSunday = new Date(chicagoNow);
-      nextSunday.setDate(chicagoNow.getDate() + daysUntilSunday);
-      nextSunday.setHours(9, 0, 0, 0);
-
-      const startLabel = startOfToday.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-      const endLabel = endOfWeek.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-      const weekRangeLabel = `${startLabel} – ${endLabel}`;
-      const subject = `🗓️ Chicago Jewish Events This Week (${weekRangeLabel}) — ${weekEvents.length} Upcoming Gatherings`;
-
-      const mappedEvents = weekEvents.map((e) => {
-        const d = e.eventDate ? new Date(e.eventDate) : null;
-        return {
-          id: e.id,
-          title: e.title,
-          url: e.url,
-          eventDate: e.eventDate,
-          dateFormatted: d
-            ? d.toLocaleDateString('en-US', {
-                weekday: 'short',
-                month: 'short',
-                day: 'numeric',
-                timeZone: 'America/Chicago',
-              })
-            : 'Date TBD',
-          timeFormatted: d
-            ? d.toLocaleTimeString('en-US', {
-                hour: 'numeric',
-                minute: '2-digit',
-                timeZone: 'America/Chicago',
-              })
-            : null,
-          organization: e.organization || e.hostName || 'Community Organizer',
-          neighborhood: e.neighborhood || null,
-          location: e.location || e.neighborhood || 'Chicago, IL',
-          description: e.description || null,
-          categories: e.categories || [],
-        };
-      });
-
-      const eventRowsHtml = mappedEvents
-        .map(
-          (e) => `
-      <tr>
-        <td style="padding: 16px; border-bottom: 1px solid #e2e8f0;">
-          <div style="font-size: 12px; font-weight: 700; color: #047857; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 4px;">
-            ${e.dateFormatted}${e.timeFormatted ? ` • ${e.timeFormatted}` : ''}${e.neighborhood ? ` • ${e.neighborhood}` : ''}
-          </div>
-          <div style="font-size: 16px; font-weight: 700; color: #0f172a; margin-bottom: 4px;">
-            <a href="${e.url}" target="_blank" style="color: #0f172a; text-decoration: none;">${e.title}</a>
-          </div>
-          <div style="font-size: 13px; color: #475569; margin-bottom: 8px;">
-            <strong>Host:</strong> ${e.organization}${e.location ? ` &nbsp;|&nbsp; <strong>Location:</strong> ${e.location}` : ''}
-          </div>
-          ${
-            e.description
-              ? `<div style="font-size: 13px; color: #64748b; line-height: 1.5; margin-bottom: 10px;">${e.description.slice(0, 220)}${
-                  e.description.length > 220 ? '...' : ''
-                }</div>`
-              : ''
-          }
-          <div>
-            <a href="${e.url}" target="_blank" style="display: inline-block; padding: 7px 14px; background-color: #059669; color: #ffffff; font-size: 12px; font-weight: 700; border-radius: 8px; text-decoration: none;">
-              RSVP &amp; Event Details →
-            </a>
-          </div>
-        </td>
-      </tr>`
-        )
-        .join('\n');
-
-      const html = `<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="utf-8" />
-  <title>${subject}</title>
-</head>
-<body style="margin: 0; padding: 20px; background-color: #f8fafc; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
-  <table width="100%" cellpadding="0" cellspacing="0" style="max-width: 640px; margin: 0 auto; background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 16px; overflow: hidden;">
-    <tr>
-      <td bgcolor="#059669" style="padding: 24px; background-color: #059669; background: linear-gradient(135deg, #059669, #0d9488); color: #ffffff;">
-        <div style="font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #ecfdf5;">
-          Weekly Community Digest • Sent Sundays at 9:00 AM CT
-        </div>
-        <h1 style="margin: 6px 0 4px; font-size: 22px; font-weight: 800; color: #ffffff;">
-          Chicago Jewish Events This Week
-        </h1>
-        <div style="font-size: 13px; color: #ecfdf5;">
-          ${weekRangeLabel} • ${mappedEvents.length} Upcoming Community Events
-        </div>
-      </td>
-    </tr>
-    <tr>
-      <td style="padding: 16px 24px 8px; font-size: 13px; color: #475569; line-height: 1.5;">
-        Here is your weekly list of upcoming Shabbat dinners, social mixers, learning circles, and volunteering events across Chicago — compiled directly from 28 primary community sources including Moishe Houses, Moishe Pods, Silverstein Base, Mishkan, Chabad, JUF YLD, and local synagogues.
-      </td>
-    </tr>
-    <tr>
-      <td style="padding: 0 8px;">
-        <table width="100%" cellpadding="0" cellspacing="0">
-          ${eventRowsHtml}
-        </table>
-      </td>
-    </tr>
-    <tr>
-      <td style="padding: 20px 24px; background-color: #f1f5f9; font-size: 12px; color: #64748b; text-align: center;">
-        Sent every Sunday at 9:00 AM CT by Chicago Jewish Community Events Aggregator.
-      </td>
-    </tr>
-  </table>
-</body>
-</html>`;
-
-      const textLines = [
-        `CHICAGO JEWISH EVENTS THIS WEEK (${weekRangeLabel})`,
-        `Sent Sundays at 9:00 AM CT • ${mappedEvents.length} Upcoming Events`,
-        `================================================================`,
-        '',
-        ...mappedEvents.map(
-          (e, idx) =>
-            `${idx + 1}. [${e.dateFormatted}${e.timeFormatted ? ` @ ${e.timeFormatted}` : ''}] ${e.title}\n   Host: ${e.organization} | Location: ${e.location || 'TBD'}\n   RSVP: ${e.url}\n`
-        ),
-      ];
-
-      return {
-        subject,
-        weekRangeLabel,
-        generatedAt: new Date().toISOString(),
-        nextSendAt: nextSunday.toISOString(),
-        eventsCount: mappedEvents.length,
-        events: mappedEvents,
-        html,
-        text: textLines.join('\n'),
-      };
-    };
-
-    if (url.pathname === '/api/newsletter/preview' && (request.method === 'GET' || request.method === 'HEAD')) {
-      if (request.method === 'HEAD') return new Response(null, { status: 200, headers });
-      const digest = buildWorkerNewsletter();
-      const activeCount = Array.from(stateSubscribers.values()).filter((s) => s.isActive).length;
-      return new Response(
-        JSON.stringify({
-          schedule: 'Every Sunday at 9:00 AM CT',
-          subscriberCount: activeCount,
-          digest,
-        }),
-        { status: 200, headers }
-      );
-    }
-
-    const sendWorkerEmailIfConfigured = async (
-      recipients: string[],
-      digest: ReturnType<typeof buildWorkerNewsletter>,
-      overrideApiKey?: string,
-      overrideSenderEmail?: string
-    ): Promise<{
-      deliveryMode: 'BREVO_API' | 'RESEND_API' | 'DEV_SIMULATOR';
-      deliveryError: string | null;
-      deliveredRecipients: string[];
-    }> => {
-      const sanitizeKey = (raw?: string) => {
-        if (!raw) return '';
-        const trimmed = raw.trim();
-        const brevoMatch = trimmed.match(/xkeysib-[A-Za-z0-9_-]+/);
-        if (brevoMatch) return brevoMatch[0];
-        const resendMatch = trimmed.match(/re_[A-Za-z0-9]{8}_[A-Za-z0-9]{24}/);
-        if (resendMatch) return resendMatch[0];
-        return trimmed;
-      };
-      const candidateKeys = Array.from(
-        new Set(
-          [
-            sanitizeKey(overrideApiKey),
-            sanitizeKey(env.BREVO_API_KEY),
-            sanitizeKey(env.RESEND_API_KEY),
-          ].filter((k): k is string => Boolean(k))
-        )
-      );
-      const senderEmail = (
-        overrideSenderEmail ||
-        env.BREVO_SENDER_EMAIL ||
-        'akrakman@gmail.com'
-      )
-        .trim()
-        .toLowerCase();
-      const fromEmail =
-        env.NEWSLETTER_FROM_EMAIL || 'Chicago Jewish Events <onboarding@resend.dev>';
-
-      if (candidateKeys.length === 0 || recipients.length === 0) {
-        return {
-          deliveryMode: 'DEV_SIMULATOR',
-          deliveryError: null,
-          deliveredRecipients: recipients,
-        };
-      }
-
-      const trySendBrevo = async (apiKey: string, toList: string[]) => {
-        const res = await fetch('https://api.brevo.com/v3/smtp/email', {
-          method: 'POST',
-          headers: {
-            'api-key': apiKey,
-            'Content-Type': 'application/json',
-            accept: 'application/json',
-          },
-          body: JSON.stringify({
-            sender: {
-              name: 'Chicago Jewish Events',
-              email: senderEmail,
-            },
-            to: toList.map((email) => ({ email })),
-            subject: digest.subject,
-            htmlContent: digest.html,
-            textContent: digest.text,
-          }),
-        });
-        const bodyText = await res.text();
-        return { ok: res.ok, status: res.status, bodyText };
-      };
-
-      const trySendResend = async (apiKey: string, toList: string[]) => {
-        const res = await fetch('https://api.resend.com/emails', {
-          method: 'POST',
-          headers: {
-            Authorization: `Bearer ${apiKey}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            from: fromEmail,
-            to: toList,
-            subject: digest.subject,
-            html: digest.html,
-            text: digest.text,
-          }),
-        });
-        const bodyText = await res.text();
-        return { ok: res.ok, status: res.status, bodyText };
-      };
-
-      let lastErr: string | null = null;
-      try {
-        for (const key of candidateKeys) {
-          if (key.startsWith('xsmtpsib-')) {
-            lastErr =
-              'That is a Brevo SMTP key (xsmtpsib-...). Please create a Brevo API v3 key (starts with xkeysib-...) under the "API Keys" tab at app.brevo.com/settings/keys/api.';
-            continue;
-          }
-
-          if (key.startsWith('xkeysib-')) {
-            const attempt = await trySendBrevo(key, recipients);
-            if (attempt.ok) {
-              return {
-                deliveryMode: 'BREVO_API',
-                deliveryError: null,
-                deliveredRecipients: recipients,
-              };
-            }
-            lastErr = `Brevo API (${attempt.status}): ${attempt.bodyText}`;
-            continue;
-          }
-
-          const attempt = await trySendResend(key, recipients);
-          if (attempt.ok) {
-            return {
-              deliveryMode: 'RESEND_API',
-              deliveryError: null,
-              deliveredRecipients: recipients,
-            };
-          }
-
-          // If Resend free-tier sandbox restricts delivery to the verified account owner (e.g. akrakman@gmail.com),
-          // automatically retry sending to that verified owner email.
-          const ownerMatch = attempt.bodyText.match(
-            /\(([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})\)/
-          );
-          if (attempt.status === 403 && ownerMatch && ownerMatch[1]) {
-            const ownerEmail = ownerMatch[1].toLowerCase();
-            const retryOwner = await trySendResend(key, [ownerEmail]);
-            if (retryOwner.ok) {
-              return {
-                deliveryMode: 'RESEND_API',
-                deliveryError: null,
-                deliveredRecipients: [ownerEmail],
-              };
-            }
-          }
-
-          lastErr = `Resend API (${attempt.status}): ${attempt.bodyText}`;
-        }
-      } catch (err: any) {
-        lastErr = err.message || 'Network error calling email API';
-      }
-
-      return {
-        deliveryMode: 'DEV_SIMULATOR',
-        deliveryError: lastErr,
-        deliveredRecipients: recipients,
-      };
-    };
-
-    if (url.pathname === '/api/newsletter/subscribe' && request.method === 'POST') {
+    // 7. Community Event Suggestion Submission
+    if (url.pathname === '/api/submit-event' && request.method === 'POST') {
       try {
         const body: any = await request.json();
-        const email = (body.email || '').trim().toLowerCase();
-        if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-          return new Response(JSON.stringify({ error: 'Please enter a valid email address' }), {
+        const eventUrl = (body.url || '').trim();
+        if (!eventUrl || !/^https?:\/\//i.test(eventUrl)) {
+          return new Response(JSON.stringify({ error: 'Please enter a valid event URL (https://...)' }), {
             status: 400,
             headers,
           });
         }
-        const sub = {
-          id: `sub_${Date.now()}`,
-          email,
-          isActive: true,
-          lastSentAt: new Date().toISOString(),
-          createdAt: new Date().toISOString(),
-        };
-        stateSubscribers.set(email, sub);
-        const digest = buildWorkerNewsletter();
-        const dispatch = await sendWorkerEmailIfConfigured(
-          [email],
-          digest,
-          body.resendApiKey,
-          body.senderEmail
-        );
-        const activeCount = Array.from(stateSubscribers.values()).filter((s) => s.isActive).length;
+
+        const existing = stateSources.find((s) => s.url.toLowerCase() === eventUrl.toLowerCase());
+        if (!existing) {
+          stateSources.push({
+            id: `src_custom_${Date.now()}`,
+            url: eventUrl,
+            name: body.title || body.organization || 'Community Submitted Link',
+            platform: detectPlatform(eventUrl),
+            isActive: true,
+            lastPolledAt: null,
+            lastStatus: null,
+            errorMessage: null,
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+          });
+        }
 
         return new Response(
           JSON.stringify({
             success: true,
-            message: `Subscribed ${email}! You will receive the weekly upcoming events digest every Sunday at 9:00 AM CT.`,
-            subscriber: sub,
-            subscriberCount: activeCount,
-            deliveryMode: dispatch.deliveryMode,
-            deliveryError: dispatch.deliveryError,
-            digest,
+            message: 'Thank you! Your event suggestion has been received and queued for community calendar inclusion.',
           }),
           { status: 201, headers }
         );
       } catch (err: any) {
-        return new Response(JSON.stringify({ error: err.message || 'Failed to subscribe' }), {
+        return new Response(JSON.stringify({ error: err.message || 'Failed to submit event' }), {
           status: 500,
           headers,
         });
       }
     }
 
-    if (url.pathname === '/api/newsletter/unsubscribe' && request.method === 'POST') {
-      try {
-        const body: any = await request.json();
-        const email = (body.email || '').trim().toLowerCase();
-        const existing = stateSubscribers.get(email);
-        if (existing) existing.isActive = false;
-        return new Response(
-          JSON.stringify({
-            success: true,
-            message: `${email} has been unsubscribed from the Sunday 9:00 AM newsletter.`,
-          }),
-          { status: 200, headers }
-        );
-      } catch (err: any) {
-        return new Response(JSON.stringify({ error: err.message || 'Failed to unsubscribe' }), {
-          status: 500,
-          headers,
-        });
-      }
-    }
-
-    if (url.pathname === '/api/newsletter/send' && request.method === 'POST') {
-      let targetEmail: string | undefined;
-      let overrideApiKey: string | undefined;
-      let overrideSenderEmail: string | undefined;
-      try {
-        const body: any = await request.json();
-        if (body && body.resendApiKey) {
-          overrideApiKey = String(body.resendApiKey).trim();
-        }
-        if (body && body.senderEmail) {
-          overrideSenderEmail = String(body.senderEmail).trim();
-        }
-        if (body && body.email) {
-          targetEmail = String(body.email).trim().toLowerCase();
-          if (targetEmail && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(targetEmail)) {
-            stateSubscribers.set(targetEmail, {
-              id: `sub_${Date.now()}`,
-              email: targetEmail,
-              isActive: true,
-              lastSentAt: new Date().toISOString(),
-              createdAt: new Date().toISOString(),
-            });
-          }
-        }
-      } catch {}
-
-      const digest = buildWorkerNewsletter();
-      const recipients = targetEmail
-        ? [targetEmail]
-        : Array.from(stateSubscribers.values())
-            .filter((s) => s.isActive)
-            .map((s) => s.email);
-
-      const dispatch = await sendWorkerEmailIfConfigured(
-        recipients,
-        digest,
-        overrideApiKey,
-        overrideSenderEmail
-      );
-
-      return new Response(
-        JSON.stringify({
-          success: true,
-          sentAt: new Date().toISOString(),
-          recipientsCount: dispatch.deliveredRecipients.length,
-          recipients: dispatch.deliveredRecipients,
-          subject: digest.subject,
-          eventsCount: digest.eventsCount,
-          deliveryMode: dispatch.deliveryMode,
-          deliveryError: dispatch.deliveryError,
-          digest,
-        }),
-        { status: 200, headers }
-      );
-    }
-
-    // 7. Guard: Return 404 JSON for any unhandled /api/* route to prevent falling through to HTML assets
+    // 8. Guard: Return 404 JSON for any unhandled /api/* route to prevent falling through to HTML assets
     if (url.pathname.startsWith('/api')) {
       return new Response(JSON.stringify({ error: 'Endpoint not found' }), {
         status: 404,
@@ -1482,9 +1071,9 @@ export default {
     }
   },
 
-  // Scheduled Cron Handler: Runs every Sunday at 9:00 AM CT to poll sources and send weekly newsletter
+  // Scheduled Cron Handler: Runs automated polling for all active community sources
   async scheduled(_event: any, _env: Env, _ctx: any): Promise<void> {
     await pollAllActiveSources();
-    console.log(`[Cron] Sunday 9:00 AM CT newsletter job executed for ${stateSubscribers.size} subscribers.`);
+    console.log(`[Cron] Automated community sources polling completed.`);
   },
 };

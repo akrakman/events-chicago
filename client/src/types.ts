@@ -115,34 +115,3 @@ export interface SampleUrl {
   platform: string;
   description: string;
 }
-
-export interface NewsletterEventItem {
-  id: string;
-  title: string;
-  url: string;
-  eventDate: string | null;
-  dateFormatted: string;
-  timeFormatted: string | null;
-  organization: string;
-  neighborhood: string | null;
-  location: string | null;
-  description: string | null;
-  categories: string[];
-}
-
-export interface WeeklyNewsletterDigest {
-  subject: string;
-  weekRangeLabel: string;
-  generatedAt: string;
-  nextSendAt: string;
-  eventsCount: number;
-  events: NewsletterEventItem[];
-  html?: string;
-  text?: string;
-}
-
-export interface NewsletterPreviewResponse {
-  schedule: string;
-  subscriberCount: number;
-  digest: WeeklyNewsletterDigest;
-}

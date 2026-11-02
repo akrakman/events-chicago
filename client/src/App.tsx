@@ -1,12 +1,15 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { Header } from './components/Header';
 import { EventCard } from './components/EventCard';
-import { EventFilters, DateFilterType } from './components/EventFilters';
+import { EventFilters, DateFilterType, ViewMode } from './components/EventFilters';
 import { SourcesModal } from './components/SourcesModal';
 import { ShareModal } from './components/ShareModal';
 import { CalendarSubscribeModal } from './components/CalendarSubscribeModal';
 import { EventDetailModal } from './components/EventDetailModal';
-import { NewsletterBanner } from './components/NewsletterBanner';
+import { ShabbatTimesBanner } from './components/ShabbatTimesBanner';
+import { NeighborhoodGuide } from './components/NeighborhoodGuide';
+import { MyPlanDrawer } from './components/MyPlanDrawer';
+import { SuggestEventModal } from './components/SuggestEventModal';
 import {
   fetchUpcomingEvents,
   fetchSources,
@@ -17,7 +20,7 @@ import {
   AvailableFilters,
 } from './api';
 import { CommunityEvent, MonitoredSource, SyncStatus } from './types';
-import { Calendar, RefreshCw, Sparkles, Inbox, AlertCircle, MapPin, Bookmark } from 'lucide-react';
+import { RefreshCw, Inbox, AlertCircle, Compass, LayoutList, PlusCircle } from 'lucide-react';
 
 const SAVED_STORAGE_KEY = 'jewish_events_saved_ids';
 
@@ -26,6 +29,9 @@ export const App: React.FC = () => {
   const [totalCount, setTotalCount] = useState<number>(0);
   const [sources, setSources] = useState<MonitoredSource[]>([]);
   const [syncStatus, setSyncStatus] = useState<SyncStatus | null>(null);
+
+  // View Mode: 'list' | 'neighborhoods'
+  const [viewMode, setViewMode] = useState<ViewMode>('list');
 
   // Filters
   const [filter, setFilter] = useState<DateFilterType>('upcoming');
@@ -53,10 +59,12 @@ export const App: React.FC = () => {
     }
   });
 
-  // UI Modals
+  // UI Modals & Drawers
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isSourcesModalOpen, setIsSourcesModalOpen] = useState<boolean>(false);
   const [isSubscribeModalOpen, setIsSubscribeModalOpen] = useState<boolean>(false);
+  const [isMyPlanOpen, setIsMyPlanOpen] = useState<boolean>(false);
+  const [isSuggestEventOpen, setIsSuggestEventOpen] = useState<boolean>(false);
   const [sharingEvent, setSharingEvent] = useState<CommunityEvent | null>(null);
   const [viewingEvent, setViewingEvent] = useState<CommunityEvent | null>(null);
   const [errorNotice, setErrorNotice] = useState<string | null>(null);
@@ -71,6 +79,13 @@ export const App: React.FC = () => {
     });
   };
 
+  const clearAllBookmarks = () => {
+    setSavedIds([]);
+    try {
+      localStorage.removeItem(SAVED_STORAGE_KEY);
+    } catch {}
+  };
+
   const handleClearFilters = () => {
     setFilter('upcoming');
     setSearch('');
@@ -78,6 +93,16 @@ export const App: React.FC = () => {
     setSelectedOrganization('ALL');
     setSelectedNeighborhood('ALL');
     setSelectedCategory('ALL');
+  };
+
+  // Toggle Shabbat filter
+  const handleToggleShabbatFilter = () => {
+    if (selectedCategory === 'Shabbat') {
+      setSelectedCategory('ALL');
+    } else {
+      setSelectedCategory('Shabbat');
+      if (filter === 'past') setFilter('upcoming');
+    }
   };
 
   // Load events from backend
@@ -112,7 +137,7 @@ export const App: React.FC = () => {
       const isNetworkErr = err?.message?.includes('NetworkError') || err?.name === 'TypeError';
       setErrorNotice(
         isNetworkErr
-          ? 'Network error loading events. If you have an ad blocker or privacy shield enabled, try pausing it for this domain.'
+          ? 'Network error loading events. Please check your network connection.'
           : (err.message || 'Failed to load events. Please check your network connection.')
       );
     } finally {
@@ -192,6 +217,20 @@ export const App: React.FC = () => {
     return Array.from(set).sort();
   }, [events]);
 
+  // Saved events array for MyPlan drawer
+  const savedEventsList = useMemo(() => {
+    return events.filter((e) => savedIds.includes(e.id));
+  }, [events, savedIds]);
+
+  // Count of Shabbat events
+  const shabbatEventsCount = useMemo(() => {
+    return events.filter((e) => {
+      if (e.categories?.includes('Shabbat')) return true;
+      const titleLower = e.title.toLowerCase();
+      return titleLower.includes('shabbat') || titleLower.includes('friday') || titleLower.includes('kiddush');
+    }).length;
+  }, [events]);
+
   const nearestEvent = events.find((e) => e.eventDate);
 
   return (
@@ -202,8 +241,11 @@ export const App: React.FC = () => {
         onSync={handleSyncNow}
         onOpenSources={() => setIsSourcesModalOpen(true)}
         onOpenSubscribe={() => setIsSubscribeModalOpen(true)}
+        onOpenSuggestEvent={() => setIsSuggestEventOpen(true)}
+        onOpenMyPlan={() => setIsMyPlanOpen(true)}
         sourcesCount={sources.length}
         upcomingCount={totalCount}
+        savedCount={savedIds.length}
       />
 
       <main className="flex-1 max-w-5xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-6">
@@ -240,7 +282,7 @@ export const App: React.FC = () => {
               </h2>
               <p className="text-xs sm:text-sm text-slate-600 max-w-2xl leading-relaxed">
                 Aggregated directly from 28 Chicago Jewish community websites — including Moishe Houses, Moishe Pods, Silverstein Base, Mishkan Chicago, Chabad, JUF YLD, JCUA, and local synagogues.
-                Subscribe to the Sunday 9:00 AM weekly email digest or sync directly to your phone calendar.
+                Sync directly to your phone calendar or bookmark events to build your weekend plan.
               </p>
             </div>
 
@@ -260,13 +302,19 @@ export const App: React.FC = () => {
           </div>
         </div>
 
-        {/* Weekly Sunday 9:00 AM Email Newsletter Signup & Digest Preview */}
-        <NewsletterBanner />
+        {/* Shabbat Times & Friday Night Dinner Finder Banner */}
+        <ShabbatTimesBanner
+          onFilterShabbat={handleToggleShabbatFilter}
+          isShabbatActive={selectedCategory === 'Shabbat'}
+          shabbatCount={shabbatEventsCount}
+        />
 
-        {/* Filter Controls (Tabs, Organization, Neighborhood, Category, Search) */}
+        {/* Filter Controls (Tabs, Search, Organization, Neighborhood, Category, View Mode) */}
         <EventFilters
           filter={filter}
           onFilterChange={setFilter}
+          viewMode={viewMode}
+          onViewModeChange={setViewMode}
           search={search}
           onSearchChange={setSearch}
           selectedPlatform={selectedPlatform}
@@ -287,8 +335,17 @@ export const App: React.FC = () => {
           onClearFilters={handleClearFilters}
         />
 
-        {/* Event List Feed */}
-        {isLoading ? (
+        {/* Main Content Area: Either Neighborhood Guide View OR Event Cards Feed */}
+        {viewMode === 'neighborhoods' ? (
+          <NeighborhoodGuide
+            events={events}
+            selectedNeighborhood={selectedNeighborhood}
+            onSelectNeighborhood={(hood) => {
+              setSelectedNeighborhood(hood);
+              if (hood !== 'ALL') setViewMode('list');
+            }}
+          />
+        ) : isLoading ? (
           <div className="space-y-3">
             {[1, 2, 3].map((n) => (
               <div
@@ -312,7 +369,7 @@ export const App: React.FC = () => {
               </h3>
               <p className="text-xs text-slate-500 max-w-sm mx-auto">
                 {filter === 'saved'
-                  ? 'Click the bookmark icon on any event card to save it for easy reference.'
+                  ? 'Click the bookmark icon on any event card to save it to your plan.'
                   : 'Try resetting your filters or check back after the daily poll.'}
               </p>
             </div>
@@ -363,6 +420,22 @@ export const App: React.FC = () => {
       <CalendarSubscribeModal
         isOpen={isSubscribeModalOpen}
         onClose={() => setIsSubscribeModalOpen(false)}
+      />
+
+      {/* Suggest Event / Community Submission Modal */}
+      <SuggestEventModal
+        isOpen={isSuggestEventOpen}
+        onClose={() => setIsSuggestEventOpen(false)}
+        neighborhoods={availableFilters.neighborhoods}
+      />
+
+      {/* My Plan / Saved Events Slide-Over Drawer */}
+      <MyPlanDrawer
+        isOpen={isMyPlanOpen}
+        onClose={() => setIsMyPlanOpen(false)}
+        savedEvents={savedEventsList}
+        onRemoveBookmark={toggleBookmark}
+        onClearAll={clearAllBookmarks}
       />
 
       {/* Share / WhatsApp Invite Modal */}

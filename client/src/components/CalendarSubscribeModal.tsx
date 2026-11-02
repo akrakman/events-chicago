@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import { X, Calendar, Copy, Check, ExternalLink, Sparkles, Smartphone, Globe, Mail, Clock, CheckCircle2, Terminal } from 'lucide-react';
-import { subscribeToNewsletter, sendTestNewsletterNow } from '../api';
+import { X, Calendar, Copy, Check, ExternalLink, Smartphone, Globe } from 'lucide-react';
 
 interface CalendarSubscribeModalProps {
   isOpen: boolean;
@@ -12,10 +11,6 @@ export const CalendarSubscribeModal: React.FC<CalendarSubscribeModalProps> = ({
   onClose,
 }) => {
   const [copied, setCopied] = useState(false);
-  const [email, setEmail] = useState('');
-  const [isSubscribing, setIsSubscribing] = useState(false);
-  const [newsletterMsg, setNewsletterMsg] = useState<string | null>(null);
-  const [newsletterErr, setNewsletterErr] = useState<string | null>(null);
 
   if (!isOpen) return null;
 
@@ -31,41 +26,6 @@ export const CalendarSubscribeModal: React.FC<CalendarSubscribeModalProps> = ({
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch {}
-  };
-
-  const handleNewsletterSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!email.trim()) return;
-    setIsSubscribing(true);
-    setNewsletterErr(null);
-    setNewsletterMsg(null);
-    try {
-      const res = await subscribeToNewsletter(email.trim());
-      setNewsletterMsg(res.message);
-      try {
-        localStorage.setItem('jewish_events_newsletter_email', email.trim().toLowerCase());
-      } catch {}
-      setEmail('');
-    } catch (err: any) {
-      setNewsletterErr(err.message || 'Failed to subscribe');
-    } finally {
-      setIsSubscribing(false);
-    }
-  };
-
-  const handleTestSendNow = async () => {
-    const target = (email.trim() || localStorage.getItem('jewish_events_newsletter_email') || 'test@jewishevents.chi').toLowerCase();
-    setIsSubscribing(true);
-    setNewsletterErr(null);
-    setNewsletterMsg(null);
-    try {
-      const res = await sendTestNewsletterNow(target);
-      setNewsletterMsg(`⚡ Dev Test Sent! Dispatched "${res.subject}" (${res.eventsCount} events) to ${target}.`);
-    } catch (err: any) {
-      setNewsletterErr(err.message || 'Failed to test newsletter');
-    } finally {
-      setIsSubscribing(false);
-    }
   };
 
   return (
@@ -94,64 +54,15 @@ export const CalendarSubscribeModal: React.FC<CalendarSubscribeModalProps> = ({
 
         {/* Body */}
         <div className="p-5 space-y-4 text-xs text-slate-600">
-          {/* Weekly Sunday 9:00 AM Newsletter Section */}
-          <div className="p-4 rounded-xl bg-emerald-50/70 border border-emerald-200 text-emerald-950 space-y-2.5">
-            <div className="flex items-center justify-between gap-2">
-              <div className="flex items-center gap-1.5 font-bold text-xs text-emerald-900">
-                <Mail className="w-3.5 h-3.5 text-emerald-600" />
-                <span>Weekly Email Newsletter</span>
-              </div>
-              <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-white text-emerald-800 border border-emerald-200">
-                <Clock className="w-3 h-3 text-emerald-600" />
-                <span>Sundays at 9:00 AM CT</span>
-              </span>
-            </div>
-            <p className="text-[11px] text-emerald-800 leading-relaxed">
-              Receive a curated weekly list of upcoming Chicago Jewish events in your inbox every Sunday morning at 9:00 AM.
-            </p>
-            <form onSubmit={handleNewsletterSubmit} className="flex gap-2">
-              <input
-                type="email"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="you@example.com"
-                className="flex-1 px-3 py-2 bg-white border border-emerald-200 rounded-xl text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/30"
-              />
-              <button
-                type="submit"
-                disabled={isSubscribing || !email.trim()}
-                className="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white font-bold text-xs transition shadow-xs"
-              >
-                {isSubscribing ? 'Saving...' : 'Subscribe'}
-              </button>
-              <button
-                type="button"
-                onClick={handleTestSendNow}
-                disabled={isSubscribing}
-                className="inline-flex items-center gap-1 px-3 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 disabled:opacity-50 text-white font-bold text-xs transition shadow-xs"
-                title="Trigger Sunday 9am newsletter dispatch immediately"
-              >
-                <Terminal className="w-3.5 h-3.5 text-emerald-400" />
-                <span>Test Now</span>
-              </button>
-            </form>
-            {newsletterMsg && (
-              <div className="flex items-center gap-1.5 text-[11px] text-emerald-800 font-semibold">
-                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 flex-shrink-0" />
-                <span>{newsletterMsg}</span>
-              </div>
-            )}
-            {newsletterErr && (
-              <p className="text-[11px] text-rose-600 font-semibold">{newsletterErr}</p>
-            )}
-          </div>
+          <p className="text-xs text-slate-600 leading-relaxed">
+            Subscribe once and any newly discovered gathering in Chicago will automatically appear in your personal calendar app with direct RSVP links and venue locations.
+          </p>
 
           {/* Quick Buttons */}
           <div className="space-y-2 pt-1">
             <a
               href={webcalUrl}
-              className="w-full inline-flex items-center justify-between p-3 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-200 transition group"
+              className="w-full inline-flex items-center justify-between p-3.5 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-200 transition group"
             >
               <div className="flex items-center gap-2.5">
                 <Smartphone className="w-4 h-4 text-slate-700" />
@@ -167,7 +78,7 @@ export const CalendarSubscribeModal: React.FC<CalendarSubscribeModalProps> = ({
               href={googleCalendarSubscribeUrl}
               target="_blank"
               rel="noreferrer"
-              className="w-full inline-flex items-center justify-between p-3 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-200 transition group"
+              className="w-full inline-flex items-center justify-between p-3.5 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-200 transition group"
             >
               <div className="flex items-center gap-2.5">
                 <Globe className="w-4 h-4 text-emerald-700" />

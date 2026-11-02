@@ -1,7 +1,6 @@
 import { FastifyPluginAsync } from 'fastify';
 import { prisma } from '../db';
 import { getPollingState, pollAllSources, pollSource } from '../services/eventPoller';
-import { buildWeeklyNewsletter, sendWeeklyNewsletter } from '../services/newsletterService';
 import { runChiTribeParityCheck } from '../services/parityChecker';
 import { z } from 'zod';
 import { detectPlatform } from '../scraper/detector';
@@ -397,102 +396,51 @@ export const eventRoutes: FastifyPluginAsync = async (fastify) => {
     }
   });
 
-  // 8. Weekly Newsletter Preview & Schedule Info (Sent Sundays at 9:00 AM CT)
-  fastify.get('/api/newsletter/preview', async (_request, reply) => {
-    try {
-      const [digest, subscriberCount] = await Promise.all([
-        buildWeeklyNewsletter(),
-        prisma.newsletterSubscriber.count({ where: { isActive: true } }),
-      ]);
-      return reply.send({
-        schedule: 'Every Sunday at 9:00 AM CT',
-        subscriberCount,
-        digest,
-      });
-    } catch (err: any) {
-      return reply.status(500).send({ error: err.message });
-    }
+  // 8. Submit Community Event Tip or Link
+  const SubmitEventSchema = z.object({
+    url: z.string().trim().url('Please enter a valid event URL (https://...)'),
+    title: z.string().trim().optional(),
+    organization: z.string().trim().optional(),
+    neighborhood: z.string().trim().optional(),
+    notes: z.string().trim().optional(),
   });
 
-  // 9. Subscribe to Weekly Sunday 9:00 AM Newsletter
-  const SubscribeSchema = z.object({
-    email: z.string().trim().email('Please enter a valid email address'),
-    resendApiKey: z.string().optional(),
-    senderEmail: z.string().optional(),
-  });
-
-  fastify.post('/api/newsletter/subscribe', async (request, reply) => {
-    const parse = SubscribeSchema.safeParse(request.body);
+  fastify.post('/api/submit-event', async (request, reply) => {
+    const parse = SubmitEventSchema.safeParse(request.body);
     if (!parse.success) {
       return reply.status(400).send({
-        error: parse.error.issues[0]?.message || 'Please enter a valid email address',
+        error: parse.error.issues[0]?.message || 'Please provide a valid event URL',
       });
     }
 
-    const email = parse.data.email.toLowerCase();
+    const { url, title, organization, neighborhood, notes } = parse.data;
 
     try {
-      const subscriber = await prisma.newsletterSubscriber.upsert({
-        where: { email },
-        update: { isActive: true },
-        create: { email, isActive: true },
-      });
+      // Check if source or item already exists
+      const existingSource = await prisma.monitoredSource.findUnique({ where: { url } });
+      const existingItem = await prisma.extractedItem.findFirst({ where: { url } });
 
-      // Dispatch an immediate welcome/preview digest for this week's upcoming events
-      const dispatch = await sendWeeklyNewsletter(
-        email,
-        parse.data.resendApiKey,
-        parse.data.senderEmail
-      );
-      const digest = await buildWeeklyNewsletter();
-      const subscriberCount = await prisma.newsletterSubscriber.count({ where: { isActive: true } });
+      // Automatically add to monitored sources if not present
+      if (!existingSource) {
+        const detected = detectPlatform(url);
+        await prisma.monitoredSource.create({
+          data: {
+            url,
+            name: title || organization || 'Community Submitted Link',
+            platform: detected.platform,
+            isActive: true,
+          },
+        });
+      }
+
+      console.log(`[CommunityTip] New event submitted: ${url} (${title || 'No title'}) from ${organization || 'Anonymous'}`);
 
       return reply.status(201).send({
         success: true,
-        message: `Subscribed ${email}! You will receive the weekly upcoming events digest every Sunday at 9:00 AM CT.`,
-        subscriber,
-        subscriberCount,
-        deliveryMode: dispatch.deliveryMode,
-        deliveryError: dispatch.deliveryError,
-        dispatch,
-        digest,
+        message: existingItem
+          ? 'Thank you! This event is already featured on the community calendar.'
+          : 'Thank you! Your event suggestion has been received and queued for aggregation.',
       });
-    } catch (err: any) {
-      return reply.status(500).send({ error: err.message });
-    }
-  });
-
-  // 10. Unsubscribe from Weekly Newsletter
-  fastify.post('/api/newsletter/unsubscribe', async (request, reply) => {
-    const parse = SubscribeSchema.safeParse(request.body);
-    if (!parse.success) {
-      return reply.status(400).send({ error: 'Valid email is required' });
-    }
-    const email = parse.data.email.toLowerCase();
-    try {
-      await prisma.newsletterSubscriber.updateMany({
-        where: { email },
-        data: { isActive: false },
-      });
-      return reply.send({
-        success: true,
-        message: `${email} has been unsubscribed from the Sunday 9:00 AM newsletter.`,
-      });
-    } catch (err: any) {
-      return reply.status(500).send({ error: err.message });
-    }
-  });
-
-  // 11. Trigger Manual Send of Weekly Newsletter
-  fastify.post('/api/newsletter/send', async (request, reply) => {
-    const body = (request.body || {}) as {
-      email?: string;
-      resendApiKey?: string;
-      senderEmail?: string;
-    };
-    try {
-      const result = await sendWeeklyNewsletter(body.email, body.resendApiKey, body.senderEmail);
-      return reply.send(result);
     } catch (err: any) {
       return reply.status(500).send({ error: err.message });
     }

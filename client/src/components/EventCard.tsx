@@ -82,6 +82,13 @@ function getPlatformBadge(platform: string) {
       btn: 'bg-fuchsia-600 hover:bg-fuchsia-700 text-white shadow-sm shadow-fuchsia-600/20',
     };
   }
+  if (p === 'HEYLO') {
+    return {
+      name: 'Heylo',
+      badge: 'bg-sky-50 text-sky-700 border-sky-200',
+      btn: 'bg-sky-600 hover:bg-sky-700 text-white shadow-sm shadow-sky-600/20',
+    };
+  }
   if (p === 'ONETABLE') {
     return {
       name: 'OneTable',

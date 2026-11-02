@@ -1,6 +1,7 @@
 export type PlatformType =
   | 'LINKTREE'
   | 'PARTIFUL'
+  | 'HEYLO'
   | 'MISHKAN'
   | 'CHABAD'
   | 'SYNAGOGUE'

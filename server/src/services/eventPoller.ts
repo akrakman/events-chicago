@@ -28,6 +28,11 @@ export const DEFAULT_SOURCES = [
     platform: 'PARTIFUL',
   },
   {
+    url: 'https://heylo.com/invite/kgJUleLm',
+    name: 'Star of David 5k 2026 (Nice Jewish Runners)',
+    platform: 'HEYLO',
+  },
+  {
     url: 'https://linktr.ee/lincolnparkmoishehouse',
     name: 'Moishe House: Lincoln Park',
     platform: 'LINKTREE',
@@ -391,6 +396,33 @@ export async function pollSource(sourceId: string) {
       }
     }
     // ------------------------------------------------------------------------
+    // CASE A3: Single Heylo Event URL (e.g. heylo.com/...)
+    // ------------------------------------------------------------------------
+    else if (source.platform === 'HEYLO' || source.url.includes('heylo.com') || source.url.includes('heylo.group')) {
+      scrapeMethod = 'CHEERIO_STATIC';
+      console.log(`[Poller] Scraping Heylo event: ${source.url}`);
+      const chResult = await scrapeWithCheerio(source.url, 5000);
+      const ev = chResult?.items.find((i) => i.itemType === 'EVENT') || chResult?.items[0];
+      if (ev && ev.title) {
+        const dateInfo = parseEventDate(ev.eventDate, ev.title);
+        enrichedEvents.push({
+          title: ev.title,
+          url: source.url,
+          platform: 'HEYLO',
+          itemType: 'EVENT',
+          eventDate: dateInfo.date,
+          eventDateStr: dateInfo.dateStr || (typeof ev.eventDate === 'string' ? ev.eventDate : null),
+          eventEndDate: ev.eventEndDate ? new Date(ev.eventEndDate) : null,
+          description: ev.description || null,
+          imageUrl: ev.imageUrl || null,
+          location: ev.location || null,
+          hostName: ev.hostName || source.name || 'Nice Jewish Runners Chicago',
+          rsvpCount: null,
+          isPinned: true,
+        });
+      }
+    }
+    // ------------------------------------------------------------------------
     // CASE B: Mishkan Chicago (The Events Calendar REST API)
     // ------------------------------------------------------------------------
     else if (source.platform === 'MISHKAN' || source.url.includes('/wp-json/tribe/events/')) {
@@ -510,6 +542,7 @@ export async function pollSource(sourceId: string) {
           }
 
           const isPartiful = urlLower.includes('partiful.com/e/');
+          const isHeylo = urlLower.includes('heylo.com') || urlLower.includes('heylo.group');
           const isOneTable = urlLower.includes('onetable.org');
           const isGenericEvent =
             item.itemType === 'EVENT' ||
@@ -535,12 +568,12 @@ export async function pollSource(sourceId: string) {
             /\b\d{1,2}\/\d{1,2}\b/.test(item.title) ||
             /\b(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)\b/i.test(item.title);
 
-          if ((isPartiful || isOneTable || isGenericEvent) && !seenUrls.has(item.url)) {
+          if ((isPartiful || isHeylo || isOneTable || isGenericEvent) && !seenUrls.has(item.url)) {
             seenUrls.add(item.url);
             candidateEvents.push({
               title: item.title,
               url: item.url,
-              platform: isPartiful ? 'PARTIFUL' : isOneTable ? 'ONETABLE' : isGoogleForm ? 'GOOGLE_FORMS' : item.platform || 'GENERIC',
+              platform: isPartiful ? 'PARTIFUL' : isHeylo ? 'HEYLO' : isOneTable ? 'ONETABLE' : isGoogleForm ? 'GOOGLE_FORMS' : item.platform || 'GENERIC',
               itemType: 'EVENT',
               description: item.description,
             });
@@ -587,11 +620,32 @@ export async function pollSource(sourceId: string) {
                     rsvpCount: primaryItem?.rsvpCount ?? null,
                     isPinned: true,
                   };
+                } else if (candidate.platform === 'HEYLO' || candidate.url.includes('heylo.com')) {
+                  const chResult = await scrapeWithCheerio(candidate.url, 4500);
+                  const primaryItem = chResult?.items.find((i) => i.itemType === 'EVENT') || chResult?.items[0];
+                  if (!primaryItem || !primaryItem.title) return null;
+
+                  const dateInfo = parseEventDate(primaryItem.eventDate, primaryItem.title);
+                  return {
+                    title: primaryItem.title,
+                    url: candidate.url,
+                    platform: 'HEYLO',
+                    itemType: 'EVENT',
+                    eventDate: dateInfo.date,
+                    eventDateStr: dateInfo.dateStr || (typeof primaryItem.eventDate === 'string' ? primaryItem.eventDate : null),
+                    eventEndDate: primaryItem.eventEndDate ? new Date(primaryItem.eventEndDate) : null,
+                    description: primaryItem.description || candidate.description || null,
+                    imageUrl: primaryItem.imageUrl || null,
+                    location: primaryItem.location || null,
+                    hostName: primaryItem.hostName || sourceName,
+                    rsvpCount: null,
+                    isPinned: true,
+                  };
                 } else {
                   const chResult = await scrapeWithCheerio(candidate.url, 3000);
                   const isGenericPageTitle = !chResult?.title || chResult.title.startsWith('OneTable |') || chResult.title.includes('Sign In');
                   const finalTitle = (isGenericPageTitle ? candidate.title : chResult?.title) || candidate.title;
-                  const dateInfo = parseEventDate(null, finalTitle);
+                  const dateInfo = parseEventDate(null, `${finalTitle} ${chResult?.description || ''}`);
 
                   return {
                     title: finalTitle,
@@ -609,8 +663,8 @@ export async function pollSource(sourceId: string) {
                   };
                 }
               } catch {
-                if (candidate.platform === 'PARTIFUL') {
-                  console.log(`[Poller] Failed to scrape Partiful event ${candidate.url}. Skipping.`);
+                if (candidate.platform === 'PARTIFUL' || candidate.platform === 'HEYLO') {
+                  console.log(`[Poller] Failed to scrape event ${candidate.url}. Skipping.`);
                   return null;
                 }
                 const dateInfo = parseEventDate(null, candidate.title);

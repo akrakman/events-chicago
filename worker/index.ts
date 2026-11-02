@@ -79,6 +79,8 @@ const DEFAULT_SOURCES: MonitoredSource[] = [
   { id: '26', name: 'JUF Young Leadership Division (YLD)', platform: 'JUF', url: 'https://www.juf.org/yld/', isActive: true, lastPolledAt: new Date().toISOString(), lastStatus: 'SUCCESS', errorMessage: null, createdAt: '2026-10-07T00:00:00.000Z', updatedAt: new Date().toISOString() },
   { id: '27', name: 'Repair the World & Civic Volunteering Chicago', platform: 'COMMUNITY', url: 'https://werepair.org/chicago/', isActive: true, lastPolledAt: new Date().toISOString(), lastStatus: 'SUCCESS', errorMessage: null, createdAt: '2026-10-07T00:00:00.000Z', updatedAt: new Date().toISOString() },
   { id: '28', name: 'Chicago Jewish Arts, Culture & Adult Learning', platform: 'COMMUNITY', url: 'https://israelifilmchi.org/', isActive: true, lastPolledAt: new Date().toISOString(), lastStatus: 'SUCCESS', errorMessage: null, createdAt: '2026-10-07T00:00:00.000Z', updatedAt: new Date().toISOString() },
+  { id: '29', name: 'Election Day Darts Party (Lakeview)', platform: 'PARTIFUL', url: 'https://partiful.com/e/X10cAbrAJMBGdgbiXFO7', isActive: true, lastPolledAt: new Date().toISOString(), lastStatus: 'SUCCESS', errorMessage: null, createdAt: '2026-10-29T00:00:00.000Z', updatedAt: new Date().toISOString() },
+  { id: '30', name: 'Star of David 5k 2026 (Nice Jewish Runners)', platform: 'HEYLO', url: 'https://heylo.com/invite/kgJUleLm', isActive: true, lastPolledAt: new Date().toISOString(), lastStatus: 'SUCCESS', errorMessage: null, createdAt: '2026-10-29T00:00:00.000Z', updatedAt: new Date().toISOString() },
 ];
 
 // In-Memory store for Cloudflare Worker isolate
@@ -91,6 +93,7 @@ function detectPlatform(url: string): string {
   const u = url.toLowerCase();
   if (u.includes('linktr.ee/')) return 'LINKTREE';
   if (u.includes('partiful.com/')) return 'PARTIFUL';
+  if (u.includes('heylo.com') || u.includes('heylo.group')) return 'HEYLO';
   if (u.includes('tribe/events') || u.includes('mishkanchicago.org')) return 'MISHKAN';
   if (u.includes('chabad') || u.includes('jewish') || u.includes('articlecco_cdo') || u.includes('section_cdo')) return 'CHABAD';
   if (u.includes('ansheemet') || u.includes('kamii') || u.includes('irz.org') || u.includes('makomshalom') || u.includes('nssbethel') || u.includes('synagogue')) return 'SYNAGOGUE';
@@ -270,6 +273,47 @@ async function enrichPartifulEvent(url: string): Promise<Partial<CommunityEvent>
   }
 }
 
+// 2B. Deep enrich Heylo event page (e.g. heylo.com/...)
+async function enrichHeyloEvent(url: string): Promise<Partial<CommunityEvent> | null> {
+  try {
+    const res = await fetch(url, {
+      headers: {
+        'User-Agent':
+          'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36',
+        'Accept': 'text/html',
+      },
+      redirect: 'follow',
+      signal: AbortSignal.timeout(5000),
+    });
+    if (!res.ok) return null;
+    const html = await res.text();
+    const scripts = html.match(/<script type="application\/ld\+json"[^>]*>([\s\S]*?)<\/script>/gi);
+    if (!scripts) return null;
+
+    for (const s of scripts) {
+      const jsonStr = s.replace(/<script[^>]*>/, '').replace(/<\/script>/, '');
+      try {
+        const parsed = JSON.parse(jsonStr);
+        if (parsed['@type'] === 'Event') {
+          return {
+            title: parsed.name,
+            description: parsed.description || null,
+            imageUrl: Array.isArray(parsed.image) ? parsed.image[0] : parsed.image || null,
+            eventDate: parsed.startDate ? new Date(parsed.startDate).toISOString() : null,
+            eventDateStr: parsed.startDate || null,
+            eventEndDate: parsed.endDate ? new Date(parsed.endDate).toISOString() : null,
+            location: parsed.location?.name || parsed.location?.address?.streetAddress || null,
+            hostName: parsed.organizer?.name || null,
+          };
+        }
+      } catch {}
+    }
+    return null;
+  } catch {
+    return null;
+  }
+}
+
 // 3. Scrape Linktree Profile (e.g. linktr.ee/...)
 async function scrapeLinktree(url: string, sourceName: string): Promise<CommunityEvent[]> {
   try {
@@ -300,6 +344,7 @@ async function scrapeLinktree(url: string, sourceName: string): Promise<Communit
         (urlLower.includes('instagram.com/') && !urlLower.includes('/p/')) ||
         (urlLower.includes('facebook.com/') && !urlLower.includes('/events/')) ||
         urlLower.startsWith('mailto:') ||
+        urlLower.includes('partiful.com/u/') ||
         titleLower.includes('survey') ||
         titleLower.includes('newsletter') ||
         titleLower.includes('email list') ||
@@ -311,6 +356,7 @@ async function scrapeLinktree(url: string, sourceName: string): Promise<Communit
       }
 
       const isPartiful = urlLower.includes('partiful.com/e/');
+      const isHeylo = urlLower.includes('heylo.com') || urlLower.includes('heylo.group');
       const isOneTable = urlLower.includes('onetable.org');
       const isGoogleForm = urlLower.includes('forms.gle') || urlLower.includes('docs.google.com/forms');
       const isGenericEvent =
@@ -336,12 +382,12 @@ async function scrapeLinktree(url: string, sourceName: string): Promise<Communit
         /\b\d{1,2}\/\d{1,2}\b/.test(item.title) ||
         /\b(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)\b/i.test(item.title);
 
-      if ((isPartiful || isOneTable || isGoogleForm || isGenericEvent) && !seen.has(item.url)) {
+      if ((isPartiful || isHeylo || isOneTable || isGoogleForm || isGenericEvent) && !seen.has(item.url)) {
         seen.add(item.url);
         candidates.push({
           title: item.title,
           url: item.url,
-          platform: isPartiful ? 'PARTIFUL' : isOneTable ? 'ONETABLE' : isGoogleForm ? 'GOOGLE_FORMS' : 'LINKTREE',
+          platform: isPartiful ? 'PARTIFUL' : isHeylo ? 'HEYLO' : isOneTable ? 'ONETABLE' : isGoogleForm ? 'GOOGLE_FORMS' : 'LINKTREE',
         });
       }
     }
@@ -373,6 +419,18 @@ async function scrapeLinktree(url: string, sourceName: string): Promise<Communit
             if (deep.location) location = deep.location;
             if (deep.hostName) hostName = deep.hostName;
             if (deep.rsvpCount) rsvpCount = deep.rsvpCount;
+          }
+        } else if (c.platform === 'HEYLO' || c.url.includes('heylo.com')) {
+          const deep = await enrichHeyloEvent(c.url);
+          if (deep) {
+            if (deep.title) title = deep.title;
+            if (deep.eventDate) eventDate = deep.eventDate;
+            if (deep.eventDateStr) eventDateStr = deep.eventDateStr;
+            if (deep.eventEndDate) eventEndDate = deep.eventEndDate;
+            if (deep.description) description = deep.description;
+            if (deep.imageUrl) imageUrl = deep.imageUrl;
+            if (deep.location) location = deep.location;
+            if (deep.hostName) hostName = deep.hostName;
           }
         }
 
@@ -555,6 +613,40 @@ async function pollSingleSource(source: MonitoredSource): Promise<CommunityEvent
           location: deep.location || null,
           hostName: deep.hostName || name,
           rsvpCount: deep.rsvpCount || null,
+          isPinned: true,
+          sourceName: name,
+          sourceUrl: url,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+          organization: meta.organization,
+          orgGroup: meta.orgGroup,
+          neighborhood: meta.neighborhood,
+          categories: meta.categories,
+        },
+      ];
+    }
+  }
+
+  // Fallback for single Heylo event
+  if (url.includes('heylo.com') || url.includes('heylo.group')) {
+    const deep = await enrichHeyloEvent(url);
+    if (deep && deep.title) {
+      const meta = classifyEvent(deep.title, deep.description, deep.location, deep.hostName, name);
+      return [
+        {
+          id: `heylo_${url.replace(/[^a-zA-Z0-9]/g, '').slice(-24)}`,
+          title: deep.title,
+          url,
+          platform: 'HEYLO',
+          itemType: 'EVENT',
+          eventDate: deep.eventDate || null,
+          eventDateStr: deep.eventDateStr || null,
+          eventEndDate: deep.eventEndDate || null,
+          description: deep.description || null,
+          imageUrl: deep.imageUrl || null,
+          location: deep.location || null,
+          hostName: deep.hostName || name,
+          rsvpCount: null,
           isPinned: true,
           sourceName: name,
           sourceUrl: url,
@@ -892,10 +984,9 @@ export default {
       let filtered = stateEvents.filter((e) => {
         // Date filters
         if (filter === 'upcoming') {
-          if (e.eventDate) {
-            const ed = new Date(new Date(e.eventDate).toLocaleString('en-US', { timeZone: 'America/Chicago' }));
-            if (ed < startOfToday) return false;
-          }
+          if (!e.eventDate) return false;
+          const ed = new Date(new Date(e.eventDate).toLocaleString('en-US', { timeZone: 'America/Chicago' }));
+          if (ed < startOfToday) return false;
         } else if (filter === 'weekend') {
           if (!e.eventDate) return false;
           const ed = new Date(new Date(e.eventDate).toLocaleString('en-US', { timeZone: 'America/Chicago' }));

@@ -103,6 +103,18 @@ export async function scrapeWithCheerio(url: string, timeoutMs = 10000): Promise
         method,
       });
 
+    case 'HEYLO':
+      return parseHeylo({
+        normalizedUrl,
+        $,
+        jsonLdList,
+        ogTitle,
+        ogDesc,
+        ogImage,
+        durationMs,
+        method,
+      });
+
     case 'SOCIAL':
       return parseSocial({
         normalizedUrl,
@@ -448,6 +460,91 @@ function parsePartiful(params: {
     author,
     avatarUrl,
     rawPayload: nextData ? JSON.stringify(nextData) : eventLd ? JSON.stringify(eventLd) : null,
+    items,
+  };
+}
+
+// -------------------------------------------------------------
+// Heylo Parser
+// -------------------------------------------------------------
+function parseHeylo(params: {
+  normalizedUrl: string;
+  $: cheerio.CheerioAPI;
+  jsonLdList: any[];
+  ogTitle: string | null;
+  ogDesc: string | null;
+  ogImage: string | null;
+  durationMs: number;
+  method: 'CHEERIO_NEXT_DATA' | 'CHEERIO_STATIC';
+}): ScrapeResult {
+  const { normalizedUrl, $, jsonLdList, ogTitle, ogDesc, ogImage, durationMs, method } = params;
+
+  let title = ogTitle;
+  let description = ogDesc;
+  let author: string | null = null;
+  let avatarUrl = ogImage;
+  let eventDate: string | null = null;
+  let eventEndDate: string | null = null;
+  let location: string | null = null;
+
+  const eventLd = jsonLdList.find((item) => item['@type'] === 'Event' || item.type === 'Event');
+  if (eventLd) {
+    if (eventLd.name) title = eventLd.name;
+    if (eventLd.description) description = eventLd.description;
+    if (eventLd.startDate) eventDate = eventLd.startDate;
+    if (eventLd.endDate) eventEndDate = eventLd.endDate;
+    if (eventLd.image) {
+      avatarUrl = Array.isArray(eventLd.image)
+        ? eventLd.image[0]
+        : typeof eventLd.image === 'string'
+        ? eventLd.image
+        : eventLd.image?.url;
+    }
+    if (eventLd.organizer) {
+      author = typeof eventLd.organizer === 'string' ? eventLd.organizer : eventLd.organizer.name;
+    }
+    if (eventLd.location) {
+      if (typeof eventLd.location === 'string') location = eventLd.location;
+      else if (eventLd.location.name) location = eventLd.location.name;
+      else if (eventLd.location.address) {
+        location = typeof eventLd.location.address === 'string' ? eventLd.location.address : eventLd.location.address.streetAddress;
+      }
+    }
+  }
+
+  if (!title) {
+    title = $('h1').first().text().trim() || 'Heylo Event';
+  }
+
+  const items: ParsedItem[] = [
+    {
+      title,
+      url: normalizedUrl,
+      itemType: 'EVENT',
+      platform: 'HEYLO',
+      description,
+      imageUrl: avatarUrl,
+      eventDate,
+      eventEndDate,
+      location,
+      hostName: author,
+      isPinned: true,
+      metadata: {
+        isPrimaryEvent: true,
+        hasJsonLd: !!eventLd,
+      },
+    },
+  ];
+
+  return {
+    url: normalizedUrl,
+    platform: 'HEYLO',
+    method,
+    durationMs,
+    title,
+    description,
+    author,
+    avatarUrl,
     items,
   };
 }

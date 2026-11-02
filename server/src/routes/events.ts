@@ -35,10 +35,7 @@ export const eventRoutes: FastifyPluginAsync = async (fastify) => {
       };
 
       if (filter === 'upcoming') {
-        whereClause.OR = [
-          { eventDate: { gte: startOfToday } },
-          { eventDate: null },
-        ];
+        whereClause.eventDate = { gte: startOfToday };
       } else if (filter === 'weekend') {
         // Calculate upcoming weekend (Friday through Sunday)
         const dayOfWeek = now.getDay();

@@ -41,6 +41,15 @@ export function detectPlatform(rawUrl: string): {
     };
   }
 
+  // Heylo
+  if (hostname.includes('heylo.com') || hostname.includes('heylo.group')) {
+    return {
+      platform: 'HEYLO',
+      subPlatform: 'HEYLO',
+      normalizedUrl: urlObj.toString(),
+    };
+  }
+
   // Mishkan
   if (hostname.includes('mishkanchicago.org') || urlObj.pathname.includes('/tribe/events')) {
     return {
@@ -155,6 +164,7 @@ export function inferItemPlatform(linkUrl: string): string {
     if (host.includes('github.com')) return 'GITHUB';
     if (host.includes('linkedin.com')) return 'LINKEDIN';
     if (host.includes('partiful.com')) return 'PARTIFUL';
+    if (host.includes('heylo.com') || host.includes('heylo.group')) return 'HEYLO';
     if (host.includes('onetable.org')) return 'ONETABLE';
     if (host.includes('mishkanchicago.org')) return 'MISHKAN';
     if (host.includes('juf.org')) return 'JUF';
